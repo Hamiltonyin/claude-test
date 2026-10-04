@@ -7,9 +7,9 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body,#root{height:100%;margin:0;overscroll-behavior:none}
-body{background:var(--bg);color:var(--ink);font-family:-apple-system,'SF Pro Text','PingFang SC','Noto Sans',sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:'Sarabun',-apple-system,'SF Pro Text','PingFang SC','Noto Sans',sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;-webkit-text-size-adjust:100%}
 button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;touch-action:manipulation}
-input,textarea,select{font:inherit;color:inherit}
+input,textarea,select{font:inherit;color:inherit;font-family:inherit}
 .th{font-family:var(--th);line-height:1.7;letter-spacing:0}
 .rom{font-family:var(--latin);letter-spacing:.2px}
 .app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;position:relative}
