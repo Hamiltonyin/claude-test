@@ -26,7 +26,7 @@ npm run test:e2e       # 需先 build；Playwright iPhone 视口端到端测试
 
 - 每个词的音频文件为 `public/audio/<词汇ID>.mp3`，与词汇 ID 永久绑定。
 - 由 `scripts/gen_audio.py` 用 Microsoft 神经网络泰语语音（`edge-tts`，默认 `th-TH-PremwadeeNeural`）生成；**已存在的文件不会覆盖**。
-- 本地生成：`pip install edge-tts && npm run audio`（需要能访问微软语音服务）。CI 中自动执行并把新增 mp3 提交回仓库。
+- 本地生成：`pip install edge-tts gTTS && npm run audio`（需要能访问微软语音服务）。CI 中自动执行并把新增 mp3 提交回仓库。
 - 应用播放：正常 / 0.8 倍速；Service Worker 首次播放后缓存；「我的」页可一键下载全部音频供离线。
 - 文件缺失、离线、被阻止播放时都会有明确提示 + 重试；可选「系统语音」备用，并明确标注为非存档音频。
 - **请抽听生成的音频**：TTS 对单个词的声调/长短音大体可靠，但无法保证 100%，发现问题可替换对应的 mp3（文件名不变）或用 `--force` 重生成。

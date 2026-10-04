@@ -23,6 +23,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,7 +37,7 @@ jobs:
           node scripts/build-content.mjs
       - name: 生成缺失的泰语音频（edge-tts，已有文件不覆盖）
         run: |
-          pip install edge-tts
+          pip install edge-tts gTTS
           python3 scripts/gen_audio.py --allow-fail ${{ inputs.force_audio && '--force' || '' }}
       - name: 提交新增音频
         run: |

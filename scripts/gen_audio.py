@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """为 public/content/library.json 中的每个词生成泰语 MP3（public/audio/<词ID>.mp3）。
 - 已存在的文件一律跳过（历史音频永不覆盖；加 --force 才重做）。
-- 引擎：Microsoft Edge 神经网络泰语语音（edge-tts，默认 th-TH-PremwadeeNeural 女声，可用 --voice 换 th-TH-NiwatNeural 男声）。
+- 引擎：先试 Microsoft Edge 神经网络泰语语音（edge-tts，失败/超时则自动改用 gTTS 泰语语音；默认 th-TH-PremwadeeNeural 女声，可用 --voice 换 th-TH-NiwatNeural 男声）。
 - 失败不会写出空文件；最终输出失败清单，存在失败时退出码为 1（--allow-fail 则为 0）。
 用法：pip install edge-tts && python3 scripts/gen_audio.py
 """
@@ -19,7 +19,13 @@ a = ap.parse_args()
 try:
     import edge_tts
 except ImportError:
-    sys.exit('请先安装：pip install edge-tts')
+    edge_tts = None
+try:
+    from gtts import gTTS
+except ImportError:
+    gTTS = None
+if not edge_tts and not gTTS:
+    sys.exit('请先安装：pip install edge-tts gTTS')
 
 words = json.load(open(a.library, encoding='utf-8'))['words']
 os.makedirs(a.out, exist_ok=True)
@@ -27,21 +33,37 @@ todo = [w for w in words if a.force or not os.path.exists(f"{a.out}/{w['id']}.mp
 print(f"共 {len(words)} 词，需生成 {len(todo)} 个")
 failed = []
 
+async def synth(w, tmp):
+    errs = []
+    if edge_tts:
+        try:
+            await asyncio.wait_for(edge_tts.Communicate(w['thai'], a.voice, rate=a.rate).save(tmp), 25)
+            if os.path.getsize(tmp) > 1000: return 'edge-tts'
+            errs.append('edge-tts: 音频过小')
+        except Exception as e:
+            errs.append(f'edge-tts: {type(e).__name__} {e}')
+    if gTTS:
+        try:
+            await asyncio.wait_for(asyncio.to_thread(lambda: gTTS(w['thai'], lang='th').save(tmp)), 25)
+            if os.path.getsize(tmp) > 1000: return 'gTTS'
+            errs.append('gTTS: 音频过小')
+        except Exception as e:
+            errs.append(f'gTTS: {type(e).__name__} {e}')
+    raise RuntimeError(' | '.join(errs))
+
 async def one(w, sem):
     path = f"{a.out}/{w['id']}.mp3"
     async with sem:
-        for attempt in range(4):
+        for attempt in range(2):
             try:
-                await edge_tts.Communicate(w['thai'], a.voice, rate=a.rate).save(path + '.tmp')
-                if os.path.getsize(path + '.tmp') < 1000:
-                    raise RuntimeError('音频过小')
+                eng = await synth(w, path + '.tmp')
                 os.replace(path + '.tmp', path)
-                print('✓', w['id'], w['thai']); return
+                print('✓', w['id'], w['thai'], eng, flush=True); return
             except Exception as e:
                 if os.path.exists(path + '.tmp'): os.remove(path + '.tmp')
                 err = e
-                await asyncio.sleep(2 ** attempt)
-        print('✗', w['id'], w['thai'], err); failed.append(w)
+                await asyncio.sleep(2)
+        print('✗', w['id'], w['thai'], err, flush=True); failed.append(w)
 
 async def main():
     sem = asyncio.Semaphore(4)
