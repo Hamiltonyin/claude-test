@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client'
-import '@fontsource/noto-sans-thai/400.css'
-import '@fontsource/noto-sans-thai/600.css'
+import '@fontsource/sarabun/thai-400.css'
+import '@fontsource/sarabun/thai-600.css'
 import '@fontsource/noto-sans/latin-400.css'
 import '@fontsource/noto-sans/latin-ext-400.css'
 import '@fontsource/noto-sans/latin-600.css'

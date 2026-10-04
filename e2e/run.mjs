@@ -8,7 +8,7 @@ import assert from 'assert'
 
 const tmp = mkdtempSync(tmpdir() + '/t30-')
 cpSync('dist', tmp + '/dist', { recursive: true })
-mkdirSync(tmp + '/dist/audio', { recursive: true })
+rmSync(tmp + '/dist/audio', { recursive: true, force: true }); mkdirSync(tmp + '/dist/audio', { recursive: true })
 execSync(`ffmpeg -y -loglevel error -f lavfi -i "sine=frequency=440:duration=0.6" ${tmp}/dist/audio/w001.mp3`)
 const port = 4400 + Math.floor(Math.random() * 500)
 const srv = spawn('npx', ['vite', 'preview', '--outDir', tmp + '/dist', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
@@ -46,8 +46,8 @@ try {
   const first = await page.textContent('[data-testid=thai]')
   assert(first && first.length > 0); ok('第一张卡泰文立即显示：' + first)
   await page.evaluate(() => document.fonts.ready)
-  const fontOK = await page.evaluate(() => document.fonts.check('64px "Noto Sans Thai"', 'สวัสดี'))
-  assert(fontOK); ok('泰文字体已加载 (Noto Sans Thai)')
+  const fontOK = await page.evaluate(() => document.fonts.check('64px "Sarabun"', 'สวัสดี'))
+  assert(fontOK); ok('泰文字体已加载 (Sarabun)')
   await page.screenshot({ path: tmp + '/card-front.png' })
 
   // 翻面 / 翻回
