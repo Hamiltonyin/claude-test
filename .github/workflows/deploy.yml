@@ -1,0 +1,65 @@
+name: 校验 · 生成音频 · 部署
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**/*.md']
+  workflow_dispatch:
+    inputs:
+      force_audio:
+        description: '重新生成全部音频（默认只生成缺失的）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write     # 把新生成的音频提交回仓库，历史音频永久保留
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: npm ci
+      - name: 校验内置数据与每日 CSV（泰文字符 / 声调 / 重复）
+        run: |
+          node scripts/check-data.mjs
+          node scripts/build-content.mjs
+      - name: 生成缺失的泰语音频（edge-tts，已有文件不覆盖）
+        run: |
+          pip install edge-tts
+          python3 scripts/gen_audio.py --allow-fail ${{ inputs.force_audio && '--force' || '' }}
+      - name: 提交新增音频
+        run: |
+          git config user.name "thai30-bot"; git config user.email "bot@users.noreply.github.com"
+          git add public/audio public/content
+          git diff --cached --quiet || (git commit -m "chore: 新增/更新音频与词库 [skip ci]" && git push)
+      - name: 构建
+        run: BASE=/${{ github.event.repository.name }}/ npm run build
+      - name: 检查音频覆盖率
+        run: |
+          total=$(node -e "console.log(require('./public/content/library.json').words.length)")
+          have=$(ls public/audio/*.mp3 2>/dev/null | wc -l)
+          echo "音频 $have / 词条 $total"
+          echo "### 音频 $have / $total" >> $GITHUB_STEP_SUMMARY
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4
