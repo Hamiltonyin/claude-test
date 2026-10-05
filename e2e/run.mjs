@@ -37,10 +37,11 @@ try {
   await page.goto(URL); await page.waitForSelector('[data-testid=start-today]')
   await page.screenshot({ path: tmp + '/home.png' })
   assert((await page.textContent('body')).includes('第3天')); ok('首页：第3天、统计头')
-  assert((await page.textContent('body')).includes('0/')); ok('今日完成 0/N')
+  assert((await page.textContent('body')).includes('0/')); ok('今日新词 0/N')
 
   // 今天学习：8复习 + 22新词
-  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 30'), null, { timeout: 8000 }); assert((await page.textContent('[data-testid=start-today]')).includes('复习 8 + 新词 30')); ok('今日课程：复习8 + 新词30（新课程合并后自动补足）')
+  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 30 个'), null, { timeout: 8000 })
+  assert((await page.textContent('[data-testid=start-review]')).includes('到期复习 8 个')); ok('「今天学习」=30个新词，「今日复习」=8个到期词，两个入口分开')
   await page.click('[data-testid=start-today]')
   await page.waitForSelector('[data-testid=thai]')
   const first = await page.textContent('[data-testid=thai]')
@@ -104,7 +105,7 @@ try {
   // 初始熟练度计数
   await page.tap('[data-testid=tab-home]')
   const home = await page.textContent('.scroll')
-  assert(/精通 12/.test(home) && /熟悉 10/.test(home) && /不熟悉 5/.test(home) && /陌生 2/.test(home) && /未标记 (23|53|113)/.test(home)); ok('熟练度：初始 12/9/5/3 + 刚把เผ็ด陌生→熟悉 = 精通12 熟悉10 不熟悉5 陌生2 未标记23')
+  assert(/精通 12/.test(home) && /熟悉 10/.test(home) && /不熟悉 5/.test(home) && /陌生 3/.test(home) && /未标记 (22|52|112)/.test(home)); ok('熟练度：初始 12/9/5/3 保持 + 刚评的新词→熟悉(10)，陌生仍为3')
 } catch (e) { console.error('FAIL', e); process.exitCode = 1 }
 finally {
   // 持久化：关闭整个浏览器后重开

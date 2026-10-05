@@ -17,24 +17,28 @@ export function streakOf(logs: { date: string }[]): number {
 export function useHeaderStats() {
   const { logs, words, session } = useApp()
   const date = today()
-  const doneToday = new Set(logs.filter(l => l.date === date).map(l => l.wordId)).size
-  return { doneToday, total: words.length, streak: streakOf(logs), dayNo: session?.dayNo ?? 1 }
+  const ratedToday = new Set(logs.filter(l => l.date === date).map(l => l.wordId))
+  const newIds = session?.newIds ?? []
+  const doneToday = newIds.filter(i => ratedToday.has(i)).length   // 今日新词完成数
+  const reviewIds = session?.reviewIds ?? []
+  const reviewDone = reviewIds.filter(i => ratedToday.has(i)).length
+  return { doneToday, newTotal: newIds.length, reviewDone, reviewTotal: reviewIds.length, total: words.length, streak: streakOf(logs), dayNo: session?.dayNo ?? 1 }
 }
 
 export function StatsHeader() {
-  const { settings, session } = useApp(); const h = useHeaderStats()
+  const h = useHeaderStats()
   return (
     <div className="stats">
       <div className="stat"><b>第{h.dayNo}天</b><span>今日课程</span></div>
-      <div className="stat"><b>{h.doneToday}/{session?.wordIds.length ?? settings.dailyGoal}</b><span>今日完成</span></div>
+      <div className="stat"><b>{h.doneToday}/{h.newTotal}</b><span>今日新词</span></div>
       <div className="stat"><b>{h.total}</b><span>总词汇</span></div>
       <div className="stat"><b>{h.streak}天</b><span>连续学习</span></div>
     </div>
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'today' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void }) {
-  const { progress, session, words, logs, settings } = useApp()
+export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void }) {
+  const { progress, words, settings } = useApp()
   const weak = weakWords(progress).length
   const due = dueWords(progress).length
   const counts = useMemo(() => {
@@ -43,16 +47,22 @@ export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'to
     return c
   }, [words, progress])
   const themeCount = useMemo(() => { const m = new Map<string, number>(); words.forEach(w => m.set(w.theme, (m.get(w.theme) ?? 0) + 1)); return m }, [words])
-  const doneToday = new Set(logs.filter(l => l.date === today()).map(l => l.wordId))
-  const left = (session?.wordIds ?? []).filter(i => !doneToday.has(i)).length
+  const h = useHeaderStats()
+  const newLeft = h.newTotal - h.doneToday
+  const revLeft = h.reviewTotal - h.reviewDone
   return (
     <>
       <h1>泰语每日30词</h1>
       <StatsHeader />
       <button className="entry" onClick={() => onStudy('today')} data-testid="start-today">
         <div className="ic" style={{ background: 'var(--blue)' }}>📖</div>
-        <div><div className="t">今天学习</div>
-          <div className="d">{session ? `复习 ${session.reviewIds.length} + 新词 ${session.newIds.length} · ` : ''}{left === 0 && session ? '今日已完成，可再看一遍' : `还剩 ${left} 个`}</div></div><Chev />
+        <div><div className="t">今天学习 · 新词</div>
+          <div className="d">{h.newTotal === 0 ? '新词已学完，请添加新课程' : newLeft === 0 ? `今日 ${h.newTotal} 个新词已完成，可再看一遍` : `新词 ${h.newTotal} 个 · 还剩 ${newLeft} 个`}</div></div><Chev />
+      </button>
+      <button className="entry" onClick={() => onStudy('review')} data-testid="start-review">
+        <div className="ic" style={{ background: '#af52de' }}>🔁</div>
+        <div><div className="t">今日复习</div>
+          <div className="d">{h.reviewTotal === 0 ? '今天没有到期的复习词' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个已完成` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个`}</div></div><Chev />
       </button>
       <button className="entry" onClick={() => onStudy('weak')} data-testid="start-weak">
         <div className="ic" style={{ background: 'var(--orange)' }}>🎧</div>
