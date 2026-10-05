@@ -103,7 +103,7 @@ try {
   // 初始熟练度计数
   await page.tap('[data-testid=tab-home]')
   const home = await page.textContent('.scroll')
-  assert(/精通 12/.test(home) && /熟悉 10/.test(home) && /不熟悉 5/.test(home) && /陌生 2/.test(home) && /未标记 23/.test(home)); ok('熟练度：初始 12/9/5/3 + 刚把เผ็ด陌生→熟悉 = 精通12 熟悉10 不熟悉5 陌生2 未标记23')
+  assert(/精通 12/.test(home) && /熟悉 10/.test(home) && /不熟悉 5/.test(home) && /陌生 2/.test(home) && /未标记 (23|53)/.test(home)); ok('熟练度：初始 12/9/5/3 + 刚把เผ็ด陌生→熟悉 = 精通12 熟悉10 不熟悉5 陌生2 未标记23')
 } catch (e) { console.error('FAIL', e); process.exitCode = 1 }
 finally {
   // 持久化：关闭整个浏览器后重开

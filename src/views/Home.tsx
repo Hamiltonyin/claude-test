@@ -60,7 +60,7 @@ export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'to
       </button>
       <button className="entry" onClick={onLibrary} data-testid="open-library">
         <div className="ic" style={{ background: 'var(--green)' }}>🗂</div>
-        <div><div className="t">全部词库</div><div className="d">{words.length} 个词 · 搜索中文/泰文/拼音</div></div><Chev />
+        <div><div className="t">全部词库</div><div className="d">{words.length} / 500 词目标 · 搜索中文/泰文/拼音</div></div><Chev />
       </button>
       <h2>熟练度分布</h2>
       <div className="bar">{[4, 3, 2, 1, 0].map(l => <i key={l} style={{ width: `${(counts[l] / Math.max(1, words.length)) * 100}%`, background: LEVEL_COLORS[l] }} />)}</div>
