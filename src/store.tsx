@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Backup, Level, Lesson, Progress, ReviewLog, Session, Settings, Word } from './types'
 import { clearStores, loadAll, put, putMany, saveSettings } from './lib/db'
 import { SEED_LESSONS, SEED_LEVELS, SEED_VERSION, SEED_WORDS } from './data/seed'
-import { applyRating, buildSession } from './lib/srs'
+import { applyRating, buildSession, topUpSession } from './lib/srs'
 import { addDays, today } from './lib/dates'
 import { toneSummary } from './lib/tone'
 import { wordIdFor } from './lib/ids'
@@ -91,6 +91,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } catch (e: any) { setError(e?.message || String(e)) }
     })()
   }, [])
+
+  // 新词池变化（合并新课程/导入）后，把今天课程的新词补足到每日新词数
+  useEffect(() => {
+    if (!ready) return
+    const cur = sessions.find(x => x.date === today()); if (!cur) return
+    const up = topUpSession(cur, { words, lessons, progress, settings })
+    if (up !== cur) { setSessions(ss => ss.map(x => x.date === up.date ? up : x)); put('sessions', up) }
+  }, [ready, words, lessons, progress, sessions, settings])
 
   const mergeLibrary = useCallback(async (nw: Word[], nl: Lesson[]) => {
     const cur = ref.current

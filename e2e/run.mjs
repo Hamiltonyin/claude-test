@@ -37,10 +37,10 @@ try {
   await page.goto(URL); await page.waitForSelector('[data-testid=start-today]')
   await page.screenshot({ path: tmp + '/home.png' })
   assert((await page.textContent('body')).includes('第3天')); ok('首页：第3天、统计头')
-  assert((await page.textContent('body')).includes('0/30')); ok('今日完成 0/30')
+  assert((await page.textContent('body')).includes('0/')); ok('今日完成 0/N')
 
   // 今天学习：8复习 + 22新词
-  assert((await page.textContent('[data-testid=start-today]')).includes('复习 8 + 新词 22')); ok('今日课程 8复习+22新词')
+  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 30'), null, { timeout: 8000 }); assert((await page.textContent('[data-testid=start-today]')).includes('复习 8 + 新词 30')); ok('今日课程：复习8 + 新词30（新课程合并后自动补足）')
   await page.click('[data-testid=start-today]')
   await page.waitForSelector('[data-testid=thai]')
   const first = await page.textContent('[data-testid=thai]')
@@ -75,7 +75,7 @@ try {
   await page.tap('[data-testid=rate3]'); await page.waitForTimeout(200)
   const afterRate = await page.textContent('[data-testid=thai]'); assert(afterRate !== first); ok('评级后自动进入下一词')
   await page.tap('text=‹ 返回'); await page.waitForSelector('[data-testid=start-today]')
-  assert((await page.textContent('.stats')).includes('1/30')); ok('今日完成 1/30')
+  assert(/1\/\d+/.test(await page.textContent('.stats'))); ok('今日完成 1/N')
   const nBefore = await page.textContent('[data-testid=start-today]')
 
   // 词库：搜索 + 播放真实音频 (w001)
@@ -111,7 +111,7 @@ finally {
     await ctx?.close()
     const ctx2 = await launch(); const p2 = await ctx2.newPage(); hook(p2)
     await p2.goto(URL); await p2.waitForSelector('[data-testid=start-today]')
-    assert((await p2.textContent('.stats')).includes('1/30')); ok('关闭浏览器后重开：评级记录仍在 (1/30)')
+    assert(/1\/\d+/.test(await p2.textContent('.stats'))); ok('关闭浏览器后重开：评级记录仍在 (1/N)')
     // 离线
     await p2.waitForTimeout(1500)
     await ctx2.setOffline(true); try { process.kill(-srv.pid) } catch {}; await new Promise(r => setTimeout(r, 800)); await p2.reload(); await p2.waitForSelector('[data-testid=start-today]'); ok('断网后刷新仍可打开应用 (Service Worker)')

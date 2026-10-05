@@ -22,11 +22,11 @@ export function useHeaderStats() {
 }
 
 export function StatsHeader() {
-  const { settings } = useApp(); const h = useHeaderStats()
+  const { settings, session } = useApp(); const h = useHeaderStats()
   return (
     <div className="stats">
       <div className="stat"><b>第{h.dayNo}天</b><span>今日课程</span></div>
-      <div className="stat"><b>{h.doneToday}/{settings.dailyGoal}</b><span>今日完成</span></div>
+      <div className="stat"><b>{h.doneToday}/{session?.wordIds.length ?? settings.dailyGoal}</b><span>今日完成</span></div>
       <div className="stat"><b>{h.total}</b><span>总词汇</span></div>
       <div className="stat"><b>{h.streak}天</b><span>连续学习</span></div>
     </div>
@@ -71,7 +71,7 @@ export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'to
       <div className="chips">
         {THEMES.map(t => <button key={t} className="chip" disabled={!themeCount.get(t)} style={!themeCount.get(t) ? { opacity: .45 } : undefined} onClick={() => onTheme(t)}>{t}<small>{themeCount.get(t) ?? 0}</small></button>)}
       </div>
-      <p className="sub" style={{ marginTop: 18 }}>每日目标 {settings.dailyGoal} 词：优先安排陌生与不熟悉的到期词，其余为新词。</p>
+      <p className="sub" style={{ marginTop: 18 }}>每天 {settings.newPerDay ?? 30} 个新词，外加到期的复习词（陌生与不熟悉优先，最多 {settings.reviewCap} 个）。</p>
     </>
   )
 }

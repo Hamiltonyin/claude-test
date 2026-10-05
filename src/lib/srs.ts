@@ -44,22 +44,27 @@ export function newPool(words: Word[], lessons: Lesson[], progress: Map<string, 
   return order.filter(id => (progress.get(id)?.level ?? 0) === 0)
 }
 
-/** 生成当天 30 词：先取到期复习词（陌生/不熟悉优先，上限 reviewCap），其余为新词；新词不足时补更多复习词。 */
+export const newPerDay = (s: Settings) => s.newPerDay ?? 30
+
+/** 生成当天课程：每天 newPerDay(默认30) 个新词 + 到期复习词（陌生/不熟悉优先，上限 reviewCap）。 */
 export function buildSession(args: {
   words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings; sessions: Session[]; date?: string
 }): Session {
   const date = args.date ?? today()
-  const goal = args.settings.dailyGoal
   const due = dueWords(args.progress, date).map(p => p.wordId)
   const pool = newPool(args.words, args.lessons, args.progress)
-  let reviewIds = due.slice(0, Math.min(args.settings.reviewCap, goal))
-  const reviewSet = new Set(reviewIds)
-  let newIds = pool.slice(0, goal - reviewIds.length)
-  if (reviewIds.length + newIds.length < goal) {
-    const more = due.filter(id => !reviewSet.has(id)).slice(0, goal - reviewIds.length - newIds.length)
-    reviewIds = [...reviewIds, ...more]
-  }
-  // 新词与复习词穿插：复习词放前面（先热身），之后是新词
+  const reviewIds = due.slice(0, args.settings.reviewCap)
+  const newIds = pool.slice(0, newPerDay(args.settings))
   const dayNo = args.settings.dayOffset + args.sessions.filter(s => s.date !== date).length + 1
   return { date, dayNo, wordIds: [...reviewIds, ...newIds], reviewIds, newIds }
+}
+
+/** 今天的课程新词不足时（例如新课程在课程生成之后才合并进来）用新词池补足；已有顺序与已评级的词不变。 */
+export function topUpSession(session: Session, args: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings }): Session {
+  const want = newPerDay(args.settings) - session.newIds.length
+  if (want <= 0) return session
+  const inSession = new Set(session.wordIds)
+  const add = newPool(args.words, args.lessons, args.progress).filter(id => !inSession.has(id)).slice(0, want)
+  if (!add.length) return session
+  return { ...session, wordIds: [...session.wordIds, ...add], newIds: [...session.newIds, ...add] }
 }
