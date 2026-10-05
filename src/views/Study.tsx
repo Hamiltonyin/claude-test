@@ -35,8 +35,8 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
   }
   const toggle = () => {
     const nf = !flip; setFlip(nf)
-    // 翻到背面时，对陌生/不熟悉词（及重点复习模式）自动播放，作为听音跟读
-    if (nf && word && settings.autoPlay && (mode === 'weak' || level <= 2)) sp.play(word, false)
+    // 翻到背面时自动朗读（在点击回调里同步触发，iPhone 才允许）；可在「我的」里关闭
+    if (nf && word && settings.autoPlay) sp.play(word, false)
   }
   const doRate = (lv: Level) => {
     if (!word) return

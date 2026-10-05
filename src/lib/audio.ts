@@ -8,9 +8,13 @@ export class AudioError extends Error {
 const base = import.meta.env.BASE_URL
 export const audioUrl = (id: string) => `${base}audio/${id}.mp3`
 
-let current: HTMLAudioElement | null = null
+// iPhone Safari 只允许在「用户点按的同一瞬间」开始播放，且需复用同一个 <audio> 元素：
+// 因此 play() 必须在点击回调里同步调用（之前先 fetch 再播放会丢失用户手势，导致自动朗读被拒绝）。
+let el: HTMLAudioElement | null = null
+const getEl = () => (el ??= new Audio())
+
 export function stopAudio() {
-  if (current) { current.pause(); current = null }
+  if (el) { el.onended = null; el.onerror = null; el.pause() }
   if ('speechSynthesis' in window) window.speechSynthesis.cancel()
 }
 
@@ -19,28 +23,31 @@ export async function hasFile(id: string): Promise<boolean> {
   catch { return false }
 }
 
-/** 播放存档音频。slow=true 使用 0.8 倍速（保持音高）。 */
-export async function playFile(id: string, slow: boolean): Promise<void> {
+/** 播放存档音频。slow=true 为 0.8 倍速（保持音高）。必须在用户手势回调中同步调用。 */
+export function playFile(id: string, slow: boolean): Promise<void> {
   stopAudio()
-  let res: Response
-  try { res = await fetch(audioUrl(id)) }
-  catch { throw new AudioError('offline', navigator.onLine ? '无法加载音频文件（网络错误）。' : '当前离线，且这个词的音频还没有缓存。') }
-  const ct = res.headers.get('content-type') || ''
-  if (!res.ok || !ct.includes('audio')) throw new AudioError('missing', '这个词的存档音频还没有生成（服务器上没有对应 MP3）。')
-  const blob = await res.blob()
-  const url = URL.createObjectURL(blob)
-  const a = new Audio(url)
+  const a = getEl()
   a.preservesPitch = true
-  a.playbackRate = slow ? 0.8 : 1
-  current = a
-  try {
-    await a.play()
-  } catch (e: any) {
-    URL.revokeObjectURL(url)
-    throw new AudioError(e?.name === 'NotAllowedError' ? 'blocked' : 'other',
-      e?.name === 'NotAllowedError' ? '浏览器阻止了自动播放，请直接点按喇叭按钮。' : '音频播放失败：' + (e?.message || e))
-  }
-  await new Promise<void>(res2 => { a.onended = () => { URL.revokeObjectURL(url); res2() }; a.onerror = () => { URL.revokeObjectURL(url); res2() } })
+  return new Promise<void>((resolve, reject) => {
+    const done = () => { a.onended = null; a.onerror = null }
+    a.onended = () => { done(); resolve() }
+    a.onerror = () => {
+      done()
+      reject(new AudioError(navigator.onLine ? 'missing' : 'offline',
+        navigator.onLine ? '这个词的存档音频还没有生成（服务器上没有对应 MP3）。' : '当前离线，且这个词的音频还没有缓存。'))
+    }
+    const rate = slow ? 0.8 : 1
+    a.defaultPlaybackRate = rate
+    a.src = audioUrl(id)
+    a.playbackRate = rate
+    const p = a.play()   // 同步调用，保持用户手势
+    p?.catch((e: any) => {
+      done()
+      if (e?.name === 'AbortError') return resolve()   // 被新的播放/停止打断
+      reject(new AudioError(e?.name === 'NotAllowedError' ? 'blocked' : 'other',
+        e?.name === 'NotAllowedError' ? '浏览器阻止了自动播放，请直接点按喇叭按钮。' : '音频播放失败：' + (e?.message || e)))
+    })
+  })
 }
 
 export function systemVoiceAvailable(): boolean {

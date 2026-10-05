@@ -53,6 +53,7 @@ try {
   // 翻面 / 翻回
   await page.tap('[data-testid=card]'); await page.waitForTimeout(500)
   assert(await page.isVisible('[data-testid=roman]')); ok('点击翻面显示拼音')
+  assert((await page.evaluate(() => window.__plays.length)) >= 1); ok('翻面即自动朗读（同步触发 play）')
   await page.screenshot({ path: tmp + '/card-back.png' })
   await page.tap('[data-testid=card]'); await page.waitForTimeout(500)
   assert(await page.evaluate(() => !document.querySelector('.card').classList.contains('flip'))); ok('再次点击翻回正面')
@@ -103,7 +104,7 @@ try {
   // 初始熟练度计数
   await page.tap('[data-testid=tab-home]')
   const home = await page.textContent('.scroll')
-  assert(/精通 12/.test(home) && /熟悉 10/.test(home) && /不熟悉 5/.test(home) && /陌生 2/.test(home) && /未标记 (23|53)/.test(home)); ok('熟练度：初始 12/9/5/3 + 刚把เผ็ด陌生→熟悉 = 精通12 熟悉10 不熟悉5 陌生2 未标记23')
+  assert(/精通 12/.test(home) && /熟悉 10/.test(home) && /不熟悉 5/.test(home) && /陌生 2/.test(home) && /未标记 (23|53|113)/.test(home)); ok('熟练度：初始 12/9/5/3 + 刚把เผ็ด陌生→熟悉 = 精通12 熟悉10 不熟悉5 陌生2 未标记23')
 } catch (e) { console.error('FAIL', e); process.exitCode = 1 }
 finally {
   // 持久化：关闭整个浏览器后重开

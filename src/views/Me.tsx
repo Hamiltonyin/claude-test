@@ -154,7 +154,7 @@ export default function Me() {
         <p className="sub">存档音频由服务器端生成并保存为 MP3。已检测（前200词）可用：{audioN === null ? '…' : `${audioN}`} 个。{audioN === 0 && '——目前服务器上还没有生成音频，请见部署说明。'}</p>
         <button className="btn sec block" onClick={downloadAudio}>下载全部音频供离线使用</button>
         {dl && <div className="note" role="status">{dl}</div>}
-        <label className="field" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}><input type="checkbox" style={{ width: 20 }} checked={settings.autoPlay} onChange={e => updateSettings({ autoPlay: e.target.checked })} /><span style={{ fontSize: 15, color: 'var(--ink)' }}>翻面时对陌生/不熟悉词自动播放</span></label>
+        <label className="field" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}><input type="checkbox" style={{ width: 20 }} checked={settings.autoPlay} onChange={e => updateSettings({ autoPlay: e.target.checked })} /><span style={{ fontSize: 15, color: 'var(--ink)' }}>翻面时自动朗读</span></label>
       </div>
       <div className="panel"><h3>词库更新</h3>
         <p className="sub">在线时每次打开会自动合并服务器新增的每日课程（只新增，不覆盖你的词条与进度）。</p>
