@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Backup, Level, Lesson, Progress, ReviewLog, Session, Settings, Word } from './types'
 import { clearStores, loadAll, put, putMany, saveSettings } from './lib/db'
 import { SEED_LESSONS, SEED_LEVELS, SEED_VERSION, SEED_WORDS } from './data/seed'
-import { applyRating, buildSession, topUpSession } from './lib/srs'
+import { applyRating, buildSession, topUpSession, calendarDay, SESSION_VER } from './lib/srs'
 import { addDays, today } from './lib/dates'
 import { toneSummary } from './lib/tone'
 import { wordIdFor } from './lib/ids'
@@ -41,6 +41,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [logs, setLogs] = useState<ReviewLog[]>([])
   const [sessions, setSessions] = useState<Session[]>([])
   const [settings, setSettings] = useState<Settings>(defaultSettings())
+  const [todayStr, setTodayStr] = useState(today())
   const ref = useRef({ words, lessons, progress, logs, sessions, settings })
   ref.current = { words, lessons, progress, logs, sessions, settings }
 
@@ -78,9 +79,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
         let sess = data.sessions
         const date = today()
-        if (!sess.some(x => x.date === date)) {
+        const cur = sess.find(x => x.date === date)
+        const ratedToday = data.logs.some(l => l.date === date)
+        if (!cur || ((cur.ver ?? 1) < SESSION_VER && !ratedToday)) {
+          // 没有今天的课程，或是旧规则生成且今天还没学过 → 按日历课程日重新生成
           const ns = buildSession({ words: ws, lessons: ls, progress: pg, settings: s, sessions: sess })
-          await put('sessions', ns); sess = [...sess, ns]
+          await put('sessions', ns); sess = [...sess.filter(x => x.date !== date), ns]
+        } else if ((cur.ver ?? 1) < SESSION_VER) {
+          const fixed = { ...cur, dayNo: calendarDay(s, date), ver: SESSION_VER }   // 今天已学过：保留词表，只校正第几天
+          await put('sessions', fixed); sess = sess.map(x => x.date === date ? fixed : x)
         }
         setWords(ws); setLessons(ls); setProgress(pg); setLogs(data.logs); setSessions(sess); setSettings(s); setReady(true)
         navigator.storage?.persist?.().catch(() => {})
@@ -95,10 +102,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // 新词池变化（合并新课程/导入）后，把今天课程的新词补足到每日新词数
   useEffect(() => {
     if (!ready) return
-    const cur = sessions.find(x => x.date === today()); if (!cur) return
+    const cur = sessions.find(x => x.date === todayStr); if (!cur) return
     const up = topUpSession(cur, { words, lessons, progress, settings })
     if (up !== cur) { setSessions(ss => ss.map(x => x.date === up.date ? up : x)); put('sessions', up) }
-  }, [ready, words, lessons, progress, sessions, settings])
+  }, [ready, todayStr, words, lessons, progress, sessions, settings])
+
+  // 跨天：回到应用/应用保持打开过了零点 → 更新日期，并自动生成新一天的课程（漏掉的日子在「学习记录」里可见）
+  useEffect(() => {
+    const tick = () => setTodayStr(today())
+    document.addEventListener('visibilitychange', tick); window.addEventListener('focus', tick)
+    const t = setInterval(tick, 60000)
+    return () => { document.removeEventListener('visibilitychange', tick); window.removeEventListener('focus', tick); clearInterval(t) }
+  }, [])
+  useEffect(() => {
+    if (!ready) return
+    const c = ref.current
+    if (c.sessions.some(x => x.date === todayStr)) return
+    const ns = buildSession({ words: c.words, lessons: c.lessons, progress: c.progress, settings: c.settings, sessions: c.sessions, date: todayStr })
+    setSessions(ss => ss.some(x => x.date === todayStr) ? ss : [...ss, ns]); put('sessions', ns)
+  }, [ready, todayStr, sessions])
 
   const mergeLibrary = useCallback(async (nw: Word[], nl: Lesson[]) => {
     const cur = ref.current
@@ -193,7 +215,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const wordMap = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
-  const session = sessions.find(s => s.date === today()) ?? null
+  const session = sessions.find(s => s.date === todayStr) ?? null
   const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession }
   return <C.Provider value={value}>{children}</C.Provider>
 }

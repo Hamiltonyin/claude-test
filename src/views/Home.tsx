@@ -5,6 +5,8 @@ import { today, addDays } from '../lib/dates'
 import { dueWords, weakWords } from '../lib/srs'
 import { THEMES } from '../data/seed'
 import { Chev } from '../ui'
+import Records from './Records'
+import { backlogIds, dayRecords, missedDays } from '../lib/records'
 
 export function streakOf(logs: { date: string }[]): number {
   const days = new Set(logs.map(l => l.date))
@@ -37,8 +39,8 @@ export function StatsHeader() {
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void }) {
-  const { progress, words, settings } = useApp()
+export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void }) {
+  const { progress, words, settings, sessions, lessons, logs, session } = useApp()
   const weak = weakWords(progress).length
   const due = dueWords(progress).length
   const counts = useMemo(() => {
@@ -48,6 +50,10 @@ export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'to
   }, [words, progress])
   const themeCount = useMemo(() => { const m = new Map<string, number>(); words.forEach(w => m.set(w.theme, (m.get(w.theme) ?? 0) + 1)); return m }, [words])
   const h = useHeaderStats()
+  const records = useMemo(() => dayRecords({ settings, sessions, lessons, logs, progress }), [settings, sessions, lessons, logs, progress])
+  const backlog = useMemo(() => backlogIds(records, new Set(session?.newIds ?? [])), [records, session])
+  const missed = missedDays(records)
+  const overdue = (session?.reviewIds ?? []).filter(id => (progress.get(id)?.due ?? '9999') < today()).length
   const newLeft = h.newTotal - h.doneToday
   const revLeft = h.reviewTotal - h.reviewDone
   return (
@@ -62,8 +68,15 @@ export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'to
       <button className="entry" onClick={() => onStudy('review')} data-testid="start-review">
         <div className="ic" style={{ background: '#af52de' }}>🔁</div>
         <div><div className="t">今日复习</div>
-          <div className="d">{h.reviewTotal === 0 ? '今天没有到期的复习词' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个已完成` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个`}</div></div><Chev />
+          <div className="d">{h.reviewTotal === 0 ? '今天没有到期的复习词' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个已完成` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个${overdue ? ` · 逾期 ${overdue} 个` : ''}`}</div></div><Chev />
       </button>
+      {backlog.length > 0 && (
+        <button className="entry" onClick={() => onCatchup('漏学补学', backlog.slice(0, 30))} data-testid="start-catchup">
+          <div className="ic" style={{ background: 'var(--red)' }}>⏰</div>
+          <div><div className="t">漏学补学</div>
+            <div className="d">有 {backlog.length} 个新词没学（漏学 {missed} 天）· 先补 {Math.min(30, backlog.length)} 个</div></div><Chev />
+        </button>
+      )}
       <button className="entry" onClick={() => onStudy('weak')} data-testid="start-weak">
         <div className="ic" style={{ background: 'var(--orange)' }}>🎧</div>
         <div><div className="t">重点复习 · 听音跟读</div><div className="d">陌生 {counts[1]} + 不熟悉 {counts[2]} · 今日到期 {due}</div></div><Chev />
@@ -72,6 +85,8 @@ export default function Home({ onStudy, onLibrary, onTheme }: { onStudy: (m: 'to
         <div className="ic" style={{ background: 'var(--green)' }}>🗂</div>
         <div><div className="t">全部词库</div><div className="d">{words.length} 词{words.length < 500 ? ` · 目标 500` : ""} · 搜索中文/泰文/拼音</div></div><Chev />
       </button>
+      <h2 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>学习记录<button className="sub" style={{ fontSize: 13, color: 'var(--blue)' }} onClick={onMoreRecords}>全部 ›</button></h2>
+      <Records limit={7} compact onCatchup={onCatchup} />
       <h2>熟练度分布</h2>
       <div className="bar">{[4, 3, 2, 1, 0].map(l => <i key={l} style={{ width: `${(counts[l] / Math.max(1, words.length)) * 100}%`, background: LEVEL_COLORS[l] }} />)}</div>
       <div className="chips" style={{ marginTop: 10 }}>

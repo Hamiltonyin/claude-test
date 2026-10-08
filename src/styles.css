@@ -91,3 +91,11 @@ textarea.big{width:100%;height:140px;border:1px solid var(--line);border-radius:
 table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3px;border-bottom:1px solid var(--line);vertical-align:top}
 .pv input{width:100%;border:1px solid var(--line);border-radius:6px;padding:4px;font-size:14px;min-width:60px}
 .pv .bad{background:#fff0ef}.pv .dup{background:#fff7e6}
+
+.rec-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;-webkit-overflow-scrolling:touch}
+.rec{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:14px;padding:10px 12px;text-align:left}
+.rec.c{flex-direction:column;gap:3px;min-width:64px;padding:10px 6px;align-items:center}
+.rec .rd{font-weight:700;font-size:15px;display:flex;flex-direction:column;align-items:center;line-height:1.2}.rec .rd small{font-weight:400;font-size:11px;color:var(--sub)}
+.rec:not(.c) .rd{flex-direction:row;gap:8px;min-width:90px}
+.rec .rs{font-size:12px;font-weight:600}.rec .rs2{font-size:13px}
+.rec-list{display:flex;flex-direction:column;gap:8px}

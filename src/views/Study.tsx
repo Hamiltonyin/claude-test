@@ -4,7 +4,7 @@ import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
 import { SpeakButtons, ToneChips, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
 
-export type StudyMode = 'today' | 'review' | 'weak' | 'theme' | 'day' | 'free'
+export type StudyMode = 'today' | 'review' | 'catchup' | 'weak' | 'theme' | 'day' | 'free'
 
 export default function Study({ title, ids, mode, onClose }: { title: string; ids: string[]; mode: StudyMode; onClose: () => void }) {
   const { wordMap, progress, logs, rate, settings } = useApp()
@@ -43,7 +43,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
     rate(word.id, lv)
     rated.current.add(word.id)
     let q = queue
-    if (lv === 1 && (mode === 'today' || mode === 'review' || mode === 'weak') && (requeued.current.get(word.id) ?? 0) < 2) {
+    if (lv === 1 && (mode === 'today' || mode === 'review' || mode === 'catchup' || mode === 'weak') && (requeued.current.get(word.id) ?? 0) < 2) {
       requeued.current.set(word.id, (requeued.current.get(word.id) ?? 0) + 1)
       q = [...queue]; q.splice(Math.min(idx + 6, q.length), 0, word.id); setQueue(q)
     }

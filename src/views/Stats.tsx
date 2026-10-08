@@ -3,8 +3,9 @@ import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES } from '../types'
 import { addDays, today } from '../lib/dates'
 import { StatsHeader, streakOf } from './Home'
+import Records from './Records'
 
-export default function Stats() {
+export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: string[]) => void }) {
   const { logs, words, progress, settings } = useApp()
   const days = useMemo(() => {
     const t = today(); const out: { d: string; n: number }[] = []
@@ -32,7 +33,9 @@ export default function Stats() {
         <div className="chart">{days.map(d => <div key={d.d}><span>{d.n || ''}</span><i style={{ height: `${(d.n / max) * 80}%`, background: d.n >= settings.dailyGoal ? 'var(--green)' : 'var(--blue)' }} /></div>)}</div>
         <div className="chart" style={{ height: 'auto', marginTop: 2 }}>{days.map(d => <div key={d.d} style={{ height: 'auto' }}>{d.d.slice(8)}</div>)}</div>
       </div>
-      <div className="panel"><h3>熟练度数量</h3>
+      <h2>每日学习记录</h2>
+      <Records limit={60} onCatchup={onCatchup} />
+      <div className="panel" style={{ marginTop: 16 }}><h3>熟练度数量</h3>
         {[4, 3, 2, 1, 0].map(l => <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '8px 0' }}>
           <span style={{ width: 54, fontSize: 14 }}>{LEVEL_NAMES[l]}</span>
           <div className="bar" style={{ flex: 1 }}><i style={{ width: `${(counts[l] / Math.max(1, words.length)) * 100}%`, background: LEVEL_COLORS[l] }} /></div>
