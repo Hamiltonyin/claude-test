@@ -9,7 +9,7 @@
     "preview": "vite preview --host",
     "check:data": "node scripts/check-data.mjs",
     "audio": "python3 scripts/gen_audio.py",
-    "test:e2e": "node e2e/run.mjs && node e2e/font.mjs && node e2e/missed.mjs"
+    "test:e2e": "node e2e/run.mjs && node e2e/font.mjs && node e2e/missed.mjs && node e2e/repeat.mjs"
   },
   "dependencies": {
     "@fontsource/noto-sans": "^5.3.0",

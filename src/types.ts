@@ -14,7 +14,7 @@ export interface ReviewLog { id: string; date: string; wordId: string; level: Le
 export interface Session { date: string; dayNo: number; wordIds: string[]; reviewIds: string[]; newIds: string[]; ver?: number }
 export interface Settings {
   startDate: string; dayOffset: number; dailyGoal: number; reviewCap: number
-  autoPlay: boolean; seedVersion: number; lastBackupAt?: number; newPerDay?: number
+  autoPlay: boolean; seedVersion: number; lastBackupAt?: number; newPerDay?: number; requeueStrange?: boolean
 }
 export interface Backup {
   app: 'thai30'; version: 1; exportedAt: number

@@ -24,6 +24,9 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
   const swiped = useRef(false)
 
   const id = queue[idx]
+  const isRepeat = !!id && queue.indexOf(id) < idx          // 同一个词在本轮更早出现过 = 陌生词重现
+  const uniqueTotal = useMemo(() => new Set(queue).size, [queue])
+  const uniquePos = useMemo(() => new Set(queue.slice(0, idx + 1)).size, [queue, idx])
   const word = id ? wordMap.get(id) : undefined
   const level = (id && progress.get(id)?.level) || 0
 
@@ -43,7 +46,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
     rate(word.id, lv)
     rated.current.add(word.id)
     let q = queue
-    if (lv === 1 && (mode === 'today' || mode === 'review' || mode === 'catchup' || mode === 'weak') && (requeued.current.get(word.id) ?? 0) < 2) {
+    if (lv === 1 && settings.requeueStrange !== false && (mode === 'today' || mode === 'review' || mode === 'catchup' || mode === 'weak') && (requeued.current.get(word.id) ?? 0) < 2) {
       requeued.current.set(word.id, (requeued.current.get(word.id) ?? 0) + 1)
       q = [...queue]; q.splice(Math.min(idx + 6, q.length), 0, word.id); setQueue(q)
     }
@@ -72,7 +75,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
           {[1, 2, 3, 4].map(l => <span key={l} className="pill" style={{ background: LEVEL_COLORS[l], fontSize: 14, padding: '4px 12px' }}>{LEVEL_NAMES[l]} {counts[l]}</span>)}
         </div>
         <button className="btn" onClick={onClose}>回到首页</button>
-        <button className="btn sec block" onClick={() => { setFinished(false); setIdx(0); setFlip(false) }}>再看一遍</button>
+        <button className="btn sec block" onClick={() => { setQueue(ids); requeued.current.clear(); setFinished(false); setIdx(0); setFlip(false) }}>再看一遍</button>
       </div></div>)
 
   if (!word) return null
@@ -81,8 +84,8 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
     <div className="study" role="dialog" aria-label={title}>
       <div className="sthead">
         <button className="close" onClick={() => { sp.stop(); onClose() }}>‹ 返回</button>
-        <div className="prog"><div className="bar"><i style={{ width: `${((idx + 1) / queue.length) * 100}%`, background: 'var(--blue)' }} /></div></div>
-        <div className="cnt">{idx + 1} / {queue.length}</div>
+        <div className="prog"><div className="bar"><i style={{ width: `${(uniquePos / uniqueTotal) * 100}%`, background: 'var(--blue)' }} /></div></div>
+        <div className="cnt">{uniquePos} / {uniqueTotal}</div>
       </div>
       <div className="stage">
         <div className={'card' + (flip ? ' flip' : '')} data-testid="card"
@@ -96,12 +99,14 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
           }}>
           <div className="face front">
             {level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
+            {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
             <div className="hint">点击卡片翻面 · 左右滑动切换</div>
           </div>
           <div className="face back">
             {level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
+            {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
             <div className="th" lang="th" style={{ fontSize: 34 }}>{word.thai}</div>
             <div className="zh">{word.zh}</div>
