@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Backup, Level, Lesson, Progress, ReviewLog, Session, Settings, Word } from './types'
 import { clearStores, loadAll, put, putMany, saveSettings } from './lib/db'
 import { SEED_LESSONS, SEED_LEVELS, SEED_VERSION, SEED_WORDS } from './data/seed'
-import { applyRating, buildSession, topUpSession, calendarDay, SESSION_VER } from './lib/srs'
+import { applyRating, buildSession, topUpSession, calendarDay, dueWords, SESSION_VER } from './lib/srs'
 import { addDays, today } from './lib/dates'
 import { toneSummary } from './lib/tone'
 import { wordIdFor } from './lib/ids'
@@ -19,6 +19,7 @@ interface Ctx {
   restoreBackup(b: Backup, mode: 'replace' | 'merge'): Promise<void>
   mergeLibrary(words: Word[], lessons: Lesson[]): Promise<number>
   rebuildSession(): Promise<void>
+  growReviews(cap: number): Promise<void>
 }
 const C = createContext<Ctx>(null as any)
 export const useApp = () => useContext(C)
@@ -214,9 +215,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await put('sessions', ns); setSessions(s => [...s.filter(x => x.date !== ns.date), ns])
   }, [])
 
+  // 调高「复习上限」后：只往今天的复习名单里补充到期词，已有的复习词和今天的新词一律不动
+  const growReviews = useCallback(async (cap: number) => {
+    const c = ref.current
+    const cur = c.sessions.find(x => x.date === today()); if (!cur) return
+    const have = new Set(cur.wordIds)
+    const more = dueWords(c.progress).map(p => p.wordId).filter(id => !have.has(id)).slice(0, Math.max(0, cap - cur.reviewIds.length))
+    if (!more.length) return
+    const ns = { ...cur, reviewIds: [...cur.reviewIds, ...more], wordIds: [...cur.wordIds, ...more] }
+    await put('sessions', ns); setSessions(ss => ss.map(x => x.date === ns.date ? ns : x))
+  }, [])
+
   const wordMap = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
   const session = sessions.find(s => s.date === todayStr) ?? null
-  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession }
+  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
   return <C.Provider value={value}>{children}</C.Provider>
 }
 export { wordIdFor }

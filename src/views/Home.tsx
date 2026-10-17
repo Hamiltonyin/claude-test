@@ -39,7 +39,7 @@ export function StatsHeader() {
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void }) {
+export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void }) {
   const { progress, words, settings, sessions, lessons, logs, session } = useApp()
   const weak = weakWords(progress).length
   const due = dueWords(progress).length
@@ -69,6 +69,10 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         <div className="ic" style={{ background: '#af52de' }}>🔁</div>
         <div><div className="t">今日复习</div>
           <div className="d">{h.reviewTotal === 0 ? '今天没有到期的复习词' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个已完成` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个${overdue ? ` · 逾期 ${overdue} 个` : ''}`}</div></div><Chev />
+      </button>
+      <button className="entry" onClick={onPickDay} data-testid="pick-day">
+        <div className="ic" style={{ background: '#5856d6' }}>📅</div>
+        <div><div className="t">选择天数学习 / 复习</div><div className="d">任选第几天，进入那一天的词（共 {lessons.length} 天）</div></div><Chev />
       </button>
       {backlog.length > 0 && (
         <button className="entry" onClick={() => onCatchup('漏学补学', backlog.slice(0, 30))} data-testid="start-catchup">

@@ -6,6 +6,7 @@ import Stats from './views/Stats'
 import Me from './views/Me'
 import Study, { type StudyMode } from './views/Study'
 import { weakWords } from './lib/srs'
+import DayPicker from './views/DayPicker'
 
 type Tab = 'home' | 'library' | 'stats' | 'me'
 interface StudyState { title: string; ids: string[]; mode: StudyMode }
@@ -22,6 +23,7 @@ function Shell() {
   const { ready, error, session, progress, words, lessons } = useApp()
   const [tab, setTab] = useState<Tab>('home')
   const [study, setStudy] = useState<StudyState | null>(null)
+  const [picking, setPicking] = useState(false)
   const startToday = () => session && setStudy({ title: '今天学习', ids: session.newIds, mode: 'today' })
   const startReview = () => session && setStudy({ title: '今日复习', ids: session.reviewIds, mode: 'review' })
   const startCatchup = (title: string, ids: string[]) => setStudy({ title, ids, mode: 'catchup' })
@@ -36,7 +38,7 @@ function Shell() {
   return (
     <div className="app">
       <div className="scroll">
-        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} />}
+        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} />}
         {tab === 'library' && <Library onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
         {tab === 'stats' && <Stats onCatchup={startCatchup} />}
         {tab === 'me' && <Me />}
@@ -47,6 +49,7 @@ function Shell() {
             <svg viewBox="0 0 24 24" fill="currentColor"><path d={icons[t]} /></svg>{labels[t]}
           </button>))}
       </nav>
+      {picking && <DayPicker onClose={() => setPicking(false)} onStudy={(title, ids) => setStudy({ title, ids, mode: 'day' })} />}
       {study && <Study key={study.title + study.ids.length} {...study} onClose={() => setStudy(null)} />}
     </div>
   )

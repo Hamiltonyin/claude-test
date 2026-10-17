@@ -69,7 +69,7 @@ function ImportPanel() {
 }
 
 export default function Me() {
-  const { exportBackup, restoreBackup, words, lessons, settings, updateSettings, mergeLibrary, rebuildSession } = useApp()
+  const { exportBackup, restoreBackup, words, lessons, settings, updateSettings, mergeLibrary, rebuildSession, growReviews } = useApp()
   const [msg, setMsg] = useState<{ t: 'ok' | 'err'; s: string } | null>(null)
   const [dl, setDl] = useState<string | null>(null)
   const [audioN, setAudioN] = useState<number | null>(null)
@@ -154,6 +154,10 @@ export default function Me() {
         <p className="sub">存档音频由服务器端生成并保存为 MP3。已检测（前200词）可用：{audioN === null ? '…' : `${audioN}`} 个。{audioN === 0 && '——目前服务器上还没有生成音频，请见部署说明。'}</p>
         <button className="btn sec block" onClick={downloadAudio}>下载全部音频供离线使用</button>
         {dl && <div className="note" role="status">{dl}</div>}
+        <label className="field" style={{ marginTop: 12 }}><span>每天「今日复习」最多出现几个词</span>
+          <select value={settings.reviewCap} onChange={async e => { const n = Number(e.target.value); await updateSettings({ reviewCap: n }); await growReviews(n) }} style={{ width: '100%', border: '1px solid var(--line)', borderRadius: 10, padding: 9, fontSize: 16, background: '#fff' }} data-testid="review-cap">
+            {[15, 30, 50, 100, 300].map(n => <option key={n} value={n}>{n} 个{n === 15 ? '（默认）' : n === 300 ? '（基本全部到期词）' : ''}</option>)}
+          </select></label>
         <label className="field" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}><input type="checkbox" style={{ width: 20 }} checked={settings.autoPlay} onChange={e => updateSettings({ autoPlay: e.target.checked })} /><span style={{ fontSize: 15, color: 'var(--ink)' }}>翻面时自动朗读</span></label>
         <label className="field" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}><input type="checkbox" style={{ width: 20 }} checked={settings.requeueStrange !== false} onChange={e => updateSettings({ requeueStrange: e.target.checked })} /><span style={{ fontSize: 15, color: 'var(--ink)' }}>评为「陌生」的词，本轮稍后再出现一次（会标注「再看一遍」）</span></label>
       </div>
