@@ -3,6 +3,10 @@ import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
 import { SpeakButtons, ToneChips, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
+import { playFile, stopAudio } from '../lib/audio'
+
+const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+const AUTO_REPEATS = 3          // 自动连读：每个词读几遍
 
 export type StudyMode = 'today' | 'review' | 'catchup' | 'weak' | 'theme' | 'day' | 'free'
 
@@ -20,6 +24,9 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
   })
   const [flip, setFlip] = useState(false)
   const [finished, setFinished] = useState(false)
+  const [auto, setAuto] = useState<{ rep: number } | null>(null)
+  const [autoMsg, setAutoMsg] = useState<{ t: 'ok' | 'err'; s: string } | null>(null)
+  const autoTok = useRef(0)
   const touch = useRef<{ x: number; y: number } | null>(null)
   const swiped = useRef(false)
 
@@ -30,13 +37,43 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
   const word = id ? wordMap.get(id) : undefined
   const level = (id && progress.get(id)?.level) || 0
 
+  const stopAuto = () => { autoTok.current++; stopAudio(); setAuto(null) }
+  useEffect(() => () => { autoTok.current++; stopAudio() }, [])   // 离开学习界面时停止连读
+
+  /** 自动连读：从第 from 个词开始，按顺序每个词读 AUTO_REPEATS 遍，读完自动翻到下一个，直到这一组读完。
+   *  第一次播放在点击回调里同步发生（iPhone 要求），之后沿用同一个播放器继续。 */
+  const startAuto = (from: number) => {
+    const tok = ++autoTok.current
+    setAutoMsg(null); sp.stop()
+    const list = queue
+    void (async () => {
+      try {
+        for (let i = from; i < list.length; i++) {
+          const w = wordMap.get(list[i]); if (!w) continue
+          setIdx(i); setFlip(true)
+          for (let r = 1; r <= AUTO_REPEATS; r++) {
+            if (autoTok.current !== tok) return
+            setAuto({ rep: r })
+            await playFile(w.id, false)
+            if (autoTok.current !== tok) return
+            await sleep(r < AUTO_REPEATS ? 900 : 600)
+          }
+        }
+        if (autoTok.current === tok) { setAuto(null); setAutoMsg({ t: 'ok', s: `这一组 ${list.length} 个词已全部连读完毕。` }) }
+      } catch (e: any) {
+        if (autoTok.current === tok) { setAuto(null); setAutoMsg({ t: 'err', s: '连读中断：' + (e?.message || e) }) }
+      }
+    })()
+  }
+
   const go = (to: number) => {
-    sp.stop(); setFlip(false)
+    stopAuto(); sp.stop(); setFlip(false)
     if (to >= queue.length) { setFinished(true); return }
     if (to < 0) return
     setIdx(to)
   }
   const toggle = () => {
+    if (auto) { stopAuto(); return }          // 连读时点卡片 = 停止连读
     const nf = !flip; setFlip(nf)
     // 翻到背面时自动朗读（在点击回调里同步触发，iPhone 才允许）；可在「我的」里关闭
     if (nf && word && settings.autoPlay) sp.play(word, false)
@@ -50,7 +87,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
       requeued.current.set(word.id, (requeued.current.get(word.id) ?? 0) + 1)
       q = [...queue]; q.splice(Math.min(idx + 6, q.length), 0, word.id); setQueue(q)
     }
-    sp.stop(); setFlip(false)
+    stopAuto(); sp.stop(); setFlip(false)
     if (idx + 1 >= q.length) setFinished(true); else setIdx(idx + 1)
   }
 
@@ -86,6 +123,12 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
         <button className="close" onClick={() => { sp.stop(); onClose() }}>‹ 返回</button>
         <div className="prog"><div className="bar"><i style={{ width: `${(uniquePos / uniqueTotal) * 100}%`, background: 'var(--blue)' }} /></div></div>
         <div className="cnt">{uniquePos} / {uniqueTotal}</div>
+      </div>
+      <div className="autorow">
+        <button className={'autobtn' + (auto ? ' on' : '')} onClick={() => auto ? stopAuto() : startAuto(idx)} data-testid="auto-read">
+          {auto ? `⏹ 停止连读 · 第 ${auto.rep}/${AUTO_REPEATS} 遍 · ${uniquePos}/${uniqueTotal}` : `▶ 自动连读：从这个词起，每个读 ${AUTO_REPEATS} 遍`}
+        </button>
+        {autoMsg && <div className={'note ' + autoMsg.t} style={{ marginTop: 6 }} role="status" data-testid="auto-msg">{autoMsg.s}</div>}
       </div>
       <div className="stage">
         <div className={'card' + (flip ? ' flip' : '')} data-testid="card"
