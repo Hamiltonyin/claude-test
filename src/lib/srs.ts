@@ -69,10 +69,26 @@ export function buildSession(args: {
 
 /** 今天的课程新词不足时（例如新课程在课程生成之后才合并进来）用新词池补足；已有顺序与已评级的词不变。 */
 export function topUpSession(session: Session, args: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings }): Session {
-  const want = newPerDay(args.settings) - session.newIds.length
-  if (want <= 0) return session
-  const inSession = new Set(session.wordIds)
-  const add = newPool(args.words, args.lessons, args.progress, session.dayNo).filter(id => !inSession.has(id)).slice(0, want)
-  if (!add.length) return session
-  return { ...session, wordIds: [...session.wordIds, ...add], newIds: [...session.newIds, ...add] }
+  const lv = (id: string) => args.progress.get(id)?.level ?? 0
+  const lessonIds = args.lessons.find(l => l.day === session.dayNo)?.wordIds ?? []
+  const inLesson = new Set(lessonIds)
+  let newIds = [...session.newIds], wordIds = [...session.wordIds]
+  // ① 今天这一课里有词还没进今天的名单（课程是后来才合并/新增的词）：补进来，
+  //    并替换掉名单里「不属于今天课程、且还没学过」的凑数词（从后往前换），所以新词总数不变。
+  const have = new Set(wordIds)
+  const extra = lessonIds.filter(id => lv(id) === 0 && !have.has(id))
+  if (extra.length) {
+    const drop = new Set(newIds.filter(id => !inLesson.has(id) && lv(id) === 0).reverse().slice(0, extra.length))
+    newIds = [...newIds.filter(id => !drop.has(id)), ...extra]
+    wordIds = [...wordIds.filter(id => !drop.has(id)), ...extra]
+  }
+  // ② 新词仍不足 newPerDay 时，用新词池补足
+  const want = newPerDay(args.settings) - newIds.length
+  if (want > 0) {
+    const inSession = new Set(wordIds)
+    const fill = newPool(args.words, args.lessons, args.progress, session.dayNo).filter(id => !inSession.has(id)).slice(0, want)
+    newIds = [...newIds, ...fill]; wordIds = [...wordIds, ...fill]
+  }
+  if (newIds.length === session.newIds.length && wordIds.length === session.wordIds.length && newIds.every((id, i) => id === session.newIds[i])) return session
+  return { ...session, wordIds, newIds }
 }
