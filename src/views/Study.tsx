@@ -3,15 +3,22 @@ import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
 import { SpeakButtons, ToneChips, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
-import { playFile, stopAudio } from '../lib/audio'
+import { playFile, playSystem, stopAudio } from '../lib/audio'
+import { zhSpeakText } from '../lib/zhspeak'
 
 const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
-const AUTO_REPEATS = 3          // 自动连读：每个词读几遍
+const AUTO_REPEATS = 3          // 自动连读：每个词读几遍（泰语）
+
+/** 读中文意思：优先用保存好的中文 MP3（<词ID>_zh.mp3）；还没生成时，改用手机自带的中文语音。 */
+async function playZh(id: string, zh: string) {
+  try { await playFile(id, false, '_zh') }
+  catch { await playSystem(zhSpeakText(zh), false, 'zh') }
+}
 
 export type StudyMode = 'today' | 'review' | 'catchup' | 'weak' | 'theme' | 'day' | 'free'
 
 export default function Study({ title, ids, mode, onClose }: { title: string; ids: string[]; mode: StudyMode; onClose: () => void }) {
-  const { wordMap, progress, logs, rate, settings } = useApp()
+  const { wordMap, progress, logs, rate, settings, updateSettings } = useApp()
   const sp = useSpeaker()
   const rated = useRef(new Set<string>())
   const requeued = useRef(new Map<string, number>())
@@ -24,7 +31,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
   })
   const [flip, setFlip] = useState(false)
   const [finished, setFinished] = useState(false)
-  const [auto, setAuto] = useState<{ rep: number } | null>(null)
+  const [auto, setAuto] = useState<{ rep: number; zh?: boolean } | null>(null)
   const [autoMsg, setAutoMsg] = useState<{ t: 'ok' | 'err'; s: string } | null>(null)
   const autoTok = useRef(0)
   const touch = useRef<{ x: number; y: number } | null>(null)
@@ -46,6 +53,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
     const tok = ++autoTok.current
     setAutoMsg(null); sp.stop()
     const list = queue
+    let zhOk = true
     void (async () => {
       try {
         for (let i = from; i < list.length; i++) {
@@ -56,8 +64,20 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
             setAuto({ rep: r })
             await playFile(w.id, false)
             if (autoTok.current !== tok) return
-            await sleep(r < AUTO_REPEATS ? 900 : 600)
+            await sleep(900)
+            if (autoTok.current !== tok) return       // 停顿期间被点了「停止」就不能再继续读
+            // 泰语第 1 遍之后读一遍中文意思：泰语 → 中文 → 泰语 → 泰语
+            if (r === 1 && zhOk && settings.readZh !== false) {
+              setAuto({ rep: r, zh: true })
+              try { await playZh(w.id, w.zh) }
+              catch { zhOk = false; if (autoTok.current === tok) setAutoMsg({ t: 'err', s: '中文意思暂时读不出来（中文音频还没生成，设备也没有中文语音），本轮只读泰语。' }) }
+              if (autoTok.current !== tok) return
+              await sleep(700)
+              if (autoTok.current !== tok) return
+            }
           }
+          await sleep(300)
+          if (autoTok.current !== tok) return
         }
         if (autoTok.current === tok) { setAuto(null); setAutoMsg({ t: 'ok', s: `这一组 ${list.length} 个词已全部连读完毕。` }) }
       } catch (e: any) {
@@ -126,8 +146,9 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
       </div>
       <div className="autorow">
         <button className={'autobtn' + (auto ? ' on' : '')} onClick={() => auto ? stopAuto() : startAuto(idx)} data-testid="auto-read">
-          {auto ? `⏹ 停止连读 · 第 ${auto.rep}/${AUTO_REPEATS} 遍 · ${uniquePos}/${uniqueTotal}` : `▶ 自动连读：从这个词起，每个读 ${AUTO_REPEATS} 遍`}
+          {auto ? `⏹ 停止连读 · ${auto.zh ? '读中文' : `泰语第 ${auto.rep}/${AUTO_REPEATS} 遍`} · ${uniquePos}/${uniqueTotal}` : `▶ 自动连读：每个词 泰语${AUTO_REPEATS}遍${settings.readZh !== false ? ' + 中文' : ''}`}
         </button>
+        <label className="zhtoggle"><input type="checkbox" checked={settings.readZh !== false} onChange={e => updateSettings({ readZh: e.target.checked })} data-testid="read-zh" /> 同时读中文意思</label>
         {autoMsg && <div className={'note ' + autoMsg.t} style={{ marginTop: 6 }} role="status" data-testid="auto-msg">{autoMsg.s}</div>}
       </div>
       <div className="stage">

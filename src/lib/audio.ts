@@ -6,7 +6,7 @@ export class AudioError extends Error {
 }
 
 const base = import.meta.env.BASE_URL
-export const audioUrl = (id: string) => `${base}audio/${id}.mp3`
+export const audioUrl = (id: string, suffix = '') => `${base}audio/${id}${suffix}.mp3`
 
 // iPhone Safari 只允许在「用户点按的同一瞬间」开始播放，且需复用同一个 <audio> 元素：
 // 因此 play() 必须在点击回调里同步调用（之前先 fetch 再播放会丢失用户手势，导致自动朗读被拒绝）。
@@ -24,7 +24,7 @@ export async function hasFile(id: string): Promise<boolean> {
 }
 
 /** 播放存档音频。slow=true 为 0.8 倍速（保持音高）。必须在用户手势回调中同步调用。 */
-export function playFile(id: string, slow: boolean): Promise<void> {
+export function playFile(id: string, slow: boolean, suffix = ''): Promise<void> {
   stopAudio()
   const a = getEl()
   a.preservesPitch = true
@@ -38,7 +38,7 @@ export function playFile(id: string, slow: boolean): Promise<void> {
     }
     const rate = slow ? 0.8 : 1
     a.defaultPlaybackRate = rate
-    a.src = audioUrl(id)
+    a.src = audioUrl(id, suffix)
     a.playbackRate = rate
     const p = a.play()   // 同步调用，保持用户手势
     p?.catch((e: any) => {
@@ -50,17 +50,17 @@ export function playFile(id: string, slow: boolean): Promise<void> {
   })
 }
 
-export function systemVoiceAvailable(): boolean {
+export function systemVoiceAvailable(lang = 'th'): boolean {
   if (!('speechSynthesis' in window)) return false
-  return window.speechSynthesis.getVoices().some(v => v.lang.toLowerCase().startsWith('th'))
+  return window.speechSynthesis.getVoices().some(v => v.lang.toLowerCase().startsWith(lang))
 }
 /** 系统语音（备用）。注意：不是存档音频，声调准确性取决于设备的泰语语音。 */
-export function playSystem(text: string, slow: boolean): Promise<void> {
+export function playSystem(text: string, slow: boolean, lang = 'th'): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!('speechSynthesis' in window)) return reject(new AudioError('nosys', '此设备不支持系统语音朗读。'))
     const voices = window.speechSynthesis.getVoices()
-    const v = voices.find(x => x.lang.toLowerCase().replace('_', '-').startsWith('th'))
-    if (!v) return reject(new AudioError('nosys', '设备上没有泰语系统语音。可在 iPhone「设置 > 辅助功能 > 朗读内容 > 声音 > 泰语」下载。'))
+    const v = voices.find(x => x.lang.toLowerCase().replace('_', '-').startsWith(lang))
+    if (!v) return reject(new AudioError('nosys', '设备上没有对应的系统语音。可在 iPhone「设置 > 辅助功能 > 朗读内容 > 声音」里下载。'))
     stopAudio()
     const u = new SpeechSynthesisUtterance(text)
     u.voice = v; u.lang = v.lang; u.rate = slow ? 0.55 : 0.85

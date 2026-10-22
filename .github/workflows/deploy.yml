@@ -40,6 +40,8 @@ jobs:
         run: |
           pip install edge-tts gTTS
           python3 scripts/gen_audio.py --allow-fail ${{ inputs.force_audio && '--force' || '' }}
+      - name: 生成缺失的中文意思音频（zh-CN-XiaoxiaoNeural → <词ID>_zh.mp3，用于连读时读中文）
+        run: python3 scripts/gen_audio.py --library public/content/library.json --out public/audio --suffix _zh --voice zh-CN-XiaoxiaoNeural --rate +0% --lang zh-CN --text-key zh --clean-zh --allow-fail ${{ inputs.force_audio && '--force' || '' }}
       - name: 生成缺失的日语音频（ja-JP-NanamiNeural，已有文件不覆盖）
         run: python3 scripts/gen_audio.py --library jp/public/content/library.json --out jp/public/audio --voice ja-JP-NanamiNeural --lang ja --text-key speak --allow-fail ${{ inputs.force_audio && '--force' || '' }}
       - name: 提交新增音频

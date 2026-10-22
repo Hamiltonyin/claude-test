@@ -5,7 +5,7 @@
 - 失败不会写出空文件；最终输出失败清单，存在失败时退出码为 1（--allow-fail 则为 0）。
 用法：pip install edge-tts && python3 scripts/gen_audio.py
 """
-import argparse, asyncio, json, os, sys
+import argparse, asyncio, json, os, re, sys
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--library', default='public/content/library.json')
@@ -14,6 +14,8 @@ ap.add_argument('--voice', default='th-TH-PremwadeeNeural')
 ap.add_argument('--rate', default='-10%', help='语速，略慢更适合初学者')
 ap.add_argument('--lang', default='th', help='gTTS 备用引擎的语言代码（th/ja）')
 ap.add_argument('--text-key', default='thai', help='词条里用来朗读的字段（泰语 thai；日语 speak）')
+ap.add_argument('--suffix', default='', help="输出文件名后缀（中文意思用 _zh → <词ID>_zh.mp3）")
+ap.add_argument('--clean-zh', action='store_true', help='朗读前清理中文释义：取第一个意思、去掉括号注释（与前端 zhSpeakText 一致）')
 ap.add_argument('--force', action='store_true')
 ap.add_argument('--allow-fail', action='store_true')
 a = ap.parse_args()
@@ -29,9 +31,19 @@ except ImportError:
 if not edge_tts and not gTTS:
     sys.exit('请先安装：pip install edge-tts gTTS')
 
+def clean_zh(z):
+    # 必须与 src/lib/zhspeak.ts 的 zhSpeakText 保持一致
+    first = re.split(r'[；;]', z)[0]
+    t = re.sub(r'（[^）]*）', '', first); t = re.sub(r'\([^)]*\)', '', t)
+    t = t.replace('……', '某某').replace('…', '某某').strip()
+    return t or re.sub(r'[（）()]', '', z).strip()
+
+def text_of(w):
+    return clean_zh(w[a.text_key]) if a.clean_zh else w[a.text_key]
+
 words = json.load(open(a.library, encoding='utf-8'))['words']
 os.makedirs(a.out, exist_ok=True)
-todo = [w for w in words if a.force or not os.path.exists(f"{a.out}/{w['id']}.mp3")]
+todo = [w for w in words if a.force or not os.path.exists(f"{a.out}/{w['id']}{a.suffix}.mp3")]
 print(f"共 {len(words)} 词，需生成 {len(todo)} 个")
 failed = []
 
@@ -39,14 +51,14 @@ async def synth(w, tmp):
     errs = []
     if edge_tts:
         try:
-            await asyncio.wait_for(edge_tts.Communicate(w[a.text_key], a.voice, rate=a.rate).save(tmp), 25)
+            await asyncio.wait_for(edge_tts.Communicate(text_of(w), a.voice, rate=a.rate).save(tmp), 25)
             if os.path.getsize(tmp) > 1000: return 'edge-tts'
             errs.append('edge-tts: 音频过小')
         except Exception as e:
             errs.append(f'edge-tts: {type(e).__name__} {e}')
     if gTTS:
         try:
-            await asyncio.wait_for(asyncio.to_thread(lambda: gTTS(w[a.text_key], lang=a.lang).save(tmp)), 25)
+            await asyncio.wait_for(asyncio.to_thread(lambda: gTTS(text_of(w), lang=a.lang).save(tmp)), 25)
             if os.path.getsize(tmp) > 1000: return 'gTTS'
             errs.append('gTTS: 音频过小')
         except Exception as e:
@@ -54,18 +66,18 @@ async def synth(w, tmp):
     raise RuntimeError(' | '.join(errs))
 
 async def one(w, sem):
-    path = f"{a.out}/{w['id']}.mp3"
+    path = f"{a.out}/{w['id']}{a.suffix}.mp3"
     async with sem:
         for attempt in range(2):
             try:
                 eng = await synth(w, path + '.tmp')
                 os.replace(path + '.tmp', path)
-                print('✓', w['id'], w[a.text_key], eng, flush=True); return
+                print('✓', w['id'], text_of(w), eng, flush=True); return
             except Exception as e:
                 if os.path.exists(path + '.tmp'): os.remove(path + '.tmp')
                 err = e
                 await asyncio.sleep(2)
-        print('✗', w['id'], w[a.text_key], err, flush=True); failed.append(w)
+        print('✗', w['id'], text_of(w), err, flush=True); failed.append(w)
 
 async def main():
     sem = asyncio.Semaphore(4)
@@ -73,6 +85,6 @@ async def main():
 
 asyncio.run(main())
 if failed:
-    print(f"失败 {len(failed)} 个：", ' '.join(w[a.text_key] for w in failed))
+    print(f"失败 {len(failed)} 个：", ' '.join(text_of(w) for w in failed))
     sys.exit(0 if a.allow_fail else 1)
 print('完成')
