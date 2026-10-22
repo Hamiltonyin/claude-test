@@ -40,8 +40,8 @@ try {
   assert((await page.textContent('body')).includes('0/')); ok('今日新词 0/N')
 
   // 今天学习：8复习 + 22新词
-  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 30 个'), null, { timeout: 8000 })
-  assert((await page.textContent('[data-testid=start-review]')).includes('到期复习 8 个')); ok('「今天学习」=30个新词，「今日复习」=8个到期词，两个入口分开')
+  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
+  assert((await page.textContent('[data-testid=start-review]')).includes('到期复习 8 个')); ok('「今天学习」=45张新词（30 + 我录入的 15），「今日复习」=8个到期词，两个入口分开')
   await page.click('[data-testid=start-today]')
   await page.waitForSelector('[data-testid=thai]')
   const first = await page.textContent('[data-testid=thai]')

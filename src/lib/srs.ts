@@ -51,45 +51,47 @@ export const newPerDay = (s: Settings) => s.newPerDay ?? 30
 
 export const SESSION_VER = 2
 
-/** 生成某天的课程：当天（日历第 N 天）课程里还没学过的词 = 新词，不足再按顺序补；外加到期复习词（陌生/不熟悉优先，上限 reviewCap）。 */
+/** 「我录入的词」每天最多占几个新词位（额外加在每日 30 个新词之外，不挤占原课程） */
+export const MINE_PER_DAY = 15
+
+/** 今天的新词名单：先放「我录入的词」（最多 MINE_PER_DAY 个，不管今天是第几天），
+ *  再放今天（日历第 N 天）课程里还没学过的词，不足 newPerDay 时按顺序补满。 */
+function desiredNew(a: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings }, dayNo: number, existingNew: string[] = []): string[] {
+  const lv = (id: string) => a.progress.get(id)?.level ?? 0
+  const mineAll = myAddedIds(a.lessons)
+  const mineAllSet = new Set(mineAll)
+  // 每天「我录入的词」总共不超过 MINE_PER_DAY：今天名单里已有的（不管学没学）都占名额，学完一个不会再补新的
+  const mineHave = existingNew.filter(id => mineAllSet.has(id))
+  const room = Math.max(0, MINE_PER_DAY - mineHave.length)
+  const mine = [...mineHave.filter(id => lv(id) === 0), ...mineAll.filter(id => lv(id) === 0 && !mineHave.includes(id)).slice(0, room)]
+  const n = newPerDay(a.settings)
+  const base = (a.lessons.find(l => l.day === dayNo)?.wordIds ?? []).filter(id => lv(id) === 0 && !mineAllSet.has(id))
+  for (const id of newPool(a.words, a.lessons, a.progress, dayNo)) { if (base.length >= n) break; if (!mineAllSet.has(id) && !base.includes(id)) base.push(id) }
+  base.length = Math.min(base.length, n)
+  return [...mine, ...base]
+}
+
+/** 生成某天的课程：新词（见 desiredNew）+ 到期复习词（陌生/不熟悉优先，上限 reviewCap）。 */
 export function buildSession(args: {
   words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings; sessions: Session[]; date?: string
 }): Session {
   const date = args.date ?? today()
   const dayNo = calendarDay(args.settings, date)
-  const n = newPerDay(args.settings)
   const due = dueWords(args.progress, date).map(p => p.wordId)
   const reviewIds = due.slice(0, args.settings.reviewCap)
-  const todays = (args.lessons.find(l => l.day === dayNo)?.wordIds ?? []).filter(id => (args.progress.get(id)?.level ?? 0) === 0)
-  const newIds = [...todays]
-  for (const id of newPool(args.words, args.lessons, args.progress, dayNo)) { if (newIds.length >= n) break; if (!newIds.includes(id)) newIds.push(id) }
-  newIds.length = Math.min(newIds.length, n)
+  const newIds = desiredNew(args, dayNo)
   return { date, dayNo, wordIds: [...reviewIds, ...newIds], reviewIds, newIds, ver: SESSION_VER }
 }
 
-/** 今天的课程新词不足时（例如新课程在课程生成之后才合并进来）用新词池补足；已有顺序与已评级的词不变。 */
+/** 课程内容后来才变化时（合并了新课程、新增了「我录入的词」）校正今天的新词名单：
+ *  已经学过（评过级）的词保留；没学过、又不在目标名单里的凑数词被换掉；缺的词补进来。幂等。 */
 export function topUpSession(session: Session, args: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings }): Session {
   const lv = (id: string) => args.progress.get(id)?.level ?? 0
-  const lessonIds = args.lessons.find(l => l.day === session.dayNo)?.wordIds ?? []
-  const inLesson = new Set(lessonIds)
-  let newIds = [...session.newIds], wordIds = [...session.wordIds]
-  // ① 今天这一课里有词还没进今天的名单（课程是后来才合并/新增的词）：补进来，
-  //    并替换掉名单里「不属于今天课程、且还没学过」的凑数词（从后往前换），所以新词总数不变。
-  const have = new Set(wordIds)
-  const extra = lessonIds.filter(id => lv(id) === 0 && !have.has(id))
-  if (extra.length) {
-    const drop = new Set(newIds.filter(id => !inLesson.has(id) && lv(id) === 0).reverse().slice(0, extra.length))
-    newIds = [...newIds.filter(id => !drop.has(id)), ...extra]
-    wordIds = [...wordIds.filter(id => !drop.has(id)), ...extra]
-  }
-  // ② 新词仍不足 newPerDay 时，用新词池补足
-  const want = newPerDay(args.settings) - newIds.length
-  if (want > 0) {
-    const inSession = new Set(wordIds)
-    const fill = newPool(args.words, args.lessons, args.progress, session.dayNo).filter(id => !inSession.has(id)).slice(0, want)
-    newIds = [...newIds, ...fill]; wordIds = [...wordIds, ...fill]
-  }
-  if (newIds.length === session.newIds.length && wordIds.length === session.wordIds.length && newIds.every((id, i) => id === session.newIds[i])) return session
+  const desired = desiredNew(args, session.dayNo, session.newIds)
+  const done = session.newIds.filter(id => lv(id) > 0)
+  const newIds = [...done, ...desired.filter(id => !done.includes(id))]
+  const wordIds = [...session.reviewIds, ...newIds]
+  if (newIds.length === session.newIds.length && newIds.every((id, i) => id === session.newIds[i]) && wordIds.length === session.wordIds.length) return session
   return { ...session, wordIds, newIds }
 }
 

@@ -23,11 +23,11 @@ try {
       tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error) }
   }))
   await page.reload(); await page.waitForSelector('[data-testid=start-today]')
-  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 30 个'), null, { timeout: 8000 })
+  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
   assert((await page.textContent('body')).includes('第6天')); ok('3天没打开后：今天是第6天（按日历走，不是第4天）')
   const missed = await page.locator('[data-testid=rec-missed]').count(); assert.equal(missed, 3); ok('学习记录里有 3 天「漏学」')
   assert((await page.textContent('[data-testid=start-catchup]')).includes('漏学 3 天')); ok('出现「漏学补学」入口（漏学 3 天）')
-  assert((await page.textContent('[data-testid=start-today]')).includes('新词 30 个')); ok('今天仍有 30 个新词')
+  assert((await page.textContent('[data-testid=start-today]')).includes('新词 45 个')); ok('今天仍有 45 个新词（含我录入的 15）')
   // 点开某个漏学日 → 详情 + 补学按钮
   await page.locator('[data-testid=rec-missed]').first().tap(); await page.waitForSelector('[data-testid=catchup-day]'); ok('点击漏学日 → 显示漏学详情和补学按钮')
   await page.tap('[data-testid=catchup-day]'); await page.waitForSelector('[data-testid=thai]')

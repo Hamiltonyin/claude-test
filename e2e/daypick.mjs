@@ -11,7 +11,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
   await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=pick-day]')
-  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 30 个'), null, { timeout: 8000 })
+  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
   await page.tap('[data-testid=pick-day]'); await page.waitForSelector('[data-testid=pick-1]')
   const n = await page.locator('[data-testid^=pick-]').count(); assert(n >= 17); ok(`天数列表：共 ${n} 天（含第1~17天）`)
   // 第1天：词都已有熟练度（未标记仅ร้อน）
@@ -31,7 +31,7 @@ try {
   await page.tap('[data-testid=tab-me]'); await page.selectOption('[data-testid=review-cap]', '300'); await page.waitForTimeout(400)
   await page.tap('[data-testid=tab-home]')
   const after = await page.textContent('[data-testid=start-review]'); ok(`复习上限调高：${before.replace(/\s+/g,'')} → ${after.replace(/\s+/g,'')}`)
-  assert((await page.textContent('[data-testid=start-today]')).includes('新词 30 个')); ok('调高复习上限后，今天的新词数量不变')
+  assert((await page.textContent('[data-testid=start-today]')).includes('新词 45 个')); ok('调高复习上限后，今天的新词数量不变')
 } catch (e) { console.error('FAIL', e.message); bad++ }
 finally { try { process.kill(-srv.pid) } catch {}; await b.close() }
 if (errors.length) { console.error('页面错误', errors); bad++ }

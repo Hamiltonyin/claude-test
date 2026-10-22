@@ -11,7 +11,7 @@ const ok = (n) => console.log('✓', n); let bad = 0
 const rate = async (n) => { await page.tap('[data-testid=card]'); await page.waitForTimeout(420); await page.tap('[data-testid=rate' + n + ']'); await page.waitForTimeout(150) }
 try {
   await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]')
-  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 30 个'), null, { timeout: 8000 })
+  await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
   await page.tap('[data-testid=start-today]'); await page.waitForSelector('[data-testid=thai]')
   const first = await page.textContent('[data-testid=thai]')
   const seen = new Set([first])
@@ -20,7 +20,7 @@ try {
   const t = await page.textContent('[data-testid=thai]')
   assert.equal(t, first); ok('陌生词在 6 张卡之后再次出现：' + t)
   assert(await page.isVisible('[data-testid=repeat-badge]')); ok('重现的卡有「再看一遍」标注')
-  const cnt = (await page.textContent('.cnt')).trim(); assert.equal(cnt, '6 / 30'); ok('计数按不同的词算：' + cnt + '（不会变成 7/31）')
+  const cnt = (await page.textContent('.cnt')).trim(); assert.equal(cnt, '6 / 45'); ok('计数按不同的词算：' + cnt + '（不会变成 7/31）')
   await rate(3)                                   // 这次评熟悉，不会再重现
   assert(!(await page.isVisible('[data-testid=repeat-badge]'))); ok('下一张是新词，没有重复标注')
   // 关闭「陌生词再出现」后不再重现
