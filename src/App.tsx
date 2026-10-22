@@ -24,6 +24,7 @@ function Shell() {
   const [tab, setTab] = useState<Tab>('home')
   const [study, setStudy] = useState<StudyState | null>(null)
   const [picking, setPicking] = useState(false)
+  const [libMine, setLibMine] = useState(false)
   const startToday = () => session && setStudy({ title: '今天学习', ids: session.newIds, mode: 'today' })
   const startReview = () => session && setStudy({ title: '今日复习', ids: session.reviewIds, mode: 'review' })
   const startCatchup = (title: string, ids: string[]) => setStudy({ title, ids, mode: 'catchup' })
@@ -38,8 +39,8 @@ function Shell() {
   return (
     <div className="app">
       <div className="scroll">
-        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} />}
-        {tab === 'library' && <Library onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
+        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onMine={() => { setLibMine(true); setTab('library') }} />}
+        {tab === 'library' && <Library startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
         {tab === 'stats' && <Stats onCatchup={startCatchup} />}
         {tab === 'me' && <Me />}
       </div>

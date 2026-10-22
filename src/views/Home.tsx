@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES } from '../types'
 import { today, addDays } from '../lib/dates'
-import { dueWords, weakWords } from '../lib/srs'
+import { dueWords, weakWords, myAddedIds } from '../lib/srs'
 import { THEMES } from '../data/seed'
 import { Chev } from '../ui'
 import Records from './Records'
@@ -39,8 +39,9 @@ export function StatsHeader() {
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void }) {
+export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void }) {
   const { progress, words, settings, sessions, lessons, logs, session } = useApp()
+  const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
   const weak = weakWords(progress).length
   const due = dueWords(progress).length
   const counts = useMemo(() => {
@@ -69,6 +70,10 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         <div className="ic" style={{ background: '#af52de' }}>🔁</div>
         <div><div className="t">今日复习</div>
           <div className="d">{h.reviewTotal === 0 ? '今天没有到期的复习词' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个已完成` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个${overdue ? ` · 逾期 ${overdue} 个` : ''}`}</div></div><Chev />
+      </button>
+      <button className="entry" onClick={onMine} data-testid="open-mine">
+        <div className="ic" style={{ background: '#ff6482' }}>📝</div>
+        <div><div className="t">我录入的词</div><div className="d">{mineN ? `跟泰国人学到的、自己添加的词 · 共 ${mineN} 个` : '跟泰国人学到的、自己添加的词会在这里'}</div></div><Chev />
       </button>
       <button className="entry" onClick={onPickDay} data-testid="pick-day">
         <div className="ic" style={{ background: '#5856d6' }}>📅</div>

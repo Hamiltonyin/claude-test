@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from '../types'
 import { LevelPill, Sheet, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
 import { THEMES } from '../data/seed'
+import { myAddedIds } from '../lib/srs'
 
 const strip = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[-\s]+/g, '')
 
@@ -41,7 +42,7 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
   )
 }
 
-export default function Library({ onStudy }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free') => void }) {
+export default function Library({ onStudy, startMine, onMineShown }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free') => void; startMine?: boolean; onMineShown?: () => void }) {
   const { words, progress, lessons, wordMap } = useApp()
   const [tab, setTab] = useState<'words' | 'days'>('words')
   const [q, setQ] = useState('')
@@ -49,16 +50,21 @@ export default function Library({ onStudy }: { onStudy: (title: string, ids: str
   const [theme, setTheme] = useState<string | null>(null)
   const [open, setOpen] = useState<Word | null>(null)
   const [day, setDay] = useState<number | null>(null)
+  const [mine, setMine] = useState(!!startMine)
+  useEffect(() => { if (startMine) onMineShown?.() }, [])   // 带着「我录入的词」筛选进来后，清掉父组件里的标记
+  const mineIds = useMemo(() => myAddedIds(lessons), [lessons])
+  const mineSet = useMemo(() => new Set(mineIds), [mineIds])
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase(), ns = strip(q.trim())
     return words.filter(w => {
+      if (mine && !mineSet.has(w.id)) return false
       if (lv !== null && (progress.get(w.id)?.level ?? 0) !== lv) return false
       if (theme && w.theme !== theme) return false
       if (!s) return true
       return w.thai.includes(q.trim()) || w.zh.includes(q.trim()) || w.roman.toLowerCase().includes(s) || (ns.length > 0 && strip(w.roman).includes(ns))
     })
-  }, [words, progress, q, lv, theme])
+  }, [words, progress, q, lv, theme, mine, mineSet])
 
   const Row = ({ w }: { w: Word }) => {
     const l = progress.get(w.id)?.level ?? 0
@@ -80,12 +86,14 @@ export default function Library({ onStudy }: { onStudy: (title: string, ids: str
       {tab === 'words' && <>
         <input className="search" placeholder="搜索中文 / 泰文 / 拼音" value={q} onChange={e => setQ(e.target.value)} data-testid="search" />
         <div className="chips" style={{ marginBottom: 8 }}>
+          <button className={'chip' + (mine ? ' on' : '')} onClick={() => setMine(!mine)} data-testid="chip-mine">📝 我录入的词<small>{mineIds.length}</small></button>
           {[1, 2, 3, 4, 0].map(l => <button key={l} className={'chip' + (lv === l ? ' on' : '')} onClick={() => setLv(lv === l ? null : l)}>{LEVEL_NAMES[l]}</button>)}
         </div>
         <div className="chips" style={{ marginBottom: 10 }}>
           {THEMES.map(t => <button key={t} className={'chip' + (theme === t ? ' on' : '')} onClick={() => setTheme(theme === t ? null : t)}>{t}</button>)}
         </div>
-        <div className="sub" style={{ margin: '4px 0' }}>{list.length} 个结果</div>
+        {mine && list.length > 0 && <button className="btn block" style={{ marginTop: 0 }} onClick={() => onStudy('我录入的词', list.map(w => w.id), 'free')} data-testid="study-mine">学习这 {list.length} 个词</button>}
+        <div className="sub" style={{ margin: '4px 0' }}>{list.length} 个结果{mine ? '（我录入的词：第18天起的课程）' : ''}</div>
         {list.map(w => <Row key={w.id} w={w} />)}
         {!list.length && <p className="sub">没有匹配的词。</p>}
       </>}
