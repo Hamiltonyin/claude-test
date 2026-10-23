@@ -39,7 +39,7 @@ export function StatsHeader() {
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void }) {
+export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void }) {
   const { progress, words, settings, sessions, lessons, logs, session } = useApp()
   const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
   const weak = weakWords(progress).length
@@ -70,6 +70,14 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         <div className="ic" style={{ background: '#af52de' }}>🔁</div>
         <div><div className="t">今日复习</div>
           <div className="d">{h.reviewTotal === 0 ? '今天没有到期的复习词' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个已完成` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个${overdue ? ` · 逾期 ${overdue} 个` : ''}`}</div></div><Chev />
+      </button>
+      <button className="entry" onClick={() => onPractice('verify')} data-testid="start-verify">
+        <div className="ic" style={{ background: '#007aff' }}>✅</div>
+        <div><div className="t">验收 · 升为熟悉</div><div className="d">{counts[1] + counts[2] ? `陌生 ${counts[1]} + 不熟悉 ${counts[2]} · 听音/选词，答对升一级` : '没有需要验收的词'}</div></div><Chev />
+      </button>
+      <button className="entry" onClick={() => onPractice('master')} data-testid="start-master">
+        <div className="ic" style={{ background: '#34c759' }}>🌟</div>
+        <div><div className="t">熟悉 → 精通 · 举一反三</div><div className="d">{counts[3] ? `熟悉 ${counts[3]} 个 · 例句填空/听音/反向选词，全对才升精通` : '先把词学到「熟悉」，再来练'}</div></div><Chev />
       </button>
       <button className="entry" onClick={onMine} data-testid="open-mine">
         <div className="ic" style={{ background: '#ff6482' }}>📝</div>

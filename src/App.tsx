@@ -4,6 +4,7 @@ import Home from './views/Home'
 import Library from './views/Library'
 import Stats from './views/Stats'
 import Me from './views/Me'
+import Practice, { type PracticeKind } from './views/Practice'
 import Study, { type StudyMode } from './views/Study'
 import { weakWords } from './lib/srs'
 import DayPicker from './views/DayPicker'
@@ -24,6 +25,7 @@ function Shell() {
   const [tab, setTab] = useState<Tab>('home')
   const [study, setStudy] = useState<StudyState | null>(null)
   const [picking, setPicking] = useState(false)
+  const [practice, setPractice] = useState<PracticeKind | null>(null)
   const [libMine, setLibMine] = useState(false)
   const startToday = () => session && setStudy({ title: '今天学习', ids: session.newIds, mode: 'today' })
   const startReview = () => session && setStudy({ title: '今日复习', ids: session.reviewIds, mode: 'review' })
@@ -39,7 +41,7 @@ function Shell() {
   return (
     <div className="app">
       <div className="scroll">
-        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onMine={() => { setLibMine(true); setTab('library') }} />}
+        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onMine={() => { setLibMine(true); setTab('library') }} />}
         {tab === 'library' && <Library startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
         {tab === 'stats' && <Stats onCatchup={startCatchup} />}
         {tab === 'me' && <Me />}
@@ -51,6 +53,7 @@ function Shell() {
           </button>))}
       </nav>
       {picking && <DayPicker onClose={() => setPicking(false)} onStudy={(title, ids) => setStudy({ title, ids, mode: 'day' })} />}
+      {practice && <Practice key={practice} kind={practice} onClose={() => setPractice(null)} />}
       {study && <Study key={study.title + study.ids.length} {...study} onClose={() => setStudy(null)} />}
     </div>
   )

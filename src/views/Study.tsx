@@ -98,8 +98,11 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
     // 翻到背面时自动朗读（在点击回调里同步触发，iPhone 才允许）；可在「我的」里关闭
     if (nf && word && settings.autoPlay) sp.play(word, false)
   }
+  const [lockMsg, setLockMsg] = useState(false)
   const doRate = (lv: Level) => {
     if (!word) return
+    // 精通要靠「举一反三」练习升级，不能在这里直接点：先记为熟悉
+    if (lv === 4 && level < 4) { lv = 3; setLockMsg(true) } else setLockMsg(false)
     rate(word.id, lv)
     rated.current.add(word.id)
     let q = queue
@@ -187,9 +190,10 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
       </div>
       <div className={'rates' + (flip ? '' : ' off')} aria-label="选择熟练度">
         {([1, 2, 3, 4] as Level[]).map(l => (
-          <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => doRate(l)} data-testid={'rate' + l}>{LEVEL_NAMES[l]}</button>
+          <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => doRate(l)} data-testid={'rate' + l}>{LEVEL_NAMES[l]}{l === 4 && level < 4 ? ' 🔒' : ''}</button>
         ))}
       </div>
+      {lockMsg && <p className="sub" style={{ textAlign: 'center', color: 'var(--orange)' }} data-testid="lock-msg">精通要通过「举一反三」练习才能升，已先记为熟悉（首页 → 熟悉 → 精通）</p>}
       <div className="nav">
         <button onClick={() => go(idx - 1)} disabled={idx === 0} data-testid="prev">‹ 上一词</button>
         <span className="sub">{flip ? '选择熟练度' : '先回忆，再翻面'}</span>

@@ -9,7 +9,7 @@
     "preview": "vite preview --host",
     "check:data": "node scripts/check-data.mjs",
     "audio": "python3 scripts/gen_audio.py",
-    "test:e2e": "node e2e/run.mjs && node e2e/font.mjs && node e2e/missed.mjs && node e2e/repeat.mjs && node e2e/daypick.mjs && node e2e/mine.mjs && node e2e/auto.mjs && node e2e/jp.mjs",
+    "test:e2e": "node e2e/run.mjs && node e2e/font.mjs && node e2e/missed.mjs && node e2e/repeat.mjs && node e2e/daypick.mjs && node e2e/mine.mjs && node e2e/auto.mjs && node e2e/master.mjs && node e2e/jp.mjs",
     "dev:jp": "vite --config jp/vite.config.ts",
     "build:jp": "node jp/scripts/build-jp.mjs && tsc --noEmit -p jp/tsconfig.json && vite build --config jp/vite.config.ts",
     "audio:jp": "python3 scripts/gen_audio.py --library jp/public/content/library.json --out jp/public/audio --voice ja-JP-NanamiNeural --lang ja --text-key speak",
