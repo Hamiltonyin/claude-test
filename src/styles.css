@@ -107,3 +107,7 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .autobtn{background:#e8f0ff;color:var(--blue);border-radius:99px;padding:9px 16px;font-weight:600;font-size:14px}
 .autobtn.on{background:var(--blue);color:#fff}
 .zhtoggle{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--sub);margin-top:6px}.zhtoggle input{width:16px;height:16px}
+
+.qcard{background:var(--card);border-radius:18px;text-align:center;padding:12px 14px;margin:0 0 10px}
+.qcard .sub{margin-bottom:6px}
+.qspk{margin-top:8px}.qspk .spk{position:static;display:flex;justify-content:center;gap:8px}

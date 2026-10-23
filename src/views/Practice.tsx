@@ -78,29 +78,29 @@ export default function Practice({ kind, onClose }: { kind: PracticeKind; onClos
   const lead = { listen: '听音，选出意思', zh2th: '选出对应的泰语', cloze: '例句填空，选出缺的词', th2zh: '选出意思' }[q.type]
   return (
     <div className="study">{head}
-      <div style={{ padding: '8px 16px', flex: 1, overflowY: 'auto' }}>
-        <p className="sub" style={{ textAlign: 'center' }}>{`题 ${qi + 1}/${plan[wi].length} · 全部答对才升「${LEVEL_NAMES[Math.min(4, lvOf(ids[wi]) + 1)]}」`}</p>
-        <div className="card" style={{ textAlign: 'center', padding: 20, margin: '8px 0 14px' }}>
+      <div style={{ padding: '0 16px calc(var(--sab) + 24px)', flex: 1, overflowY: 'auto' }}>
+        <p className="sub" style={{ textAlign: 'center', margin: '0 0 6px' }}>{`题 ${qi + 1}/${plan[wi].length} · 全部答对才升「${LEVEL_NAMES[Math.min(4, lvOf(ids[wi]) + 1)]}」`}</p>
+        <div className="qcard">
           <div className="sub" style={{ marginBottom: 8 }}>{lead}</div>
           {q.type === 'listen' && <><button className="btn" onClick={() => sayWord(w.id)} data-testid="q-play">🔊 播放</button>
-            {picked && <div className="th" lang="th" style={{ fontSize: 28, marginTop: 8 }}>{w.thai}</div>}</>}
+            {picked && <div className="th" lang="th" style={{ fontSize: 26 }}>{w.thai}</div>}</>}
           {q.type === 'th2zh' && <div className="th" lang="th" style={{ fontSize: 34 }}>{w.thai}</div>}
           {q.type === 'zh2th' && <div style={{ fontSize: 24, fontWeight: 600 }} data-testid="q-prompt">{q.prompt}</div>}
           {q.type === 'cloze' && <><div className="th" lang="th" style={{ fontSize: 24 }} data-testid="q-prompt">{q.prompt}</div><div className="sub" style={{ marginTop: 6 }}>{q.hint}</div></>}
-          {picked && <div style={{ marginTop: 8 }}><SpeakButtons word={w} sp={sp} /></div>}
+          {picked && q.type !== 'listen' && <div className="qspk"><SpeakButtons word={w} sp={sp} /></div>}
         </div>
-        <div style={{ display: 'grid', gap: 10 }}>
+        <div style={{ display: 'grid', gap: 8 }}>
           {q.options.map(o => {
             const right = !!picked && o === q.answer, wrong = picked === o && o !== q.answer
             return <button key={o} className={'btn sec' + (isTh ? ' th' : '')} lang={isTh ? 'th' : undefined} disabled={!!picked && !right && !wrong}
-              style={{ minHeight: 54, fontSize: isTh ? 22 : 17, background: right ? '#e3f7e8' : wrong ? '#ffe5e3' : undefined, color: right ? '#1f8a3b' : wrong ? 'var(--red)' : undefined }}
+              style={{ minHeight: 46, padding: '6px 12px', fontSize: isTh ? 20 : 16, background: right ? '#e3f7e8' : wrong ? '#ffe5e3' : undefined, color: right ? '#1f8a3b' : wrong ? 'var(--red)' : undefined }}
               onClick={() => answer(o)} data-testid="q-opt" data-right={o === q.answer ? '1' : '0'}>{o}</button>
           })}
         </div>
         {picked && <>
-          <p style={{ textAlign: 'center', fontWeight: 600, color: picked === q.answer ? '#1f8a3b' : 'var(--red)' }}>
+          <p style={{ textAlign: 'center', fontWeight: 600, margin: '8px 0 2px', color: picked === q.answer ? '#1f8a3b' : 'var(--red)' }}>
             {picked === q.answer ? '✔ 答对了' : `✘ 正确答案：${q.answer}`}</p>
-          <p className="sub" style={{ textAlign: 'center' }}>{w.thai} · {w.roman} · {w.zh}</p>
+          <p className="sub" style={{ textAlign: 'center', margin: '0 0 4px' }}>{w.thai} · {w.roman} · {w.zh}</p>
           <button className="btn block" onClick={next} data-testid="q-next">{qi + 1 < plan[wi].length ? '下一题' : '这个词完成，下一个'}</button>
         </>}
       </div>
