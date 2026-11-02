@@ -92,3 +92,14 @@
 สามารถ|RF|sǎa-mâat|能够|日常交流|คุณสามารถไปได้|khun sǎa-mâat pai dâi|你可以去。
 ทำให้|MF|tham-hâi|使；让|日常交流|ทำให้ผมดีใจ|tham-hâi phǒm dii-jai|让我高兴。
 ดูแล|MM|duu-lɛɛ|照顾|日常交流|ช่วยดูแลหน่อย|chûai duu-lɛɛ nɔ̀i|请照看一下。
+# day 104
+ข้างหน้า|FF|khâang-nâa|前面|打车|ร้านอยู่ข้างหน้า|ráan yùu khâang-nâa|店在前面。
+ข้างหลัง|FR|khâang-lǎng|后面|打车|ห้องน้ำอยู่ข้างหลัง|hɔ̂ɔng-náam yùu khâang-lǎng|洗手间在后面。
+ข้างซ้าย|FH|khâang-sáai|左边|打车|ธนาคารอยู่ข้างซ้าย|thá-naa-khaan yùu khâang-sáai|银行在左边。
+ข้างขวา|FR|khâang-khwǎa|右边|打车|โรงแรมอยู่ข้างขวา|roong-rɛɛm yùu khâang-khwǎa|酒店在右边。
+ข้างบน|FM|khâang-bon|上面|打车|ห้องผมอยู่ข้างบน|hɔ̂ɔng phǒm yùu khâang-bon|我的房间在上面。
+ข้างล่าง|FF|khâang-lâang|下面|打车|ร้านอาหารอยู่ข้างล่าง|ráan-aa-hǎan yùu khâang-lâang|餐厅在下面。
+ข้างใน|FM|khâang-nai|里面|打车|ข้างในร้อนมาก|khâang-nai rɔ́ɔn mâak|里面很热。
+ข้างนอก|FF|khâang-nɔ̂ɔk|外面|打车|ข้างนอกฝนตก|khâang-nɔ̂ɔk fǒn tòk|外面在下雨。
+ตรงข้าม|MF|trong-khâam|对面|打车|ร้านอยู่ตรงข้ามธนาคาร|ráan yùu trong-khâam thá-naa-khaan|店在银行对面。
+ตรงกลาง|MM|trong-klaang|中间|打车|นั่งตรงกลาง|nâng trong-klaang|坐中间。

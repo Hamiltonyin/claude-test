@@ -179,3 +179,13 @@
 ทำให้|ทำให้หน่อย|MFL|tham-hâi nɔ̀i|帮我做一下
 ดูแล|ดูแลตัวเอง|MMMM|duu-lɛɛ tua eeng|照顾好自己
 ดูแล|ดูแลลูก|MMF|duu-lɛɛ lûuk|照顾孩子
+ข้างหน้า|ไปข้างหน้า|MFF|pai khâang-nâa|往前走
+ข้างหลัง|อยู่ข้างหลัง|LFR|yùu khâang-lǎng|在后面
+ข้างซ้าย|ข้างซ้ายมือ|FHM|khâang-sáai mɯɯ|左手边
+ข้างขวา|ข้างขวามือ|FRM|khâang-khwǎa mɯɯ|右手边
+ข้างบน|อยู่ข้างบน|LFM|yùu khâang-bon|在上面
+ข้างล่าง|ลงไปข้างล่าง|MMFF|long pai khâang-lâang|下去下面
+ข้างใน|เข้าไปข้างใน|FMFM|khâo pai khâang-nai|进去里面
+ข้างนอก|ออกไปข้างนอก|LMFF|ɔ̀ɔk pai khâang-nɔ̂ɔk|出去外面
+ตรงข้าม|อยู่ตรงข้าม|LMF|yùu trong-khâam|在对面
+ตรงกลาง|ตรงกลางถนน|MMLR|trong-klaang thà-nǒn|马路中间
