@@ -40,6 +40,8 @@ jobs:
         run: |
           pip install edge-tts gTTS
           python3 scripts/gen_audio.py --allow-fail ${{ inputs.force_audio && '--force' || '' }}
+      - name: 生成缺失的例句与常用词组音频（<词ID>_ex.mp3 / <词ID>_p<N>.mp3）
+        run: python3 scripts/gen_audio.py --library public/content/clips.json --out public/audio --text-key th --allow-fail ${{ inputs.force_audio && '--force' || '' }}
       - name: 生成缺失的中文意思音频（zh-CN-XiaoxiaoNeural → <词ID>_zh.mp3，用于连读时读中文）
         run: python3 scripts/gen_audio.py --library public/content/library.json --out public/audio --suffix _zh --voice zh-CN-XiaoxiaoNeural --rate +0% --lang zh-CN --text-key zh --clean-zh --allow-fail ${{ inputs.force_audio && '--force' || '' }}
       - name: 生成缺失的日语音频（ja-JP-NanamiNeural，已有文件不覆盖）
@@ -54,7 +56,7 @@ jobs:
       - name: 检查音频覆盖率
         run: |
           total=$(node -e "console.log(require('./public/content/library.json').words.length)")
-          have=$(ls public/audio/*.mp3 2>/dev/null | wc -l)
+          have=$(ls public/audio/ 2>/dev/null | grep -E '^[^_]+\.mp3$' | wc -l)
           echo "音频 $have / 词条 $total"
           echo "### 泰语音频 $have / $total" >> $GITHUB_STEP_SUMMARY
           jtotal=$(node -e "console.log(require('./jp/public/content/library.json').words.length)")

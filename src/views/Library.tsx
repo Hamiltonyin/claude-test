@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from '../types'
-import { LevelPill, Sheet, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
+import { LevelPill, Sheet, ExampleBlock, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
 import { THEMES } from '../data/seed'
 import { myAddedIds } from '../lib/srs'
 
@@ -24,12 +24,10 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
         <div className="zh">{word.zh}</div>
         <div className="rom" style={{ fontSize: 20, color: 'var(--blue)', fontWeight: 600 }}>{word.roman}</div>
         <ToneChips roman={word.roman} />
-        <div className="ex" style={{ background: 'var(--card)', textAlign: 'left' }}>
-          <div className="th" lang="th">{word.exTh}</div><div className="rom">{word.exRoman}</div><div className="z">{word.exZh}</div>
-        </div>
+        <div style={{ textAlign: 'left' }}><ExampleBlock word={word} /></div>
         <p className="sub">{word.theme} · {days.length ? '出现在第 ' + days.join('、') + ' 天' : '未归入课程'}{p ? ` · 复习 ${p.reps} 次 · 遗忘 ${p.lapses} 次 · 下次 ${p.due}` : ''}</p>
         <div className="rates" style={{ padding: '8px 0' }}>
-          {([1, 2, 3, 4] as Level[]).map(l => <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => rate(word.id, l)}>{LEVEL_NAMES[l]}</button>)}
+          {([1, 2, 3, 4] as Level[]).map(l => <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => rate(word.id, l === 4 && level < 4 ? 3 : l)}>{LEVEL_NAMES[l]}{l === 4 && level < 4 ? ' 🔒' : ''}</button>)}
         </div>
         <button className="btn sec block" onClick={() => setEdit(true)}>编辑词条</button>
       </div> : <div>

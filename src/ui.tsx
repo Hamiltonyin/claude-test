@@ -74,3 +74,55 @@ export function Sheet({ onClose, children }: { onClose: () => void; children: Re
 }
 
 export const Chev = () => <span className="chev">›</span>
+
+/** 例句/词组的小喇叭：优先播放存档 MP3（<词ID>_ex / _p<N>），没有时用系统泰语语音 */
+export function ClipButton({ id, suffix, text, label }: { id: string; suffix: string; text: string; label: string }) {
+  const stopProp = (e: React.SyntheticEvent) => e.stopPropagation()
+  const [busy, setBusy] = useState(false)
+  const go = (slow: boolean) => {
+    setBusy(true)
+    playFile(id, slow, suffix).catch(() => playSystem(text, slow)).catch(() => {}).finally(() => setBusy(false))
+  }
+  return (
+    <span className="clip" onClick={stopProp} onTouchEnd={stopProp}>
+      <button aria-label={label} className={busy ? 'busy' : ''} onClick={() => go(false)}><Speaker /></button>
+      <button aria-label={label + '（慢速）'} className="slow" onClick={() => go(true)}>🐢</button>
+    </span>
+  )
+}
+
+export interface Phrase { th: string; roman: string; zh: string }
+let phraseCache: Promise<Record<string, { id: string; items: Phrase[] }>> | null = null
+export function usePhrases(word: Word): Phrase[] {
+  const [map, setMap] = useState<Record<string, { id: string; items: Phrase[] }> | null>(null)
+  useEffect(() => {
+    phraseCache ??= fetch(`${import.meta.env.BASE_URL}content/phrases.json`).then(r => r.ok ? r.json() : {}).catch(() => { phraseCache = null; return {} })
+    let on = true; phraseCache.then(m => on && setMap(m)); return () => { on = false }
+  }, [])
+  return map?.[word.thai]?.items ?? []
+}
+
+/** 例句（可发音）+ 常用词组（可发音） */
+export function ExampleBlock({ word }: { word: Word }) {
+  const phrases = usePhrases(word)
+  return (
+    <>
+      <div className="ex" data-testid="example">
+        <div className="exrow"><div className="th" lang="th">{word.exTh}</div><ClipButton id={word.id} suffix="_ex" text={word.exTh} label="播放例句" /></div>
+        <div className="rom">{word.exRoman}</div>
+        <div className="z">{word.exZh}</div>
+      </div>
+      {phrases.length > 0 && (
+        <div className="ex phr" data-testid="phrases">
+          <div className="phrh">常用词组</div>
+          {phrases.map((x, i) => (
+            <div key={i} className="phrow">
+              <div><div className="th" lang="th">{x.th}</div><div className="rom">{x.roman} · {x.zh}</div></div>
+              <ClipButton id={word.id} suffix={'_p' + i} text={x.th} label="播放词组" />
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
-import { SpeakButtons, ToneChips, useSpeaker } from '../ui'
+import { ExampleBlock, SpeakButtons, ToneChips, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { zhSpeakText } from '../lib/zhspeak'
@@ -179,11 +179,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
             <div className="zh">{word.zh}</div>
             <div className="rom" style={{ fontSize: 22, color: 'var(--blue)', fontWeight: 600 }} data-testid="roman">{word.roman}</div>
             <ToneChips roman={word.roman} />
-            <div className="ex">
-              <div className="th" lang="th">{word.exTh}</div>
-              <div className="rom">{word.exRoman}</div>
-              <div className="z">{word.exZh}</div>
-            </div>
+            <ExampleBlock word={word} />
             <div className="hint">{word.theme}{p ? ` · 已复习 ${p.reps} 次` : ' · 新词'}</div>
           </div>
         </div>

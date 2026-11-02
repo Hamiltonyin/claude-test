@@ -111,3 +111,11 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .qcard{background:var(--card);border-radius:18px;text-align:center;padding:12px 14px;margin:0 0 10px}
 .qcard .sub{margin-bottom:6px}
 .qspk{margin-top:8px}.qspk .spk{position:static;display:flex;justify-content:center;gap:8px}
+
+.exrow{display:flex;align-items:center;gap:8px;justify-content:space-between;text-align:left}
+.clip{display:inline-flex;gap:4px;flex:none}
+.clip button{width:36px;height:36px;border-radius:18px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:15px}
+.clip button svg{width:18px;height:18px}.clip button.slow{background:#dbeafe}.clip button.busy{opacity:.6}
+.ex.phr{background:#f7f9fc;text-align:left}.phrh{font-size:13px;font-weight:600;color:var(--sub);margin-bottom:4px}
+.phrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.phrow:first-of-type{border-top:0}.phrow .th{font-size:18px;line-height:1.5}.phrow .rom{font-size:13px}
