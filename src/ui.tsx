@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from './types'
 import { AudioError, playFile, playSystem, stopAudio, systemVoiceAvailable } from './lib/audio'
-import { TONE_SYMBOL, toneDescription } from './lib/tone'
+import { TONE_SYMBOL, TONE_ZH, toneCodes, toneDescription } from './lib/tone'
 
 export const Speaker = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>
@@ -59,12 +59,47 @@ export function SpeakButtons({ word, sp }: { word: Word; sp: ReturnType<typeof u
   )
 }
 
+export const TONE_COLOR: Record<string, string> = { M: '#1e6fd9', L: '#2e9e4f', F: '#e0392d', H: '#e8830c', R: '#8e44ad' }
+const TONE_PATH: Record<string, string> = { M: '3,10 37,10', L: '3,11 37,16', F: '3,3 37,17', H: '3,11 37,4', R: '3,9 14,16 37,3' }
+
+/** 声调曲线：一条线表示这个音节的音高走向（中平/低/降/高/升） */
+export function ToneLine({ code }: { code: string }) {
+  const c = TONE_COLOR[code]
+  const [x, y] = TONE_PATH[code].split(' ')[0].split(',')
+  return (
+    <svg className="toneline" viewBox="0 0 40 20" aria-hidden>
+      <line x1="3" y1="3" x2="37" y2="3" stroke="#e5e7eb" strokeDasharray="2 2" /><line x1="3" y1="17" x2="37" y2="17" stroke="#e5e7eb" strokeDasharray="2 2" />
+      <polyline points={TONE_PATH[code]} fill="none" stroke={c} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={x} cy={y} r="3" fill={c} />
+    </svg>
+  )
+}
+
+/** 单词的声调提示：每个音节 = 拼音 + 声调曲线 + 声调名/符号 */
 export function ToneChips({ roman }: { roman: string }) {
   return (
-    <div className="tonebox">
+    <div className="tonebox" data-testid="tones">
       {toneDescription(roman).map((d, i) => (
-        <span className="tone" key={i}><b className="rom">{d.syl}</b> {d.name}{d.code !== 'M' && <span className="sub"> {TONE_SYMBOL[d.code]}</span>}</span>
+        <span className="tone" key={i} style={{ borderColor: TONE_COLOR[d.code] }}>
+          <b className="rom" style={{ color: TONE_COLOR[d.code] }}>{d.syl}</b>
+          <ToneLine code={d.code} />
+          <span className="tname" style={{ color: TONE_COLOR[d.code] }}>{d.name}{d.code !== 'M' && <> {TONE_SYMBOL[d.code]}</>}</span>
+        </span>
       ))}
+    </div>
+  )
+}
+
+/** 拼音按声调上色（句子、词组里用），音节顺序和声调符号一目了然 */
+export function ColorRoman({ roman, className = 'rom' }: { roman: string; className?: string }) {
+  const parts = roman.split(/([-\s]+)/)
+  return <div className={className}>{parts.map((p, i) => /^[-\s]+$/.test(p) || !p ? p : <span key={i} style={{ color: TONE_COLOR[toneCodes(p)] ?? undefined, fontWeight: 600 }}>{p}</span>)}</div>
+}
+
+export function ToneLegend() {
+  return (
+    <div className="tlegend">
+      {(['M', 'L', 'F', 'H', 'R'] as const).map(c => <span key={c} style={{ color: TONE_COLOR[c] }}>● {TONE_ZH[c]}</span>)}
     </div>
   )
 }
@@ -108,8 +143,9 @@ export function ExampleBlock({ word }: { word: Word }) {
   return (
     <>
       <div className="ex" data-testid="example">
+        <ToneLegend />
         <div className="exrow"><div className="th" lang="th">{word.exTh}</div><ClipButton id={word.id} suffix="_ex" text={word.exTh} label="播放例句" /></div>
-        <div className="rom">{word.exRoman}</div>
+        <ColorRoman roman={word.exRoman} />
         <div className="z">{word.exZh}</div>
       </div>
       {phrases.length > 0 && (
@@ -117,7 +153,7 @@ export function ExampleBlock({ word }: { word: Word }) {
           <div className="phrh">常用词组</div>
           {phrases.map((x, i) => (
             <div key={i} className="phrow">
-              <div><div className="th" lang="th">{x.th}</div><div className="rom">{x.roman} · {x.zh}</div></div>
+              <div><div className="th" lang="th">{x.th}</div><ColorRoman roman={x.roman} /><div className="sub" style={{ fontSize: 13 }}>{x.zh}</div></div>
               <ClipButton id={word.id} suffix={'_p' + i} text={x.th} label="播放词组" />
             </div>
           ))}
