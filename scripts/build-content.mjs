@@ -58,5 +58,20 @@ const clips = []
 for (const w of words) clips.push({ id: w.id + '_ex', th: w.exTh })
 for (const e of Object.values(phrases)) e.items.forEach((x, i) => clips.push({ id: `${e.id}_p${i}`, th: x.th }))
 writeFileSync('public/content/clips.json', JSON.stringify({ words: clips }))
+// 分类（按主题浏览，不受每天课程限制）：content/categories.json，词用泰文，必须是词库里已有的
+if (existsSync('content/categories.json')) {
+  const src = JSON.parse(readFileSync('content/categories.json', 'utf8'))
+  let miss = 0
+  const groups = src.groups.map(g => ({ name: g.name, icon: g.icon, cats: g.cats.map(c => {
+    const list = [...new Set(c.words.split(/\s+/).filter(Boolean).map(normThai))]
+    for (const t of list) if (!byThai.has(t)) { console.error(`✗ 分类「${c.name}」里的「${t}」不在词库中`); miss++ }
+    return { id: c.id, name: c.name, emoji: c.emoji, words: list.filter(t => byThai.has(t)) }
+  }) }))
+  if (miss) { console.error(`${miss} 个分类词不存在，已中止`); process.exit(1) }
+  const used = new Set(groups.flatMap(g => g.cats.flatMap(c => c.words)))
+  const left = words.filter(w => !used.has(w.thai)).map(w => w.thai)
+  writeFileSync('public/content/categories.json', JSON.stringify({ groups }))
+  console.log(`分类：${groups.reduce((a, g) => a + g.cats.length, 0)} 个；未归入任何分类的词 ${left.length} 个：${left.join(' ')}`)
+}
 console.log(`词组：${Object.keys(phrases).length} 个词有词组，共 ${Object.values(phrases).reduce((a, e) => a + e.items.length, 0)} 条`)
 console.log(`library.json: ${words.length} 词，${lessons.length} 天`)

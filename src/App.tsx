@@ -7,18 +7,20 @@ import Me from './views/Me'
 import Practice, { type PracticeKind } from './views/Practice'
 import Study, { type StudyMode } from './views/Study'
 import { weakWords } from './lib/srs'
+import Categories from './views/Categories'
 import DayPicker from './views/DayPicker'
 
-type Tab = 'home' | 'library' | 'stats' | 'me'
+type Tab = 'home' | 'cats' | 'library' | 'stats' | 'me'
 interface StudyState { title: string; ids: string[]; mode: StudyMode }
 
 const icons: Record<Tab, string> = {
   home: 'M12 3 3 10v10h6v-6h6v6h6V10z',
+  cats: 'M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z',
   library: 'M4 4h16v4H4zm0 6h16v4H4zm0 6h16v4H4z',
   stats: 'M5 20V10h3v10zm5.5 0V4h3v16zM16 20v-7h3v7z',
   me: 'M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4 0-8 2-8 5v3h16v-3c0-3-4-5-8-5z',
 }
-const labels: Record<Tab, string> = { home: '首页', library: '词库', stats: '统计', me: '我的' }
+const labels: Record<Tab, string> = { home: '首页', cats: '分类', library: '词库', stats: '统计', me: '我的' }
 
 function Shell() {
   const { ready, error, session, progress, words, lessons } = useApp()
@@ -42,6 +44,7 @@ function Shell() {
     <div className="app">
       <div className="scroll">
         {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onMine={() => { setLibMine(true); setTab('library') }} />}
+        {tab === 'cats' && <Categories onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
         {tab === 'library' && <Library startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
         {tab === 'stats' && <Stats onCatchup={startCatchup} />}
         {tab === 'me' && <Me />}
