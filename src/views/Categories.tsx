@@ -5,7 +5,7 @@ import { Sheet } from '../ui'
 import type { StudyMode } from './Study'
 
 interface Cat { id: string; name: string; emoji: string; words: string[] }
-interface Group { name: string; icon: string; cats: Cat[] }
+interface Group { name: string; icon: string; own?: boolean; cats: Cat[] }
 
 let cache: Promise<Group[]> | null = null
 const load = () => (cache ??= fetch(`${import.meta.env.BASE_URL}content/categories.json`).then(r => r.ok ? r.json() : { groups: [] }).then(j => j.groups as Group[]).catch(() => { cache = null; return [] }))
@@ -22,7 +22,7 @@ export default function Categories({ onStudy }: { onStudy: (title: string, ids: 
   const stat = (c: Cat) => { const ids = idsOf(c); return { ids, learned: ids.filter(i => (progress.get(i)?.level ?? 0) > 0).length } }
 
   if (!groups) return <div className="cats"><p className="sub" style={{ textAlign: 'center', padding: 40 }}>加载中…</p></div>
-  const unlocked = groups.flatMap(g => g.cats).filter(c => c.words.length)
+  const unlocked = groups.filter(g => !g.own).flatMap(g => g.cats).filter(c => c.words.length)
 
   const card = (c: Cat, locked: boolean) => {
     const s = stat(c)
@@ -42,6 +42,7 @@ export default function Categories({ onStudy }: { onStudy: (title: string, ids: 
       {head('🔓', '已解锁分类')}
       <div className="catgrid">{unlocked.map(c => card(c, false))}</div>
       {groups.map(g => {
+        if (g.own) return <div key={g.name}>{head(g.icon, g.name + `（每类不超过 10 个词）`)}<div className="catgrid">{g.cats.map(c => card(c, !c.words.length))}</div></div>
         const locked = g.cats.filter(c => !c.words.length)
         return locked.length ? <div key={g.name}>{head(g.icon, g.name)}<div className="catgrid">{locked.map(c => card(c, true))}</div></div> : null
       })}

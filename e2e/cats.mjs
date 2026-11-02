@@ -19,6 +19,10 @@ try {
   assert((await page.textContent('[data-testid=cat-all]')).includes('8')); ok('水果分类：8 个词（第7天和第15天的词合在一起，与天数无关）')
   await page.tap('[data-testid=cat-all]'); await page.waitForSelector('[data-testid=card]')
   assert((await page.textContent('.cnt')).trim() === '1 / 8'); ok('进入学习：1 / 8')
+  await page.tap('text=‹ 返回').catch(() => {})
+  await page.tap('[data-testid=tab-cats]'); await page.waitForSelector('[data-testid=cat-v-core]')
+  await page.tap('[data-testid=cat-v-buy]'); await page.waitForSelector('.catrow')
+  const nrows = await page.locator('.catrow').count(); assert(nrows >= 1 && nrows <= 10, '动词分类词数 ' + nrows); ok(`动词分类「买卖付款」${nrows} 个词（每类不超过 10）`)
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/cats-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
