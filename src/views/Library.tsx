@@ -30,6 +30,7 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
           {([1, 2, 3, 4] as Level[]).map(l => <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => rate(word.id, l === 4 && level < 4 ? 3 : l)}>{LEVEL_NAMES[l]}{l === 4 && level < 4 ? ' 🔒' : ''}</button>)}
         </div>
         <button className="btn sec block" onClick={() => setEdit(true)}>编辑词条</button>
+        <button className="btn block" onClick={() => { sp.stop(); onClose() }} data-testid="sheet-close">关闭</button>
       </div> : <div>
         {F('thai', '泰文')}{F('roman', '带声调拼音（音节用 - 分隔）')}{F('zh', '中文释义')}{F('theme', '主题')}{F('exTh', '例句（泰文）')}{F('exRoman', '例句拼音')}{F('exZh', '例句中文')}
         <button className="btn block" onClick={async () => { await updateWord(d); setEdit(false) }}>保存</button>

@@ -22,3 +22,7 @@
 `node scripts/author-days.mjs` 会校验后生成 `content/day-0NN.csv`：
 - 声调码（M中 L低 F降 H高 R升）由作者按泰语规则独立标注，必须与拼音上的声调符号完全一致；
 - 泰文必须是纯泰文字符、不得与已有词重复、必填项齐全。
+
+## 常用词组（content/phrases/*.txt）
+每行：`词|词组泰文|声调码|带声调拼音|中文`（声调码 M中 L低 F降 H高 R升，须与拼音符号一致；词组必须包含该词）。
+构建时生成 `public/content/phrases.json` 与 `clips.json`；部署时自动为每条例句（`<词ID>_ex.mp3`）和词组（`<词ID>_p<N>.mp3`）生成真人发音。

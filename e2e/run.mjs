@@ -93,7 +93,7 @@ try {
   await page.tap('.sheet .spk button[aria-label="播放发音"]'); await page.waitForTimeout(300)
   plays = await page.evaluate(() => window.__plays); assert(plays.length >= 3); ok('可反复播放')
   await page.screenshot({ path: tmp + '/sheet.png' })
-  await page.mouse.click(200, 30)
+  await page.tap('[data-testid=sheet-close]')
 
   // 课程：第1天/第2天 + 个人成绩
   await page.fill('[data-testid=search]', '')
