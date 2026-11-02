@@ -97,8 +97,9 @@ export function topUpSession(session: Session, args: { words: Word[]; lessons: L
 
 /** 「我录入的词」：第 18 天起的课程（我跟泰国人学到的词，或在 App 里自己添加的词）。第 1~17 天是内置的 500 词课程。 */
 export const USER_DAY_FROM = 18
+export const USER_DAY_TO = 99            // 第 101 天起是我补充的内置课程（动词专题等），不算「我录入的词」
 export const myAddedIds = (lessons: Lesson[]): string[] => {
   const seen = new Set<string>(), out: string[] = []
-  for (const l of [...lessons].sort((a, b) => a.day - b.day)) if (l.day >= USER_DAY_FROM) for (const id of l.wordIds) if (!seen.has(id)) { seen.add(id); out.push(id) }
+  for (const l of [...lessons].sort((a, b) => a.day - b.day)) if (l.day >= USER_DAY_FROM && l.day <= USER_DAY_TO) for (const id of l.wordIds) if (!seen.has(id)) { seen.add(id); out.push(id) }
   return out
 }
