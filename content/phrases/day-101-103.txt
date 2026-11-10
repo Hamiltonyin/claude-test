@@ -189,3 +189,7 @@
 ข้างนอก|ออกไปข้างนอก|LMFF|ɔ̀ɔk pai khâang-nɔ̂ɔk|出去外面
 ตรงข้าม|อยู่ตรงข้าม|LMF|yùu trong-khâam|在对面
 ตรงกลาง|ตรงกลางถนน|MMLR|trong-klaang thà-nǒn|马路中间
+หมายความว่า|คุณหมายความว่าอย่างไร|MRMFLM|khun mǎai-khwaam-wâa yàang-rai|你是什么意思？
+ความหมาย|ไม่รู้ความหมาย|FHMR|mâi rúu khwaam-mǎai|不知道意思
+หมายถึง|หมายถึงคุณ|RRM|mǎai-thɯ̌ng khun|指的是你
+ก็คือ|นั่นก็คือ|FFM|nân kɔ̂ɔ-khɯɯ|那就是

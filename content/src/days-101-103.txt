@@ -103,3 +103,8 @@
 ข้างนอก|FF|khâang-nɔ̂ɔk|外面|打车|ข้างนอกฝนตก|khâang-nɔ̂ɔk fǒn tòk|外面在下雨。
 ตรงข้าม|MF|trong-khâam|对面|打车|ร้านอยู่ตรงข้ามธนาคาร|ráan yùu trong-khâam thá-naa-khaan|店在银行对面。
 ตรงกลาง|MM|trong-klaang|中间|打车|นั่งตรงกลาง|nâng trong-klaang|坐中间。
+# day 105
+หมายความว่า|RMF|mǎai-khwaam-wâa|意思是；意味着|日常交流|หมายความว่าอะไร|mǎai-khwaam-wâa à-rai|这是什么意思？
+ความหมาย|MR|khwaam-mǎai|意思；含义|日常交流|ความหมายคืออะไร|khwaam-mǎai khɯɯ à-rai|意思是什么？
+หมายถึง|RR|mǎai-thɯ̌ng|指的是；意指|日常交流|หมายถึงอะไร|mǎai-thɯ̌ng à-rai|指的是什么？
+ก็คือ|FM|kɔ̂ɔ-khɯɯ|也就是；就是|日常交流|ก็คือผมเอง|kɔ̂ɔ-khɯɯ phǒm eeng|就是我自己。
