@@ -221,3 +221,12 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .uhead{font-size:20px;font-weight:800;margin-bottom:12px}.ubadges{display:grid;gap:10px;margin-bottom:6px}
 .ub{background:linear-gradient(160deg,#fff7de,#ffe9a8);border-radius:18px;padding:12px}.ub i{display:block;font-style:normal;font-size:44px}.ub b{display:block;font-size:17px;margin-top:2px}.ub span{font-size:12px;color:#7a6420}
 @media (prefers-reduced-motion:reduce){.rfg{transition:none}.ucard,.unlock{animation:none}}
+
+/* 自动判断模式的底部操作条 */
+.autonav{display:grid;grid-template-columns:auto 1fr 1.1fr;gap:10px;padding:6px 14px calc(var(--sab) + 12px)}
+.autonav button{min-height:54px;border-radius:18px;font-weight:700;font-size:16px;transition:transform .12s}.autonav button:active{transform:scale(.95)}
+.autonav .ghost{background:#eef1f6;color:var(--sub);padding:0 14px;font-size:14px;font-weight:600}.autonav .ghost:disabled{opacity:.4}
+.autonav .peek{background:#fff3e0;color:#c2570c}.autonav .know{background:linear-gradient(135deg,#34c759,#2bb673);color:#fff;box-shadow:0 6px 14px rgba(52,199,89,.35)}
+.judge{position:fixed;left:50%;bottom:calc(var(--sab) + 96px);transform:translateX(-50%);z-index:60;pointer-events:none;font-weight:800;font-size:17px;padding:8px 18px;border-radius:20px;color:#fff;animation:judge 1s ease-out forwards}
+.judge.lv3,.judge.lv4{background:#34c759}.judge.lv2{background:#ff9500}.judge.lv1{background:#ff6b6b}
+@keyframes judge{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}20%{opacity:1;transform:translate(-50%,0) scale(1.05)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}

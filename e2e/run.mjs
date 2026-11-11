@@ -29,19 +29,21 @@ const swipe = async (page, dx) => {
   await c.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
 }
 
+const manualOn = async (pg) => { await pg.tap('[data-testid=tab-me]'); await pg.locator('[data-testid=manual-rate]').check(); await pg.tap('[data-testid=tab-home]') }
+
 let ctx
 try {
   ctx = await launch(); let page = await ctx.newPage(); hook(page)
   // 记录 Audio.play 调用
   await page.addInitScript(() => { window.__plays = []; const o = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { window.__plays.push({ src: this.src.slice(0, 5), rate: this.playbackRate }); return o.call(this) } })
-  await page.goto(URL); await page.waitForSelector('[data-testid=start-today]')
+  await page.goto(URL); await page.waitForSelector('[data-testid=start-today]'); await manualOn(page)
   await page.screenshot({ path: tmp + '/home.png' })
   assert((await page.textContent('body')).includes('第3天')); ok('首页：第3天、统计头')
   assert((await page.textContent('body')).includes('0/')); ok('今日新词 0/N')
 
   // 今天学习：8复习 + 22新词
   await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
-  assert((await page.textContent('[data-testid=start-review]')).includes('到期复习 8 个')); ok('「今天学习」=45张新词（30 + 我录入的 15），「今日复习」=8个到期词，两个入口分开')
+  assert((await page.textContent('[data-testid=start-review]')).includes('学过的词到期后')); ok('「今天学习」=45张新词（30 + 我录入的 15），还没学过的词不安排复习，两个入口分开')
   await page.click('[data-testid=start-today]')
   await page.waitForSelector('[data-testid=thai]')
   const first = await page.textContent('[data-testid=thai]')

@@ -8,9 +8,11 @@ await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
+const manualOn = async (pg) => { await pg.tap('[data-testid=tab-me]'); await pg.locator('[data-testid=manual-rate]').check(); await pg.tap('[data-testid=tab-home]') }
+
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]')
+  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]'); await manualOn(page)
   assert((await page.textContent('body')).includes('第3天')); ok('第一次使用：第3天')
   // 把「开始日」改到 3 天前，并删除今天的课程（模拟 3 天没打开）
   await page.evaluate(() => new Promise((res, rej) => {

@@ -26,7 +26,8 @@ const isDue = (p: Progress, date: string) => p.level > 0 && (p.due ?? date) <= d
 
 /** 到期复习词，陌生/不熟悉优先，其次越逾期越靠前 */
 export function dueWords(progress: Map<string, Progress>, date = today(), maxLevel: Level = 4): Progress[] {
-  return [...progress.values()].filter(p => p.level > 0 && p.level <= maxLevel && isDue(p, date))
+  // 只复习「在 App 里真正学过」的词（reps>0）：初始自评的词没学过就不会逼你复习
+  return [...progress.values()].filter(p => p.level > 0 && p.reps > 0 && p.level <= maxLevel && isDue(p, date))
     .sort((a, b) => a.level - b.level || (a.due ?? '').localeCompare(b.due ?? '') || a.wordId.localeCompare(b.wordId))
 }
 /** 重点复习：所有陌生 + 不熟悉词（不论是否到期），陌生在前 */
@@ -102,4 +103,12 @@ export const myAddedIds = (lessons: Lesson[]): string[] => {
   const seen = new Set<string>(), out: string[] = []
   for (const l of [...lessons].sort((a, b) => a.day - b.day)) if (l.day >= USER_DAY_FROM && l.day <= USER_DAY_TO) for (const id of l.wordIds) if (!seen.has(id)) { seen.add(id); out.push(id) }
   return out
+}
+
+/** 根据这一次看这张卡的行为推断熟悉程度（不用手动点）：
+ *  没翻卡、直接跳过 = 认识；翻了 1 次看答案 = 不太确定；来回翻 2 次以上 = 陌生。精通只能靠「举一反三」练习升。 */
+export function inferLevel(prev: Level, flipsThisView: number): Level {
+  if (flipsThisView >= 2) return 1
+  if (flipsThisView === 1) return prev === 0 ? 2 : prev === 4 ? 3 : prev === 3 ? 2 : prev
+  return prev === 0 ? 3 : prev === 1 ? 2 : prev === 2 ? 3 : prev
 }

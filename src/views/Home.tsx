@@ -173,7 +173,7 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
           <div className="tt"><i style={{ background: '#af52de' }}>🔁</i>复习</div>
           <div className="tn"><b>{h.reviewDone}</b>/{h.reviewTotal}</div>
           <div className="bar"><i style={{ width: `${h.reviewTotal ? (h.reviewDone / h.reviewTotal) * 100 : 0}%`, background: '#af52de' }} /></div>
-          <div className="td">{h.reviewTotal === 0 ? '今天没有到期复习' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个 · 已完成 ✓` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个${overdue ? ` · 逾期 ${overdue}` : ''}`}</div>
+          <div className="td">{h.reviewTotal === 0 ? '学过的词到期后会出现在这里' : revLeft === 0 ? `到期复习 ${h.reviewTotal} 个 · 已完成 ✓` : `到期复习 ${h.reviewTotal} 个 · 还剩 ${revLeft} 个${overdue ? ` · 逾期 ${overdue}` : ''}`}</div>
         </button>
       </div>
 

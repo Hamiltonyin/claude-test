@@ -8,6 +8,8 @@ await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
+const manualOn = async (pg) => { await pg.tap('[data-testid=tab-me]'); await pg.locator('[data-testid=manual-rate]').check(); await pg.tap('[data-testid=tab-home]') }
+
 let bad = 0; const ok = (n) => console.log('✓', n)
 // 答题：按 data-right 选对/选错
 const runWord = async (right) => {
@@ -20,7 +22,7 @@ const runWord = async (right) => {
   }
 }
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-master]')
+  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-master]'); await manualOn(page)
   assert((await page.textContent('[data-testid=start-master]')).includes('熟悉 9')); ok('首页：熟悉 9 个，有「熟悉→精通」入口')
   // 学习里点精通 → 先记为熟悉
   await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')

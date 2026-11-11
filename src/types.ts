@@ -14,7 +14,7 @@ export interface ReviewLog { id: string; date: string; wordId: string; level: Le
 export interface Session { date: string; dayNo: number; wordIds: string[]; reviewIds: string[]; newIds: string[]; ver?: number }
 export interface Settings {
   startDate: string; dayOffset: number; dailyGoal: number; reviewCap: number
-  autoPlay: boolean; seedVersion: number; lastBackupAt?: number; newPerDay?: number; requeueStrange?: boolean; readZh?: boolean; autoEx?: boolean
+  autoPlay: boolean; seedVersion: number; lastBackupAt?: number; newPerDay?: number; requeueStrange?: boolean; readZh?: boolean; autoEx?: boolean; manualRate?: boolean
 }
 /** 每天的行为计数（翻卡 / 单词发音 / 例句发音），用于「每日学习量」 */
 export interface DailyCount { flips: number; plays: number; ex: number }

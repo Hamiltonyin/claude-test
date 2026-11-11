@@ -3,6 +3,7 @@ import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
 import { Burst, CountBadge, ExampleBlock, SpeakButtons, ToneChips, playExample, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
+import { inferLevel } from '../lib/srs'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { zhSpeakText } from '../lib/zhspeak'
 
@@ -21,6 +22,10 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   const { wordMap, progress, logs, rate, settings, updateSettings, countFlip, countPlay, countExPlay } = useApp()
   const [burst, setBurst] = useState(0)
   const [exSig, setExSig] = useState(0)
+  const manual = settings.manualRate === true          // 「我的」里可打开手动标熟练度；默认由翻卡行为自动判断
+  const viewFlips = useRef(0)                            // 这一张卡这一次看了几次背面
+  const committed = useRef(new Set<number>())            // 已经判定过的队列位置
+  const [judge, setJudge] = useState<{ k: number; lv: Level } | null>(null)
   const exTok = useRef(0)
   const sp = useSpeaker()
   const rated = useRef(new Set<string>())
@@ -41,6 +46,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   const touch = useRef<{ x: number; y: number } | null>(null)
   const swiped = useRef(false)
 
+  useEffect(() => { viewFlips.current = 0 }, [idx])
   const id = queue[idx]
   const isRepeat = !!id && queue.indexOf(id) < idx          // 同一个词在本轮更早出现过 = 陌生词重现
   const uniqueTotal = useMemo(() => new Set(queue).size, [queue])
@@ -91,16 +97,31 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
     })()
   }
 
+  /** 往后翻走这张卡时，按翻卡行为自动判定熟悉程度并记录（词库浏览模式只计数、不评级）。返回判定后的队列长度。 */
+  const commitCurrent = (): number => {
+    if (manual || mode === 'free' || !word || committed.current.has(idx)) return queue.length
+    committed.current.add(idx)
+    const lv = inferLevel(level as Level, viewFlips.current)
+    rate(word.id, lv); rated.current.add(word.id)
+    if (lv >= 3) setBurst(b => b + 1)
+    setJudge({ k: Date.now(), lv })
+    if (lv === 1 && settings.requeueStrange !== false && (requeued.current.get(word.id) ?? 0) < 2) {
+      requeued.current.set(word.id, (requeued.current.get(word.id) ?? 0) + 1)
+      const q = [...queue]; q.splice(Math.min(idx + 6, q.length), 0, word.id); setQueue(q); return q.length
+    }
+    return queue.length
+  }
   const go = (to: number) => {
+    const len = to > idx ? commitCurrent() : queue.length
     exTok.current++; stopAuto(); sp.stop(); setFlip(false)
-    if (to >= queue.length) { setFinished(true); return }
+    if (to >= len) { if (to > idx) setFinished(true); return }
     if (to < 0) return
     setIdx(to)
   }
   const toggle = () => {
     if (auto) { stopAuto(); return }          // 连读时点卡片 = 停止连读
     const nf = !flip; setFlip(nf)
-    if (nf && word) countFlip(word.id)
+    if (nf && word) { countFlip(word.id); viewFlips.current++ }
     // 翻到背面时自动朗读（在点击回调里同步触发，iPhone 才允许）；可在「我的」里关闭
     exTok.current++
     if (nf && word && settings.autoPlay) {
@@ -151,7 +172,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
           {[1, 2, 3, 4].map(l => <span key={l} className="pill" style={{ background: LEVEL_COLORS[l], fontSize: 14, padding: '4px 12px' }}>{LEVEL_NAMES[l]} {counts[l]}</span>)}
         </div>
         <button className="btn" onClick={onClose}>回到首页</button>
-        <button className="btn sec block" onClick={() => { setQueue(ids); requeued.current.clear(); setFinished(false); setIdx(0); setFlip(false) }}>再看一遍</button>
+        <button className="btn sec block" onClick={() => { setQueue(ids); requeued.current.clear(); committed.current.clear(); setFinished(false); setIdx(0); setFlip(false) }}>再看一遍</button>
       </div></div>)
 
   if (!word) return null
@@ -182,14 +203,14 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             touch.current = null
           }}>
           <div className="face front">
-            {level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
+            {manual && level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
             {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
-            <div className="hint">点击卡片翻面 · 左右滑动切换</div>
+            <div className="hint">{manual ? '点击卡片翻面 · 左右滑动切换' : '认识就直接下一个 · 不确定点卡片看答案'}</div>
           </div>
           <div className="face back">
-            {level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
+            {manual && level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
             {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
             <div className="th" lang="th" style={{ fontSize: 34 }}>{word.thai}</div>
@@ -202,6 +223,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
         </div>
       </div>
       <CountBadge id={word.id} className="flipcnt2" />
+      {manual ? (<>
       <div className={'rates' + (flip ? '' : ' off')} aria-label="选择熟练度">
         {([1, 2, 3, 4] as Level[]).map(l => (
           <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => doRate(l)} data-testid={'rate' + l}>{LEVEL_NAMES[l]}{l === 4 && level < 4 ? ' 🔒' : ''}</button>
@@ -212,7 +234,13 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
         <button onClick={() => go(idx - 1)} disabled={idx === 0} data-testid="prev">‹ 上一词</button>
         <span className="sub">{flip ? '选择熟练度' : '先回忆，再翻面'}</span>
         <button onClick={() => go(idx + 1)} data-testid="next">下一词 ›</button>
-      </div>
+      </div></>) : (
+      <div className="autonav">
+        <button className="ghost" onClick={() => go(idx - 1)} disabled={idx === 0} data-testid="prev">‹ 上一个</button>
+        <button className="peek" onClick={toggle} data-testid="peek">{flip ? '↩ 翻回' : '👀 看答案'}</button>
+        <button className="know" onClick={() => go(idx + 1)} data-testid="next">{mode === 'free' ? '下一个 ›' : flip ? '看完了 ›' : '认识 ›'}</button>
+      </div>)}
+      {judge && <div key={judge.k} className={'judge lv' + judge.lv} data-testid="judge">{judge.lv >= 3 ? '✓ 认识' : judge.lv === 2 ? '再熟悉一下' : '多看几遍'}</div>}
       {sp.toast}
       <Burst k={burst} />
     </div>
