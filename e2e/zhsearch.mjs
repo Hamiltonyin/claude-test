@@ -19,6 +19,7 @@ try {
   let r = await search('帮忙'); assert(r[0].includes('ช่วย'), r[0]); ok('首页搜「帮忙」→ 第一条是 ช่วย')
   r = await search('如果'); assert(r[0].includes('ถ้า'), r[0]); ok('搜「如果」→ ถ้า')
   r = await search('怎么'); assert(r.slice(0, 3).some(x => x.includes('ยังไง')) && r.slice(0, 3).some(x => x.includes('อย่างไร')), r.slice(0, 3).join('|')); ok('搜「怎么」→ ยังไง / อย่างไร 排在前面')
+  r = await search('发票'); assert(r[0].includes('ใบกำกับภาษี'), r[0]); assert(!r.some(x => x.includes('ใบเสร็จ') && x.includes('收据；小票') && !x.includes('词组') && !x.includes('例句')), '收据不应被当成发票'); ok('搜「发票」→ ใบกำกับภาษี 第一，收据 ใบเสร็จ 不再冒充发票')
   r = await search('请'); assert(r.length >= 4 && r.some(x => x.includes('ขอ')) && r.some(x => x.includes('เชิญ'))); ok(`搜「请」→ ${r.length} 个词，含 ขอ / เชิญ`)
   assert(r.some(x => x.includes('例句：') || x.includes('词组：')), '应有例句/词组命中'); ok('只在例句/词组里出现的词也能搜到，并标出来源')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')

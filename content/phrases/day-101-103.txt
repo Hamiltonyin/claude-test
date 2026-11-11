@@ -209,3 +209,8 @@
 สแกน|สแกนเลย|LMM|sà-kɛɛn ləəi|直接扫
 พร้อมเพย์|โอนพร้อมเพย์|MHM|oon phrɔ́ɔm-phee|用 PromptPay 转账
 เช็กบิล|เช็กบิลหน่อย|HML|chék-bin nɔ̀i|结个账
+ใบกำกับภาษี|ขอใบกำกับภาษี|RMMLMR|khɔ̌ɔ bai-kam-kàp-phaa-sǐi|要发票
+ใบกำกับภาษี|ใบกำกับภาษีเต็มรูป|MMLMRMF|bai-kam-kàp-phaa-sǐi tem-rûup|完整税务发票
+ออกใบกำกับภาษี|ช่วยออกใบกำกับภาษี|FLMMLMR|chûai ɔ̀ɔk bai-kam-kàp-phaa-sǐi|请帮忙开发票
+ใบแจ้งหนี้|ขอใบแจ้งหนี้|RMFF|khɔ̌ɔ bai-jɛ̂ng-nîi|要账单（请款单）
+บิล|เช็กบิล|HM|chék bin|结账
