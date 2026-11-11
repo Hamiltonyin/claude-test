@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Backup, Level, Lesson, Progress, ReviewLog, Session, Settings, Word } from './types'
-import { clearStores, loadAll, put, putMany, saveSettings } from './lib/db'
+import { clearStores, db, loadAll, put, putMany, saveSettings } from './lib/db'
 import { SEED_LESSONS, SEED_LEVELS, SEED_VERSION, SEED_WORDS } from './data/seed'
 import { applyRating, buildSession, topUpSession, calendarDay, dueWords, SESSION_VER } from './lib/srs'
 import { addDays, today } from './lib/dates'
@@ -11,6 +11,7 @@ interface Ctx {
   ready: boolean; error: string | null
   words: Word[]; wordMap: Map<string, Word>; lessons: Lesson[]; progress: Map<string, Progress>
   logs: ReviewLog[]; sessions: Session[]; settings: Settings; session: Session | null
+  flips: Record<string, number>; countFlip(wordId: string): void
   rate(wordId: string, level: Level): Promise<void>
   updateSettings(p: Partial<Settings>): Promise<void>
   addWords(words: Word[], lessonAdds: { day: number; wordIds: string[] }[]): Promise<void>
@@ -43,8 +44,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sessions, setSessions] = useState<Session[]>([])
   const [settings, setSettings] = useState<Settings>(defaultSettings())
   const [todayStr, setTodayStr] = useState(today())
+  const [flips, setFlips] = useState<Record<string, number>>({})
+  const flipsRef = useRef(flips); flipsRef.current = flips
   const ref = useRef({ words, lessons, progress, logs, sessions, settings })
   ref.current = { words, lessons, progress, logs, sessions, settings }
+
+  useEffect(() => { db().then(d => d.get('meta', 'flips')).then(f => { if (f) setFlips(cur => ({ ...f, ...cur })) }).catch(() => {}) }, [])
+  // 翻卡计数：每个词每翻到背面一次 +1，存在本机（meta/flips），备份时一起导出
+  const countFlip = useCallback((id: string) => {
+    const n = { ...flipsRef.current, [id]: (flipsRef.current[id] ?? 0) + 1 }
+    flipsRef.current = n; setFlips(n); void put('meta', n, 'flips')
+  }, [])
 
   useEffect(() => {
     (async () => {
@@ -185,11 +195,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const exportBackup = useCallback((): Backup => {
     const c = ref.current
-    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings }
+    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings, flips: flipsRef.current }
   }, [])
 
   const restoreBackup = useCallback(async (b: Backup, mode: 'replace' | 'merge') => {
     const c = ref.current
+    if (b.flips) {
+      const f: Record<string, number> = mode === 'replace' ? { ...b.flips } : { ...flipsRef.current }
+      if (mode !== 'replace') for (const [k, v] of Object.entries(b.flips)) f[k] = Math.max(f[k] ?? 0, v)
+      flipsRef.current = f; setFlips(f); await put('meta', f, 'flips')
+    }
     if (mode === 'replace') {
       await clearStores(['words', 'lessons', 'progress', 'logs', 'sessions'])
       await Promise.all([putMany('words', b.words), putMany('lessons', b.lessons), putMany('progress', b.progress), putMany('logs', b.logs ?? []), putMany('sessions', b.sessions ?? [])])
@@ -228,7 +243,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const wordMap = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
   const session = sessions.find(s => s.date === todayStr) ?? null
-  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
+  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
   return <C.Provider value={value}>{children}</C.Provider>
 }
 export { wordIdFor }

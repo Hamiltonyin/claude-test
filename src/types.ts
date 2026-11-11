@@ -19,6 +19,7 @@ export interface Settings {
 export interface Backup {
   app: 'thai30'; version: 1; exportedAt: number
   words: Word[]; lessons: Lesson[]; progress: Progress[]; logs: ReviewLog[]; sessions: Session[]; settings: Settings
+  flips?: Record<string, number>
 }
 export const LEVEL_NAMES = ['未标记', '陌生', '不熟悉', '熟悉', '精通'] as const
 export const LEVEL_COLORS = ['#c7ccd6', '#ff3b30', '#ff9500', '#007aff', '#34c759'] as const

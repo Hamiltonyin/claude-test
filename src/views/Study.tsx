@@ -18,7 +18,7 @@ async function playZh(id: string, zh: string) {
 export type StudyMode = 'today' | 'review' | 'catchup' | 'weak' | 'theme' | 'day' | 'free'
 
 export default function Study({ title, ids, mode, onClose }: { title: string; ids: string[]; mode: StudyMode; onClose: () => void }) {
-  const { wordMap, progress, logs, rate, settings, updateSettings } = useApp()
+  const { wordMap, progress, logs, rate, settings, updateSettings, flips, countFlip } = useApp()
   const sp = useSpeaker()
   const rated = useRef(new Set<string>())
   const requeued = useRef(new Map<string, number>())
@@ -95,6 +95,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
   const toggle = () => {
     if (auto) { stopAuto(); return }          // 连读时点卡片 = 停止连读
     const nf = !flip; setFlip(nf)
+    if (nf && word) countFlip(word.id)
     // 翻到背面时自动朗读（在点击回调里同步触发，iPhone 才允许）；可在「我的」里关闭
     if (nf && word && settings.autoPlay) sp.play(word, false)
   }
@@ -170,6 +171,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
             <div className="hint">点击卡片翻面 · 左右滑动切换</div>
+            <div className="flipcnt" data-testid="flips-front">已翻 {flips[word.id] ?? 0} 次</div>
           </div>
           <div className="face back">
             {level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
@@ -181,6 +183,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
             <ToneChips roman={word.roman} />
             <ExampleBlock word={word} />
             <div className="hint">{word.theme}{p ? ` · 已复习 ${p.reps} 次` : ' · 新词'}</div>
+            <div className="flipcnt" data-testid="flips-back">已翻 {flips[word.id] ?? 0} 次</div>
           </div>
         </div>
       </div>
