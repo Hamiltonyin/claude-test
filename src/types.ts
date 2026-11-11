@@ -14,13 +14,17 @@ export interface ReviewLog { id: string; date: string; wordId: string; level: Le
 export interface Session { date: string; dayNo: number; wordIds: string[]; reviewIds: string[]; newIds: string[]; ver?: number }
 export interface Settings {
   startDate: string; dayOffset: number; dailyGoal: number; reviewCap: number
-  autoPlay: boolean; seedVersion: number; lastBackupAt?: number; newPerDay?: number; requeueStrange?: boolean; readZh?: boolean
+  autoPlay: boolean; seedVersion: number; lastBackupAt?: number; newPerDay?: number; requeueStrange?: boolean; readZh?: boolean; autoEx?: boolean
 }
+/** 每天的行为计数（翻卡 / 单词发音 / 例句发音），用于「每日学习量」 */
+export interface DailyCount { flips: number; plays: number; ex: number }
 export interface Backup {
   app: 'thai30'; version: 1; exportedAt: number
   words: Word[]; lessons: Lesson[]; progress: Progress[]; logs: ReviewLog[]; sessions: Session[]; settings: Settings
   flips?: Record<string, number>
   plays?: Record<string, number>
+  exPlays?: Record<string, number>
+  daily?: Record<string, DailyCount>
 }
 export const LEVEL_NAMES = ['未标记', '陌生', '不熟悉', '熟悉', '精通'] as const
 export const LEVEL_COLORS = ['#c7ccd6', '#ff3b30', '#ff9500', '#007aff', '#34c759'] as const

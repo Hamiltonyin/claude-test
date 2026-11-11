@@ -27,6 +27,14 @@ export function useHeaderStats() {
   return { doneToday, newTotal: newIds.length, reviewDone, reviewTotal: reviewIds.length, total: words.length, streak: streakOf(logs), dayNo: session?.dayNo ?? 1 }
 }
 
+/** 首页淡淡的一行：今天的学习量 */
+function TodayLine() {
+  const { daily, logs } = useApp()
+  const d = today(), c = daily[d]
+  const rated = new Set(logs.filter(l => l.date === d).map(l => l.wordId)).size
+  return <p className="todayline" data-testid="today-line">今天：评级 {rated} 词 · 翻卡 {c?.flips ?? 0} 次 · 听单词 {c?.plays ?? 0} 次 · 听例句 {c?.ex ?? 0} 次</p>
+}
+
 export function StatsHeader() {
   const h = useHeaderStats()
   return (
@@ -62,6 +70,7 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
     <>
       <h1>泰语每日30词</h1>
       <StatsHeader />
+      <TodayLine />
       <form className="homesearch" onSubmit={e => { e.preventDefault(); if (hq.trim()) onSearch(hq.trim()) }}>
         <input value={hq} onChange={e => setHq(e.target.value)} placeholder="🔍 中文查单词：请、帮忙、怎么、如果" data-testid="home-search" enterKeyHint="search" />
         <button type="submit" data-testid="home-search-go">查</button>

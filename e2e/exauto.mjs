@@ -1,0 +1,36 @@
+// 翻面后自动朗读例句（不用点）+ 例句单独计数；每日学习量
+import { chromium, devices } from 'playwright'
+import { spawn } from 'child_process'
+import assert from 'assert'
+const port = 5100 + Math.floor(Math.random() * 90)
+const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
+await new Promise(r => setTimeout(r, 2500))
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
+const errors = []; page.on('pageerror', e => errors.push(String(e)))
+const requested = []; page.on('request', r => { if (/audio\//.test(r.url())) requested.push(r.url()) })
+let bad = 0; const ok = (n) => console.log('✓', n)
+try {
+  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-weak]')
+  assert((await page.textContent('[data-testid=today-line]')).includes('翻卡 0')); ok('首页淡淡一行显示今天学习量（初始 0）')
+  await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')
+  await page.tap('[data-testid=card]')
+  await page.waitForFunction(() => document.querySelector('[data-testid=ex-count] b')?.textContent === '1', null, { timeout: 8000 })
+  ok('翻面后不用点：例句自动朗读，例句计数 0 → 1')
+  assert(requested.some(u => /_ex\.mp3/.test(u))); ok('请求了 <词ID>_ex.mp3')
+  assert(await page.locator('.exflip').count() >= 1); ok('例句卡片有翻入特效（exflip）')
+  await page.locator('[data-testid=example] .clip button').first().tap(); await page.waitForTimeout(500)
+  assert.equal(await page.textContent('[data-testid=ex-count] b'), '2'); ok('手点例句喇叭也计数 → 2')
+  await page.tap('text=‹ 返回'); await page.waitForSelector('[data-testid=start-weak]')
+  const line = await page.textContent('[data-testid=today-line]'); assert(/翻卡 1 次/.test(line) && /听例句 2 次/.test(line), line); ok('首页今日行：' + line.trim())
+  await page.tap('[data-testid=tab-stats]'); await page.waitForSelector('[data-testid=daily-panel]')
+  const t = await page.textContent('[data-testid=daily-panel]'); assert(t.includes('每日学习量') && t.includes('听例句')); ok('统计页有「每日学习量」')
+  // 关闭自动例句
+  await page.tap('[data-testid=tab-me]'); await page.locator('[data-testid=auto-ex]').uncheck()
+  await page.tap('[data-testid=tab-home]'); await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')
+  const c0 = await page.textContent('[data-testid=ex-count] b')
+  await page.tap('[data-testid=card]'); await page.waitForTimeout(2500)
+  assert.equal(await page.textContent('[data-testid=ex-count] b'), c0); ok('关掉「自动朗读例句」后不再自动读')
+  assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
+} catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/exauto-fail.png' }) }
+await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
-import { Burst, CountBadge, ExampleBlock, SpeakButtons, ToneChips, useSpeaker } from '../ui'
+import { Burst, CountBadge, ExampleBlock, SpeakButtons, ToneChips, playExample, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { zhSpeakText } from '../lib/zhspeak'
@@ -18,8 +18,10 @@ async function playZh(id: string, zh: string) {
 export type StudyMode = 'today' | 'review' | 'catchup' | 'weak' | 'theme' | 'day' | 'free'
 
 export default function Study({ title, ids, mode, onClose, startIdx, onDetail }: { title: string; ids: string[]; mode: StudyMode; onClose: () => void; startIdx?: number; onDetail?: (id: string) => void }) {
-  const { wordMap, progress, logs, rate, settings, updateSettings, countFlip, countPlay } = useApp()
+  const { wordMap, progress, logs, rate, settings, updateSettings, countFlip, countPlay, countExPlay } = useApp()
   const [burst, setBurst] = useState(0)
+  const [exSig, setExSig] = useState(0)
+  const exTok = useRef(0)
   const sp = useSpeaker()
   const rated = useRef(new Set<string>())
   const requeued = useRef(new Map<string, number>())
@@ -90,7 +92,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   }
 
   const go = (to: number) => {
-    stopAuto(); sp.stop(); setFlip(false)
+    exTok.current++; stopAuto(); sp.stop(); setFlip(false)
     if (to >= queue.length) { setFinished(true); return }
     if (to < 0) return
     setIdx(to)
@@ -100,7 +102,16 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
     const nf = !flip; setFlip(nf)
     if (nf && word) countFlip(word.id)
     // 翻到背面时自动朗读（在点击回调里同步触发，iPhone 才允许）；可在「我的」里关闭
-    if (nf && word && settings.autoPlay) sp.play(word, false)
+    exTok.current++
+    if (nf && word && settings.autoPlay) {
+      // 翻面：先读单词；读完接着自动读例句（不用点），例句卡片「翻」一下并单独计数
+      const tok = exTok.current, w = word
+      void sp.play(w, false).then(() => {
+        if (settings.autoEx === false || tok !== exTok.current) return
+        setExSig(x => x + 1); countExPlay(w.id)
+        void playExample(w)
+      })
+    }
   }
   const [lockMsg, setLockMsg] = useState(false)
   const doRate = (lv: Level) => {
@@ -115,7 +126,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
       requeued.current.set(word.id, (requeued.current.get(word.id) ?? 0) + 1)
       q = [...queue]; q.splice(Math.min(idx + 6, q.length), 0, word.id); setQueue(q)
     }
-    stopAuto(); sp.stop(); setFlip(false)
+    exTok.current++; stopAuto(); sp.stop(); setFlip(false)
     if (idx + 1 >= q.length) setFinished(true); else setIdx(idx + 1)
   }
 
@@ -185,7 +196,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             <div className="zh">{word.zh}</div>
             <div className="rom" style={{ fontSize: 22, color: 'var(--blue)', fontWeight: 600 }} data-testid="roman">{word.roman}</div>
             <ToneChips roman={word.roman} />
-            <ExampleBlock word={word} />
+            <ExampleBlock word={word} signal={exSig} />
             <div className="hint">{word.theme}{p ? ` · 已复习 ${p.reps} 次` : ' · 新词'}</div>
           </div>
         </div>

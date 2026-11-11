@@ -114,10 +114,11 @@ export function Sheet({ onClose, children }: { onClose: () => void; children: Re
 export const Chev = () => <span className="chev">›</span>
 
 /** 例句/词组的小喇叭：优先播放存档 MP3（<词ID>_ex / _p<N>），没有时用系统泰语语音 */
-export function ClipButton({ id, suffix, text, label }: { id: string; suffix: string; text: string; label: string }) {
+export function ClipButton({ id, suffix, text, label, onPlay }: { id: string; suffix: string; text: string; label: string; onPlay?: () => void }) {
   const stopProp = (e: React.SyntheticEvent) => e.stopPropagation()
   const [busy, setBusy] = useState(false)
   const go = (slow: boolean) => {
+    onPlay?.()
     setBusy(true)
     playFile(id, slow, suffix).catch(() => playSystem(text, slow)).catch(() => {}).finally(() => setBusy(false))
   }
@@ -141,16 +142,20 @@ export function usePhrases(word: Word): Phrase[] {
   return map?.[word.thai]?.items ?? []
 }
 
-/** 例句（可发音）+ 常用词组（可发音） */
-export function ExampleBlock({ word }: { word: Word }) {
+/** 例句（可发音）+ 常用词组（可发音）。signal 每变一次，例句卡片就「翻」一下（自动朗读时触发），并有自己的计数。 */
+export function ExampleBlock({ word, signal = 0 }: { word: Word; signal?: number }) {
   const phrases = usePhrases(word)
+  const { exPlays, countExPlay } = useApp()
+  const [manual, setManual] = useState(0)
+  const key = signal + manual
   return (
     <>
-      <div className="ex" data-testid="example">
+      <div key={'ex' + key} className={'ex' + (key ? ' exflip' : '')} data-testid="example">
         <ToneLegend />
-        <div className="exrow"><div className="th" lang="th">{word.exTh}</div><ClipButton id={word.id} suffix="_ex" text={word.exTh} label="播放例句" /></div>
+        <div className="exrow"><div className="th" lang="th">{word.exTh}</div><ClipButton id={word.id} suffix="_ex" text={word.exTh} label="播放例句" onPlay={() => { countExPlay(word.id); setManual(m => m + 1) }} /></div>
         <ColorRoman roman={word.exRoman} />
         <div className="z">{word.exZh}</div>
+        <ExCount n={exPlays[word.id] ?? 0} />
       </div>
       {phrases.length > 0 && (
         <div className="ex phr" data-testid="phrases">
@@ -165,6 +170,16 @@ export function ExampleBlock({ word }: { word: Word }) {
       )}
     </>
   )
+}
+
+/** 例句自己的计数（和单词的「已翻/已听」分开），数字增加时同样弹跳 + 飘 +1 */
+export function ExCount({ n }: { n: number }) {
+  return <div className="excnt" data-testid="ex-count"><Num n={n} label="例句已听" /></div>
+}
+
+/** 播放一句例句（优先存档 MP3，没有就用系统泰语语音）。 */
+export async function playExample(word: Word) {
+  try { await playFile(word.id, false, '_ex') } catch { try { await playSystem(word.exTh, false) } catch { /* 没有存档音频也没有系统语音：自动朗读时静默跳过 */ } }
 }
 
 /** 淡淡的计数：已翻 N 次 · 已听 M 次。数字增加时弹一下，并飘起一个 +1。 */

@@ -159,6 +159,7 @@ export default function Me() {
             {[15, 30, 50, 100, 300].map(n => <option key={n} value={n}>{n} 个{n === 15 ? '（默认）' : n === 300 ? '（基本全部到期词）' : ''}</option>)}
           </select></label>
         <label className="field" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}><input type="checkbox" style={{ width: 20 }} checked={settings.autoPlay} onChange={e => updateSettings({ autoPlay: e.target.checked })} /><span style={{ fontSize: 15, color: 'var(--ink)' }}>翻面时自动朗读</span></label>
+        <label className="field" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}><input type="checkbox" style={{ width: 20 }} checked={settings.autoEx !== false} onChange={e => updateSettings({ autoEx: e.target.checked })} data-testid="auto-ex" /><span style={{ fontSize: 15, color: 'var(--ink)' }}>翻面后接着自动朗读例句</span></label>
         <label className="field" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}><input type="checkbox" style={{ width: 20 }} checked={settings.requeueStrange !== false} onChange={e => updateSettings({ requeueStrange: e.target.checked })} /><span style={{ fontSize: 15, color: 'var(--ink)' }}>评为「陌生」的词，本轮稍后再出现一次（会标注「再看一遍」）</span></label>
       </div>
       <div className="panel"><h3>词库更新</h3>
