@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from '../types'
-import { LevelPill, Sheet, ExampleBlock, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
+import { LevelPill, Sheet, ExampleBlock, loadPhrases, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
 import { THEMES } from '../data/seed'
 import { myAddedIds } from '../lib/srs'
 
@@ -41,10 +41,13 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
   )
 }
 
-export default function Library({ onStudy, startMine, onMineShown }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free') => void; startMine?: boolean; onMineShown?: () => void }) {
+export default function Library({ onStudy, startMine, onMineShown, initialQuery, onQueryUsed }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free') => void; startMine?: boolean; onMineShown?: () => void; initialQuery?: string; onQueryUsed?: () => void }) {
   const { words, progress, lessons, wordMap } = useApp()
   const [tab, setTab] = useState<'words' | 'days'>('words')
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState(initialQuery ?? '')
+  useEffect(() => { if (initialQuery) onQueryUsed?.() }, [])
+  const [extra, setExtra] = useState<Map<string, { ex: string; ph: string[] }>>(new Map())
+  useEffect(() => { let on = true; loadPhrases().then(m => { if (!on) return; const e = new Map<string, { ex: string; ph: string[] }>(); for (const [t, v] of Object.entries(m) as [string, { items: { th: string; zh: string }[] }][]) e.set(t, { ex: '', ph: v.items.map((x: { th: string; zh: string }) => x.th + ' ' + x.zh) }); setExtra(e) }); return () => { on = false } }, [])
   const [lv, setLv] = useState<number | null>(null)
   const [theme, setTheme] = useState<string | null>(null)
   const [open, setOpen] = useState<Word | null>(null)
@@ -54,16 +57,39 @@ export default function Library({ onStudy, startMine, onMineShown }: { onStudy: 
   const mineIds = useMemo(() => myAddedIds(lessons), [lessons])
   const mineSet = useMemo(() => new Set(mineIds), [mineIds])
 
+  const isZh = /[\u4e00-\u9fff]/.test(q)
+  // 中文搜索：先精确（某个释义就是它），再开头匹配，再释义里包含，最后是例句/词组里出现。命中例句/词组的会标出来。
+  const hits = useMemo(() => {
+    const m = new Map<string, { score: number; via?: string }>()
+    const k = q.trim()
+    if (!k || !isZh) return m
+    for (const w of words) {
+      const segs = w.zh.split(/[；;]/).map(x => x.replace(/（[^）]*）|\([^)]*\)/g, '').trim())
+      let score = 0, via: string | undefined
+      if (segs.some(x => x === k)) score = 4
+      else if (segs.some(x => x.startsWith(k))) score = 3
+      else if (w.zh.includes(k)) score = 2
+      else {
+        const ph = extra.get(w.thai)?.ph.find(x => x.includes(k))
+        if (w.exZh.includes(k)) { score = 1; via = '例句：' + w.exZh } else if (ph) { score = 0.5; via = '词组：' + ph }
+      }
+      if (score) m.set(w.id, { score, via })
+    }
+    return m
+  }, [words, q, isZh, extra])
+
   const list = useMemo(() => {
     const s = q.trim().toLowerCase(), ns = strip(q.trim())
-    return words.filter(w => {
+    const out = words.filter(w => {
       if (mine && !mineSet.has(w.id)) return false
       if (lv !== null && (progress.get(w.id)?.level ?? 0) !== lv) return false
       if (theme && w.theme !== theme) return false
       if (!s) return true
-      return w.thai.includes(q.trim()) || w.zh.includes(q.trim()) || w.roman.toLowerCase().includes(s) || (ns.length > 0 && strip(w.roman).includes(ns))
+      if (isZh) return hits.has(w.id)
+      return w.thai.includes(q.trim()) || w.roman.toLowerCase().includes(s) || (ns.length > 0 && strip(w.roman).includes(ns))
     })
-  }, [words, progress, q, lv, theme, mine, mineSet])
+    return isZh ? out.sort((a, b) => (hits.get(b.id)?.score ?? 0) - (hits.get(a.id)?.score ?? 0)) : out
+  }, [words, progress, q, lv, theme, mine, mineSet, isZh, hits])
 
   const Row = ({ w }: { w: Word }) => {
     const l = progress.get(w.id)?.level ?? 0
@@ -71,7 +97,7 @@ export default function Library({ onStudy, startMine, onMineShown }: { onStudy: 
       <button className="row" onClick={() => setOpen(w)} data-testid="word-row">
         <span className="dot" style={{ background: LEVEL_COLORS[l] }} />
         <span className="w th" lang="th">{w.thai}</span>
-        <span className="m"><div>{w.zh}</div><div className="sub rom">{w.roman}</div></span>
+        <span className="m"><div>{w.zh}</div><div className="sub rom">{w.roman}</div>{hits.get(w.id)?.via && <div className="sub via">{hits.get(w.id)!.via}</div>}</span>
         <LevelPill level={l as Level} />
       </button>
     )

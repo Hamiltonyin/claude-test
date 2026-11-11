@@ -83,7 +83,7 @@ try {
   // 词库：搜索 + 播放真实音频 (w001)
   await page.tap('[data-testid=tab-library]'); await page.fill('[data-testid=search]', 'sa wat')
   await page.waitForTimeout(200); assert((await page.locator('[data-testid=word-row]').count()) >= 1); ok('拼音搜索（无声调符号）')
-  await page.fill('[data-testid=search]', '你好'); assert((await page.locator('[data-testid=word-row]').count()) === 1); ok('中文搜索')
+  await page.fill('[data-testid=search]', '你好'); await page.waitForTimeout(500); assert((await page.locator('[data-testid=word-row]').first().textContent()).includes('สวัสดี')); ok('中文搜索（精确释义排第一）')
   await page.fill('[data-testid=search]', 'สวัสดี'); assert((await page.locator('[data-testid=word-row]').count()) === 1); ok('泰文搜索')
   await page.tap('[data-testid=word-row]')
   await page.tap('.sheet .spk button[aria-label="播放发音"]'); await page.waitForTimeout(800)

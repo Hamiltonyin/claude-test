@@ -127,12 +127,13 @@ export function ClipButton({ id, suffix, text, label }: { id: string; suffix: st
 }
 
 export interface Phrase { th: string; roman: string; zh: string }
-let phraseCache: Promise<Record<string, { id: string; items: Phrase[] }>> | null = null
+type PhraseMap = Record<string, { id: string; items: Phrase[] }>
+let phraseCache: Promise<PhraseMap> | null = null
+export const loadPhrases = () => (phraseCache ??= fetch(`${import.meta.env.BASE_URL}content/phrases.json`).then(r => r.ok ? r.json() : {}).catch(() => { phraseCache = null; return {} }))
 export function usePhrases(word: Word): Phrase[] {
-  const [map, setMap] = useState<Record<string, { id: string; items: Phrase[] }> | null>(null)
+  const [map, setMap] = useState<PhraseMap | null>(null)
   useEffect(() => {
-    phraseCache ??= fetch(`${import.meta.env.BASE_URL}content/phrases.json`).then(r => r.ok ? r.json() : {}).catch(() => { phraseCache = null; return {} })
-    let on = true; phraseCache.then(m => on && setMap(m)); return () => { on = false }
+    let on = true; loadPhrases().then(m => on && setMap(m)); return () => { on = false }
   }, [])
   return map?.[word.thai]?.items ?? []
 }

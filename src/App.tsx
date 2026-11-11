@@ -29,6 +29,8 @@ function Shell() {
   const [picking, setPicking] = useState(false)
   const [practice, setPractice] = useState<PracticeKind | null>(null)
   const [libMine, setLibMine] = useState(false)
+  const [libQuery, setLibQuery] = useState('')
+  const [libNonce, setLibNonce] = useState(0)
   const startToday = () => session && setStudy({ title: '今天学习', ids: session.newIds, mode: 'today' })
   const startReview = () => session && setStudy({ title: '今日复习', ids: session.reviewIds, mode: 'review' })
   const startCatchup = (title: string, ids: string[]) => setStudy({ title, ids, mode: 'catchup' })
@@ -43,9 +45,9 @@ function Shell() {
   return (
     <div className="app">
       <div className="scroll">
-        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onMine={() => { setLibMine(true); setTab('library') }} />}
+        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
         {tab === 'cats' && <Categories onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
-        {tab === 'library' && <Library startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
+        {tab === 'library' && <Library key={libNonce} initialQuery={libQuery} onQueryUsed={() => setLibQuery('')} startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
         {tab === 'stats' && <Stats onCatchup={startCatchup} />}
         {tab === 'me' && <Me />}
       </div>

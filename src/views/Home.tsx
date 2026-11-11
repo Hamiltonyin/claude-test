@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES } from '../types'
 import { today, addDays } from '../lib/dates'
@@ -39,7 +39,8 @@ export function StatsHeader() {
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void }) {
+export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void }) {
+  const [hq, setHq] = useState('')
   const { progress, words, settings, sessions, lessons, logs, session } = useApp()
   const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
   const weak = weakWords(progress).length
@@ -61,6 +62,10 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
     <>
       <h1>泰语每日30词</h1>
       <StatsHeader />
+      <form className="homesearch" onSubmit={e => { e.preventDefault(); if (hq.trim()) onSearch(hq.trim()) }}>
+        <input value={hq} onChange={e => setHq(e.target.value)} placeholder="🔍 中文查单词：请、帮忙、怎么、如果" data-testid="home-search" enterKeyHint="search" />
+        <button type="submit" data-testid="home-search-go">查</button>
+      </form>
       <button className="entry" onClick={() => onStudy('today')} data-testid="start-today">
         <div className="ic" style={{ background: 'var(--blue)' }}>📖</div>
         <div><div className="t">今天学习 · 新词</div>
