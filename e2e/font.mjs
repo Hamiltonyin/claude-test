@@ -17,7 +17,7 @@ try {
   console.log('检查元素数', fam.length, '字体首选:', [...new Set(fam)])
   if (!fam.length || fam.some(f => f !== 'Sarabun')) bad++
   await page.tap('[data-testid=word-row]'); await page.waitForTimeout(200)
-  const fam2 = await page.evaluate(() => [...document.querySelectorAll('.sheet *')].filter(e => /[฀-๿]/.test(e.childNodes[0]?.textContent || '') ).map(e => getComputedStyle(e).fontFamily.split(',')[0].replace(/"/g, '')))
+  const fam2 = await page.evaluate(() => [...document.querySelectorAll('.study *')].filter(e => /[฀-๿]/.test(e.childNodes[0]?.textContent || '') ).map(e => getComputedStyle(e).fontFamily.split(',')[0].replace(/"/g, '')))
   console.log('新词详情中泰文元素', fam2.length, [...new Set(fam2)])
   if (!fam2.length || fam2.some(f => f !== 'Sarabun')) bad++
   const ok = await page.evaluate(() => document.fonts.check('40px "Sarabun"', 'ห้อง'))

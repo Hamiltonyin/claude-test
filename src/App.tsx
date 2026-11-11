@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AppProvider, useApp } from './store'
 import Home from './views/Home'
-import Library from './views/Library'
+import Library, { WordSheet } from './views/Library'
 import Stats from './views/Stats'
 import Me from './views/Me'
 import Practice, { type PracticeKind } from './views/Practice'
@@ -11,7 +11,7 @@ import Categories from './views/Categories'
 import DayPicker from './views/DayPicker'
 
 type Tab = 'home' | 'cats' | 'library' | 'stats' | 'me'
-interface StudyState { title: string; ids: string[]; mode: StudyMode }
+interface StudyState { title: string; ids: string[]; mode: StudyMode; startIdx?: number }
 
 const icons: Record<Tab, string> = {
   home: 'M12 3 3 10v10h6v-6h6v6h6V10z',
@@ -23,10 +23,11 @@ const icons: Record<Tab, string> = {
 const labels: Record<Tab, string> = { home: '首页', cats: '分类', library: '词库', stats: '统计', me: '我的' }
 
 function Shell() {
-  const { ready, error, session, progress, words, lessons } = useApp()
+  const { ready, error, session, progress, words, lessons, wordMap } = useApp()
   const [tab, setTab] = useState<Tab>('home')
   const [study, setStudy] = useState<StudyState | null>(null)
   const [picking, setPicking] = useState(false)
+  const [detail, setDetail] = useState<string | null>(null)
   const [practice, setPractice] = useState<PracticeKind | null>(null)
   const [libMine, setLibMine] = useState(false)
   const [libQuery, setLibQuery] = useState('')
@@ -47,7 +48,7 @@ function Shell() {
       <div className="scroll">
         {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
         {tab === 'cats' && <Categories onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
-        {tab === 'library' && <Library key={libNonce} initialQuery={libQuery} onQueryUsed={() => setLibQuery('')} startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
+        {tab === 'library' && <Library key={libNonce} initialQuery={libQuery} onQueryUsed={() => setLibQuery('')} startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode, startIdx) => setStudy({ title, ids, mode, startIdx })} />}
         {tab === 'stats' && <Stats onCatchup={startCatchup} />}
         {tab === 'me' && <Me />}
       </div>
@@ -59,7 +60,8 @@ function Shell() {
       </nav>
       {picking && <DayPicker onClose={() => setPicking(false)} onStudy={(title, ids) => setStudy({ title, ids, mode: 'day' })} />}
       {practice && <Practice key={practice} kind={practice} onClose={() => setPractice(null)} />}
-      {study && <Study key={study.title + study.ids.length} {...study} onClose={() => setStudy(null)} />}
+      {study && <Study key={study.title + study.ids.length + (study.startIdx ?? '')} {...study} onClose={() => setStudy(null)} onDetail={study.mode === 'free' ? setDetail : undefined} />}
+      {detail && wordMap.get(detail) && <WordSheet word={wordMap.get(detail)!} onClose={() => setDetail(null)} />}
     </div>
   )
 }

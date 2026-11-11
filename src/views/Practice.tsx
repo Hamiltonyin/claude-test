@@ -3,7 +3,7 @@ import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
 import { masterQuestions, verifyQuestions } from '../lib/quiz'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
-import { SpeakButtons, useSpeaker } from '../ui'
+import { Burst, SpeakButtons, useSpeaker } from '../ui'
 
 export type PracticeKind = 'verify' | 'master'
 const ROUND = 10
@@ -25,6 +25,7 @@ export default function Practice({ kind, onClose }: { kind: PracticeKind; onClos
   const missed = useRef(false)
   const results = useRef<{ id: string; from: Level; to: Level }[]>([])
   const [done, setDone] = useState(false)
+  const [burst, setBurst] = useState({ k: 0, big: false })
 
   const title = kind === 'master' ? '熟悉 → 精通 · 举一反三' : '验收 · 升级一级'
   const sayWord = (id: string) => { stopAudio(); playFile(id, false).catch(() => playSystem(wordMap.get(id)!.thai, false)) }
@@ -42,6 +43,7 @@ export default function Practice({ kind, onClose }: { kind: PracticeKind; onClos
     const to: Level = missed.current ? from : (Math.min(4, from + 1) as Level)
     results.current.push({ id, from, to })
     void rate(id, to)
+    if (to > from) setBurst(b => ({ k: b.k + 1, big: to === 4 }))   // 升级：庆祝一下（升到精通更大）
     missed.current = false
     if (wi + 1 >= plan.length) { setDone(true); stopAudio(); return }
     setWi(wi + 1); setQi(0); setPicked(null); autoListen(wi + 1, 0)
@@ -69,7 +71,7 @@ export default function Practice({ kind, onClose }: { kind: PracticeKind; onClos
                 {w.thai} {r.to > r.from ? `→ ${LEVEL_NAMES[r.to]}` : '再练'}</span>) })}
           </div>
           <p className="sub">没升级的词保持原级别，之后继续练。</p>
-          <button className="btn block" onClick={onClose}>完成</button></div></div>)
+          <button className="btn block" onClick={onClose}>完成</button></div><Burst k={burst.k} big={burst.big} /></div>)
   }
 
   const q = plan[wi][qi]
@@ -104,5 +106,6 @@ export default function Practice({ kind, onClose }: { kind: PracticeKind; onClos
           <button className="btn block" onClick={next} data-testid="q-next">{qi + 1 < plan[wi].length ? '下一题' : '这个词完成，下一个'}</button>
         </>}
       </div>
+      <Burst k={burst.k} big={burst.big} />
     </div>)
 }

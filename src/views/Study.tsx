@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
-import { ExampleBlock, SpeakButtons, ToneChips, useSpeaker } from '../ui'
+import { Burst, CountBadge, ExampleBlock, SpeakButtons, ToneChips, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { zhSpeakText } from '../lib/zhspeak'
@@ -17,13 +17,15 @@ async function playZh(id: string, zh: string) {
 
 export type StudyMode = 'today' | 'review' | 'catchup' | 'weak' | 'theme' | 'day' | 'free'
 
-export default function Study({ title, ids, mode, onClose }: { title: string; ids: string[]; mode: StudyMode; onClose: () => void }) {
-  const { wordMap, progress, logs, rate, settings, updateSettings, flips, countFlip } = useApp()
+export default function Study({ title, ids, mode, onClose, startIdx, onDetail }: { title: string; ids: string[]; mode: StudyMode; onClose: () => void; startIdx?: number; onDetail?: (id: string) => void }) {
+  const { wordMap, progress, logs, rate, settings, updateSettings, countFlip, countPlay } = useApp()
+  const [burst, setBurst] = useState(0)
   const sp = useSpeaker()
   const rated = useRef(new Set<string>())
   const requeued = useRef(new Map<string, number>())
   const [queue, setQueue] = useState<string[]>(ids)
   const [idx, setIdx] = useState(() => {
+    if (startIdx !== undefined) return Math.min(Math.max(startIdx, 0), Math.max(ids.length - 1, 0))
     if (mode !== 'today' && mode !== 'review') return 0
     const doneToday = new Set(logs.filter(l => l.date === today()).map(l => l.wordId))
     const first = ids.findIndex(i => !doneToday.has(i))
@@ -62,6 +64,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
           for (let r = 1; r <= AUTO_REPEATS; r++) {
             if (autoTok.current !== tok) return
             setAuto({ rep: r })
+            countPlay(w.id)
             await playFile(w.id, false)
             if (autoTok.current !== tok) return
             await sleep(900)
@@ -106,6 +109,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
     if (lv === 4 && level < 4) { lv = 3; setLockMsg(true) } else setLockMsg(false)
     rate(word.id, lv)
     rated.current.add(word.id)
+    if (lv >= 3) setBurst(b => b + 1)
     let q = queue
     if (lv === 1 && settings.requeueStrange !== false && (mode === 'today' || mode === 'review' || mode === 'catchup' || mode === 'weak') && (requeued.current.get(word.id) ?? 0) < 2) {
       requeued.current.set(word.id, (requeued.current.get(word.id) ?? 0) + 1)
@@ -147,6 +151,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
         <button className="close" onClick={() => { sp.stop(); onClose() }}>‹ 返回</button>
         <div className="prog"><div className="bar"><i style={{ width: `${(uniquePos / uniqueTotal) * 100}%`, background: 'var(--blue)' }} /></div></div>
         <div className="cnt">{uniquePos} / {uniqueTotal}</div>
+        {onDetail && word && <button className="close" onClick={() => { sp.stop(); onDetail(word.id) }} data-testid="study-detail">详情</button>}
       </div>
       <div className="autorow">
         <button className={'autobtn' + (auto ? ' on' : '')} onClick={() => auto ? stopAuto() : startAuto(idx)} data-testid="auto-read">
@@ -171,7 +176,6 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
             <div className="hint">点击卡片翻面 · 左右滑动切换</div>
-            <div className="flipcnt" data-testid="flips-front">已翻 {flips[word.id] ?? 0} 次</div>
           </div>
           <div className="face back">
             {level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
@@ -183,10 +187,10 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
             <ToneChips roman={word.roman} />
             <ExampleBlock word={word} />
             <div className="hint">{word.theme}{p ? ` · 已复习 ${p.reps} 次` : ' · 新词'}</div>
-            <div className="flipcnt" data-testid="flips-back">已翻 {flips[word.id] ?? 0} 次</div>
           </div>
         </div>
       </div>
+      <CountBadge id={word.id} className="flipcnt2" />
       <div className={'rates' + (flip ? '' : ' off')} aria-label="选择熟练度">
         {([1, 2, 3, 4] as Level[]).map(l => (
           <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => doRate(l)} data-testid={'rate' + l}>{LEVEL_NAMES[l]}{l === 4 && level < 4 ? ' 🔒' : ''}</button>
@@ -199,6 +203,7 @@ export default function Study({ title, ids, mode, onClose }: { title: string; id
         <button onClick={() => go(idx + 1)} data-testid="next">下一词 ›</button>
       </div>
       {sp.toast}
+      <Burst k={burst} />
     </div>
   )
 }

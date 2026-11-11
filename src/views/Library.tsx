@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from '../types'
-import { LevelPill, Sheet, ExampleBlock, loadPhrases, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
+import { LevelPill, Sheet, CountBadge, ExampleBlock, loadPhrases, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
 import { THEMES } from '../data/seed'
 import { myAddedIds } from '../lib/srs'
 
 const strip = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[-\s]+/g, '')
 
 export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }) {
-  const { progress, rate, updateWord, lessons, flips, countFlip } = useApp()
+  const { progress, rate, updateWord, lessons } = useApp()
   const sp = useSpeaker()
-  useEffect(() => { countFlip(word.id) }, [word.id])   // 打开词条查看 = 看了一次，和学习卡片翻面一样计数
   const [edit, setEdit] = useState(false)
   const [d, setD] = useState(word)
   const p = progress.get(word.id)
@@ -26,7 +25,7 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
         <div className="rom" style={{ fontSize: 20, color: 'var(--blue)', fontWeight: 600 }}>{word.roman}</div>
         <ToneChips roman={word.roman} />
         <div style={{ textAlign: 'left' }}><ExampleBlock word={word} /></div>
-        <p className="flipline" data-testid="flips-sheet">已翻 {flips[word.id] ?? 0} 次</p>
+        <CountBadge id={word.id} className="flipline" />
         <p className="sub">{word.theme} · {days.length ? '出现在第 ' + days.join('、') + ' 天' : '未归入课程'}{p ? ` · 复习 ${p.reps} 次 · 遗忘 ${p.lapses} 次 · 下次 ${p.due}` : ''}</p>
         <div className="rates" style={{ padding: '8px 0' }}>
           {([1, 2, 3, 4] as Level[]).map(l => <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => rate(word.id, l === 4 && level < 4 ? 3 : l)}>{LEVEL_NAMES[l]}{l === 4 && level < 4 ? ' 🔒' : ''}</button>)}
@@ -43,7 +42,7 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
   )
 }
 
-export default function Library({ onStudy, startMine, onMineShown, initialQuery, onQueryUsed }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free') => void; startMine?: boolean; onMineShown?: () => void; initialQuery?: string; onQueryUsed?: () => void }) {
+export default function Library({ onStudy, startMine, onMineShown, initialQuery, onQueryUsed }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free', startIdx?: number) => void; startMine?: boolean; onMineShown?: () => void; initialQuery?: string; onQueryUsed?: () => void }) {
   const { words, progress, lessons, wordMap } = useApp()
   const [tab, setTab] = useState<'words' | 'days'>('words')
   const [q, setQ] = useState(initialQuery ?? '')
@@ -52,7 +51,6 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
   useEffect(() => { let on = true; loadPhrases().then(m => { if (!on) return; const e = new Map<string, { ex: string; ph: string[] }>(); for (const [t, v] of Object.entries(m) as [string, { items: { th: string; zh: string }[] }][]) e.set(t, { ex: '', ph: v.items.map((x: { th: string; zh: string }) => x.th + ' ' + x.zh) }); setExtra(e) }); return () => { on = false } }, [])
   const [lv, setLv] = useState<number | null>(null)
   const [theme, setTheme] = useState<string | null>(null)
-  const [open, setOpen] = useState<Word | null>(null)
   const [day, setDay] = useState<number | null>(null)
   const [mine, setMine] = useState(!!startMine)
   useEffect(() => { if (startMine) onMineShown?.() }, [])   // 带着「我录入的词」筛选进来后，清掉父组件里的标记
@@ -93,10 +91,10 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
     return isZh ? out.sort((a, b) => (hits.get(b.id)?.score ?? 0) - (hits.get(a.id)?.score ?? 0)) : out
   }, [words, progress, q, lv, theme, mine, mineSet, isZh, hits])
 
-  const Row = ({ w }: { w: Word }) => {
+  const Row = ({ w, i }: { w: Word; i: number }) => {
     const l = progress.get(w.id)?.level ?? 0
     return (
-      <button className="row" onClick={() => setOpen(w)} data-testid="word-row">
+      <button className="row" onClick={() => onStudy(q.trim() ? `搜索：${q.trim()}` : '词库', list.map(x => x.id), 'free', i)} data-testid="word-row">
         <span className="dot" style={{ background: LEVEL_COLORS[l] }} />
         <span className="w th" lang="th">{w.thai}</span>
         <span className="m"><div>{w.zh}</div><div className="sub rom">{w.roman}</div>{hits.get(w.id)?.via && <div className="sub via">{hits.get(w.id)!.via}</div>}</span>
@@ -105,6 +103,17 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
     )
   }
 
+  const DayRow = ({ w, i }: { w: Word; i: number }) => {
+    const l = progress.get(w.id)?.level ?? 0
+    return (
+      <button className="row" onClick={() => onStudy(`第${day}天`, lessonDetail!.wordIds, 'free', i)} data-testid="word-row">
+        <span className="dot" style={{ background: LEVEL_COLORS[l] }} />
+        <span className="w th" lang="th">{w.thai}</span>
+        <span className="m"><div>{w.zh}</div><div className="sub rom">{w.roman}</div></span>
+        <LevelPill level={l as Level} />
+      </button>
+    )
+  }
   const lessonDetail = day !== null ? lessons.find(l => l.day === day) : null
   return (
     <>
@@ -121,7 +130,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
         </div>
         {mine && list.length > 0 && <button className="btn block" style={{ marginTop: 0 }} onClick={() => onStudy('我录入的词', list.map(w => w.id), 'free')} data-testid="study-mine">学习这 {list.length} 个词</button>}
         <div className="sub" style={{ margin: '4px 0' }}>{list.length} 个结果{mine ? '（我录入的词：第18天起的课程）' : ''}</div>
-        {list.map(w => <Row key={w.id} w={w} />)}
+        {list.map((w, i) => <Row key={w.id} w={w} i={i} />)}
         {!list.length && <p className="sub">没有匹配的词。</p>}
       </>}
       {tab === 'days' && !lessonDetail && lessons.slice().sort((a, b) => b.day - a.day).map(l => {
@@ -138,9 +147,8 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
         <button className="chip" onClick={() => setDay(null)}>‹ 所有课程</button>
         <h2>第 {lessonDetail.day} 天（{lessonDetail.wordIds.length} 条）</h2>
         <button className="btn block" style={{ marginTop: 0 }} onClick={() => onStudy(`第${lessonDetail.day}天`, lessonDetail.wordIds, 'day')}>学习本课全部词</button>
-        {lessonDetail.wordIds.map(id => wordMap.get(id)).filter(Boolean).map(w => <Row key={w!.id} w={w!} />)}
+        {lessonDetail.wordIds.map(id => wordMap.get(id)).filter(Boolean).map((w, i) => <DayRow key={w!.id} w={w!} i={i} />)}
       </>}
-      {open && <WordSheet word={open} onClose={() => setOpen(null)} />}
     </>
   )
 }

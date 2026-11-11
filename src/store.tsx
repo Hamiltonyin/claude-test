@@ -12,6 +12,7 @@ interface Ctx {
   words: Word[]; wordMap: Map<string, Word>; lessons: Lesson[]; progress: Map<string, Progress>
   logs: ReviewLog[]; sessions: Session[]; settings: Settings; session: Session | null
   flips: Record<string, number>; countFlip(wordId: string): void
+  plays: Record<string, number>; countPlay(wordId: string): void
   rate(wordId: string, level: Level): Promise<void>
   updateSettings(p: Partial<Settings>): Promise<void>
   addWords(words: Word[], lessonAdds: { day: number; wordIds: string[] }[]): Promise<void>
@@ -46,9 +47,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [todayStr, setTodayStr] = useState(today())
   const [flips, setFlips] = useState<Record<string, number>>({})
   const flipsRef = useRef(flips); flipsRef.current = flips
+  const [plays, setPlays] = useState<Record<string, number>>({})
+  const playsRef = useRef(plays); playsRef.current = plays
   const ref = useRef({ words, lessons, progress, logs, sessions, settings })
   ref.current = { words, lessons, progress, logs, sessions, settings }
 
+  useEffect(() => { db().then(d => d.get('meta', 'plays')).then(f => { if (f) setPlays(cur => ({ ...f, ...cur })) }).catch(() => {}) }, [])
+  // 发音计数：每次播放这个词的发音 +1（正常/慢速/连读都算）
+  const countPlay = useCallback((id: string) => {
+    const n = { ...playsRef.current, [id]: (playsRef.current[id] ?? 0) + 1 }
+    playsRef.current = n; setPlays(n); void put('meta', n, 'plays')
+  }, [])
   useEffect(() => { db().then(d => d.get('meta', 'flips')).then(f => { if (f) setFlips(cur => ({ ...f, ...cur })) }).catch(() => {}) }, [])
   // 翻卡计数：每个词每翻到背面一次 +1，存在本机（meta/flips），备份时一起导出
   const countFlip = useCallback((id: string) => {
@@ -195,11 +204,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const exportBackup = useCallback((): Backup => {
     const c = ref.current
-    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings, flips: flipsRef.current }
+    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings, flips: flipsRef.current, plays: playsRef.current }
   }, [])
 
   const restoreBackup = useCallback(async (b: Backup, mode: 'replace' | 'merge') => {
     const c = ref.current
+    if (b.plays) {
+      const f: Record<string, number> = mode === 'replace' ? { ...b.plays } : { ...playsRef.current }
+      if (mode !== 'replace') for (const [k, v] of Object.entries(b.plays)) f[k] = Math.max(f[k] ?? 0, v)
+      playsRef.current = f; setPlays(f); await put('meta', f, 'plays')
+    }
     if (b.flips) {
       const f: Record<string, number> = mode === 'replace' ? { ...b.flips } : { ...flipsRef.current }
       if (mode !== 'replace') for (const [k, v] of Object.entries(b.flips)) f[k] = Math.max(f[k] ?? 0, v)
@@ -243,7 +257,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const wordMap = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
   const session = sessions.find(s => s.date === todayStr) ?? null
-  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
+  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, plays, countPlay, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
   return <C.Provider value={value}>{children}</C.Provider>
 }
 export { wordIdFor }

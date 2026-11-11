@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from './types'
 import { AudioError, playFile, playSystem, stopAudio, systemVoiceAvailable } from './lib/audio'
+import { useApp } from './store'
 import { TONE_SYMBOL, TONE_ZH, toneCodes, toneDescription } from './lib/tone'
 
 export const Speaker = () => (
@@ -15,18 +16,20 @@ export function LevelPill({ level }: { level: Level }) {
 interface Fail { msg: string; code: AudioError['code']; word: Word; slow: boolean }
 /** 发音控制：存档音频（正常/0.8倍速）+ 明确的错误提示、重试和系统语音备用 */
 export function useSpeaker() {
+  const { countPlay } = useApp()
   const [busy, setBusy] = useState<string | null>(null)
   const [fail, setFail] = useState<Fail | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const seq = useRef(0)
   const play = useCallback(async (word: Word, slow: boolean) => {
     const my = ++seq.current
+    countPlay(word.id)
     setFail(null); setInfo(null); setBusy(word.id + (slow ? 's' : 'n'))
     try { await playFile(word.id, slow) }
     catch (e: any) {
       if (my === seq.current) setFail({ msg: e?.message || '播放失败', code: e?.code ?? 'other', word, slow })
     } finally { if (my === seq.current) setBusy(null) }
-  }, [])
+  }, [countPlay])
   const playSys = useCallback(async (word: Word, slow: boolean) => {
     setFail(null); setBusy(word.id + 'sys')
     try { setInfo('正在使用系统语音朗读（不是存档音频，发音由设备决定）'); await playSystem(word.thai, slow); setInfo(null) }
@@ -161,5 +164,35 @@ export function ExampleBlock({ word }: { word: Word }) {
         </div>
       )}
     </>
+  )
+}
+
+/** 淡淡的计数：已翻 N 次 · 已听 M 次。数字增加时弹一下，并飘起一个 +1。 */
+function Num({ n, label }: { n: number; label: string }) {
+  const prev = useRef(n)
+  const [k, setK] = useState(0)
+  useEffect(() => { if (n > prev.current) setK(x => x + 1); prev.current = n }, [n])
+  return (
+    <span className="cnum">{label} <b key={'b' + k} className={k ? 'cpop' : ''}>{n}</b> 次{k > 0 && <i key={'p' + k} className="cplus">+1</i>}</span>
+  )
+}
+export function CountBadge({ id, className = 'flipcnt' }: { id: string; className?: string }) {
+  const { flips, plays } = useApp()
+  return <div className={className} data-testid="counts"><Num n={flips[id] ?? 0} label="已翻" /> · <Num n={plays[id] ?? 0} label="已听" /></div>
+}
+
+/** 小庆祝特效：彩纸/星星从中间向四周飘散。k 每变一次触发一次；big = 更多更大。 */
+const BURST_COLORS = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#007aff', '#af52de', '#ff6482']
+export function Burst({ k, big = false }: { k: number; big?: boolean }) {
+  if (!k) return null
+  const n = big ? 26 : 14
+  return (
+    <div className="burst" key={k} aria-hidden>
+      {Array.from({ length: n }, (_, i) => {
+        const a = (i / n) * Math.PI * 2 + Math.random() * 0.6, d = (big ? 120 : 80) + Math.random() * (big ? 120 : 70)
+        return <span key={i} style={{ ['--dx' as any]: `${Math.cos(a) * d}px`, ['--dy' as any]: `${Math.sin(a) * d - 40}px`, ['--rot' as any]: `${Math.random() * 540 - 270}deg`, background: BURST_COLORS[i % BURST_COLORS.length], animationDelay: `${Math.random() * 80}ms` }} />
+      })}
+      <em>{big ? '🎉' : '✨'}</em>
+    </div>
   )
 }

@@ -86,14 +86,14 @@ try {
   await page.fill('[data-testid=search]', '你好'); await page.waitForTimeout(500); assert((await page.locator('[data-testid=word-row]').first().textContent()).includes('สวัสดี')); ok('中文搜索（精确释义排第一）')
   await page.fill('[data-testid=search]', 'สวัสดี'); assert((await page.locator('[data-testid=word-row]').count()) === 1); ok('泰文搜索')
   await page.tap('[data-testid=word-row]')
-  await page.tap('.sheet .spk button[aria-label="播放发音"]'); await page.waitForTimeout(800)
+  await page.tap('.study .face.front .spk button[aria-label="播放发音"]'); await page.waitForTimeout(800)
   let plays = await page.evaluate(() => window.__plays); assert(plays.length >= 1 && plays.at(-1).rate === 1); ok('点击喇叭 → 存档 MP3 实际播放')
-  await page.tap('.sheet .spk button.slow'); await page.waitForTimeout(800)
+  await page.tap('.study .face.front .spk button.slow'); await page.waitForTimeout(800)
   plays = await page.evaluate(() => window.__plays); assert(plays.at(-1).rate === 0.8); ok('慢速 0.8× 播放')
-  await page.tap('.sheet .spk button[aria-label="播放发音"]'); await page.waitForTimeout(300)
+  await page.tap('.study .face.front .spk button[aria-label="播放发音"]'); await page.waitForTimeout(300)
   plays = await page.evaluate(() => window.__plays); assert(plays.length >= 3); ok('可反复播放')
   await page.screenshot({ path: tmp + '/sheet.png' })
-  await page.tap('[data-testid=sheet-close]')
+  await page.tap('text=‹ 返回')
 
   // 课程：第1天/第2天 + 个人成绩
   await page.fill('[data-testid=search]', '')
@@ -118,7 +118,7 @@ finally {
     await p2.waitForTimeout(1500)
     await ctx2.setOffline(true); try { process.kill(-srv.pid) } catch {}; await new Promise(r => setTimeout(r, 800)); await p2.reload(); await p2.waitForSelector('[data-testid=start-today]'); ok('断网后刷新仍可打开应用 (Service Worker)')
     await p2.tap('[data-testid=tab-library]'); await p2.fill('[data-testid=search]', 'ขอบคุณ'); await p2.tap('[data-testid=word-row]')
-    await p2.tap('.sheet .spk button[aria-label="播放发音"]'); await p2.waitForSelector('.toast .note.err', { timeout: 4000 })
+    await p2.tap('.study .face.front .spk button[aria-label="播放发音"]'); await p2.waitForSelector('.toast .note.err', { timeout: 4000 })
     const t = await p2.textContent('.toast'); assert(/离线|没有生成|网络/.test(t)); ok('离线且无缓存音频 → 明确提示：' + t.slice(0, 40))
     await ctx2.close()
   } catch (e) { console.error('FAIL(persist/offline)', e); process.exitCode = 1 }
