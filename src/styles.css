@@ -230,3 +230,9 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .judge{position:fixed;left:50%;bottom:calc(var(--sab) + 96px);transform:translateX(-50%);z-index:60;pointer-events:none;font-weight:800;font-size:17px;padding:8px 18px;border-radius:20px;color:#fff;animation:judge 1s ease-out forwards}
 .judge.lv3,.judge.lv4{background:#34c759}.judge.lv2{background:#ff9500}.judge.lv1{background:#ff6b6b}
 @keyframes judge{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}20%{opacity:1;transform:translate(-50%,0) scale(1.05)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
+
+.hab{margin:8px 0 0;padding-left:18px;font-size:13.5px;line-height:1.55}.hab li{margin:5px 0}
+.hbar{display:flex;align-items:flex-end;gap:2px;height:56px}.hbar>div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.hbar i{display:block;width:100%;min-height:2px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#6a8dff,#3b6bff)}
+.hbar.wk{height:70px;gap:8px}.hbar.wk span{font-size:11px;color:var(--sub);margin-top:2px}
+.hlab{display:flex;justify-content:space-between;font-size:10px;color:var(--sub);margin-top:2px}

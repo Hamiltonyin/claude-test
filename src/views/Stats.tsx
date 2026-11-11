@@ -4,9 +4,10 @@ import { LEVEL_COLORS, LEVEL_NAMES } from '../types'
 import { addDays, today } from '../lib/dates'
 import { StatsHeader, streakOf } from './Home'
 import Records from './Records'
+import { summarize } from '../lib/habits'
 
 export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: string[]) => void }) {
-  const { logs, words, progress, settings, daily } = useApp()
+  const { logs, words, progress, settings, daily, flips, plays } = useApp()
   const days = useMemo(() => {
     const t = today(); const out: { d: string; n: number }[] = []
     for (let i = 13; i >= 0; i--) {
@@ -24,6 +25,7 @@ export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: s
     }
     return out
   }, [logs, daily])
+  const hab = useMemo(() => summarize({ logs, daily, flips, plays, progress, words, settings }), [logs, daily, flips, plays, progress, words, settings])
   const counts = [0, 0, 0, 0, 0]; words.forEach(w => counts[progress.get(w.id)?.level ?? 0]++)
   const max = Math.max(settings.dailyGoal, ...days.map(d => d.n))
   const todayN = days[days.length - 1].n
@@ -45,6 +47,16 @@ export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: s
         <p className="sub" style={{ margin: '6px 0' }}>今天 · 下面是最近 7 天</p>
         <table className="dtable"><thead><tr><th>日期</th><th>评级</th><th>新词</th><th>翻卡</th><th>听词</th><th>听句</th></tr></thead>
           <tbody>{rows.map(r => <tr key={r.d} className={r.rated + r.flips + r.plays + r.ex ? '' : 'zero'}><td>{r.d.slice(5)}</td><td>{r.rated}</td><td>{r.fresh}</td><td>{r.flips}</td><td>{r.plays}</td><td>{r.ex}</td></tr>)}</tbody></table>
+      </div>
+      <div className="panel" data-testid="habits-panel"><h3>学习习惯总结</h3>
+        <ul className="hab">{hab.insights.map((t, i) => <li key={i}>{t}</li>)}</ul>
+        {hab.hasData && <>
+          <p className="sub" style={{ margin: '10px 0 4px' }}>一天中的学习时段（评级次数）</p>
+          <div className="hbar">{hab.byHour.map((n, h) => <div key={h} title={`${h}点 ${n}次`}><i style={{ height: `${(n / Math.max(1, ...hab.byHour)) * 100}%` }} /></div>)}</div>
+          <div className="hlab"><span>0</span><span>6</span><span>12</span><span>18</span><span>23</span></div>
+          <p className="sub" style={{ margin: '10px 0 4px' }}>一周中的学习分布</p>
+          <div className="hbar wk">{hab.byWeekday.map((n, d) => <div key={d}><i style={{ height: `${(n / Math.max(1, ...hab.byWeekday)) * 100}%` }} /><span>{['日', '一', '二', '三', '四', '五', '六'][d]}</span></div>)}</div>
+        </>}
       </div>
       <div className="panel"><h3>近 14 天（每天评级的不同词数）</h3>
         <div className="chart">{days.map(d => <div key={d.d}><span>{d.n || ''}</span><i style={{ height: `${(d.n / max) * 80}%`, background: d.n >= settings.dailyGoal ? 'var(--green)' : 'var(--blue)' }} /></div>)}</div>

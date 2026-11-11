@@ -28,6 +28,9 @@ try {
   await page.tap('text=‹ 返回'); await page.waitForSelector('[data-testid=start-today]')
   const t = await page.textContent('[data-testid=start-today]'); assert(/3\/\d+/.test(t), t); ok('首页今日新词进度 3/N')
   const rv2 = await page.textContent('[data-testid=start-review]'); ok('学过之后复习才会出现：' + rv2.replace(/\s+/g, ' ').slice(0, 40))
+  await page.tap('[data-testid=tab-stats]'); await page.waitForSelector('[data-testid=habits-panel]')
+  const hp = await page.textContent('[data-testid=habits-panel]'); assert(hp.includes('学习习惯总结') && hp.includes('时间：') && hp.includes('坚持：')); ok('统计页「学习习惯总结」：时段/坚持/量/判断 等自动总结')
+  assert(await page.locator('.hbar i').count() >= 24); ok('有学习时段柱状图')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/autolevel-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
