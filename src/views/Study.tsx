@@ -207,7 +207,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
-            <div className="hint">{manual ? '点击卡片翻面 · 左右滑动切换' : '认识就直接下一个 · 不确定点卡片看答案'}</div>
+            <div className="hint">{manual ? '点击卡片翻面 · 左右滑动切换' : '认识就直接下一个 · 不确定点卡片看答案 · 左右滑动切换'}</div>
           </div>
           <div className="face back">
             {manual && level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
@@ -237,8 +237,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
       </div></>) : (
       <div className="autonav">
         <button className="ghost" onClick={() => go(idx - 1)} disabled={idx === 0} data-testid="prev">‹ 上一个</button>
-        <button className="peek" onClick={toggle} data-testid="peek">{flip ? '↩ 翻回' : '👀 看答案'}</button>
-        <button className="know" onClick={() => go(idx + 1)} data-testid="next">{mode === 'free' ? '下一个 ›' : flip ? '看完了 ›' : '认识 ›'}</button>
+        <button className="know" onClick={() => go(idx + 1)} data-testid="next">下一个 ›</button>
       </div>)}
       {judge && <div key={judge.k} className={'judge lv' + judge.lv} data-testid="judge">{judge.lv >= 3 ? '✓ 认识' : judge.lv === 2 ? '再熟悉一下' : '多看几遍'}</div>}
       {sp.toast}

@@ -18,11 +18,11 @@ try {
   // 第 1 张：直接「认识」
   await page.tap('[data-testid=next]'); await page.waitForSelector('[data-testid=judge]')
   assert((await page.textContent('[data-testid=judge]')).includes('认识')); ok('没翻卡直接下一个 → 判定「认识」')
-  // 第 2 张：看一次答案
-  await page.tap('[data-testid=peek]'); await page.tap('[data-testid=next]'); await page.waitForTimeout(150)
+  // 第 2 张：点卡片看一次答案
+  await page.tap('[data-testid=card]'); await page.waitForTimeout(300); await page.tap('[data-testid=next]'); await page.waitForTimeout(150)
   assert((await page.textContent('[data-testid=judge]')).includes('再熟悉')); ok('翻了 1 次看答案 → 判定「再熟悉一下」')
   // 第 3 张：来回翻 2 次 → 陌生，会再出现
-  await page.tap('[data-testid=peek]'); await page.tap('[data-testid=peek]'); await page.tap('[data-testid=peek]'); await page.tap('[data-testid=next]'); await page.waitForTimeout(150)
+  for (let i = 0; i < 3; i++) { await page.tap('[data-testid=card]'); await page.waitForTimeout(250) }; await page.tap('[data-testid=next]'); await page.waitForTimeout(150)
   assert((await page.textContent('[data-testid=judge]')).includes('多看几遍')); ok('来回翻 2 次以上 → 判定「多看几遍」')
   const total1 = Number((await page.textContent('.cnt')).split('/')[1]); assert.equal(total1, total0); ok('「多看几遍」的词稍后会再出现（不重复计数）')
   await page.tap('text=‹ 返回'); await page.waitForSelector('[data-testid=start-today]')

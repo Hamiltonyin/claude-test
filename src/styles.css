@@ -223,7 +223,7 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 @media (prefers-reduced-motion:reduce){.rfg{transition:none}.ucard,.unlock{animation:none}}
 
 /* 自动判断模式的底部操作条 */
-.autonav{display:grid;grid-template-columns:auto 1fr 1.1fr;gap:10px;padding:6px 14px calc(var(--sab) + 12px)}
+.autonav{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;padding:6px 14px calc(var(--sab) + 12px)}
 .autonav button{min-height:54px;border-radius:18px;font-weight:700;font-size:16px;transition:transform .12s}.autonav button:active{transform:scale(.95)}
 .autonav .ghost{background:#eef1f6;color:var(--sub);padding:0 14px;font-size:14px;font-weight:600}.autonav .ghost:disabled{opacity:.4}
 .autonav .peek{background:#fff3e0;color:#c2570c}.autonav .know{background:linear-gradient(135deg,#34c759,#2bb673);color:#fff;box-shadow:0 6px 14px rgba(52,199,89,.35)}
