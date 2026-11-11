@@ -77,7 +77,7 @@ try {
   await page.tap('[data-testid=rate3]'); await page.waitForTimeout(200)
   const afterRate = await page.textContent('[data-testid=thai]'); assert(afterRate !== first); ok('评级后自动进入下一词')
   await page.tap('text=‹ 返回'); await page.waitForSelector('[data-testid=start-today]')
-  assert(/1\/\d+/.test(await page.textContent('.stats'))); ok('今日完成 1/N')
+  assert(/1\/\d+/.test(await page.textContent('[data-testid=start-today]'))); ok('今日完成 1/N')
   const nBefore = await page.textContent('[data-testid=start-today]')
 
   // 词库：搜索 + 播放真实音频 (w001)
@@ -113,7 +113,7 @@ finally {
     await ctx?.close()
     const ctx2 = await launch(); const p2 = await ctx2.newPage(); hook(p2)
     await p2.goto(URL); await p2.waitForSelector('[data-testid=start-today]')
-    assert(/1\/\d+/.test(await p2.textContent('.stats'))); ok('关闭浏览器后重开：评级记录仍在 (1/N)')
+    assert(/1\/\d+/.test(await p2.textContent('[data-testid=start-today]'))); ok('关闭浏览器后重开：评级记录仍在 (1/N)')
     // 离线
     await p2.waitForTimeout(1500)
     await ctx2.setOffline(true); try { process.kill(-srv.pid) } catch {}; await new Promise(r => setTimeout(r, 800)); await p2.reload(); await p2.waitForSelector('[data-testid=start-today]'); ok('断网后刷新仍可打开应用 (Service Worker)')

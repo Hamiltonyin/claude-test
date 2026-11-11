@@ -36,7 +36,7 @@ try {
   await page.waitForSelector('[data-testid=practice-done]')
   const t = await page.textContent('[data-testid=practice-done]')
   assert(t.includes(`升级 ${total - 1} / ${total}`), t); ok(`全对升精通、答错保持：升级 ${total - 1}/${total}`)
-  await page.tap('text=完成'); await page.waitForSelector('[data-testid=start-master]')
+  await page.tap('[data-testid=practice-done] .btn'); await page.waitForSelector('[data-testid=start-master]')
   assert((await page.textContent('[data-testid=start-master]')).includes('熟悉 1 个')); ok('首页熟悉数 10 → 1（9 个升精通，答错的 1 个保持）')
   // 验收
   await page.tap('[data-testid=start-verify]'); await page.waitForSelector('[data-testid=q-opt]')
