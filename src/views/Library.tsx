@@ -8,8 +8,9 @@ import { myAddedIds } from '../lib/srs'
 const strip = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[-\s]+/g, '')
 
 export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }) {
-  const { progress, rate, updateWord, lessons } = useApp()
+  const { progress, rate, updateWord, lessons, flips, countFlip } = useApp()
   const sp = useSpeaker()
+  useEffect(() => { countFlip(word.id) }, [word.id])   // 打开词条查看 = 看了一次，和学习卡片翻面一样计数
   const [edit, setEdit] = useState(false)
   const [d, setD] = useState(word)
   const p = progress.get(word.id)
@@ -25,6 +26,7 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
         <div className="rom" style={{ fontSize: 20, color: 'var(--blue)', fontWeight: 600 }}>{word.roman}</div>
         <ToneChips roman={word.roman} />
         <div style={{ textAlign: 'left' }}><ExampleBlock word={word} /></div>
+        <p className="flipline" data-testid="flips-sheet">已翻 {flips[word.id] ?? 0} 次</p>
         <p className="sub">{word.theme} · {days.length ? '出现在第 ' + days.join('、') + ' 天' : '未归入课程'}{p ? ` · 复习 ${p.reps} 次 · 遗忘 ${p.lapses} 次 · 下次 ${p.due}` : ''}</p>
         <div className="rates" style={{ padding: '8px 0' }}>
           {([1, 2, 3, 4] as Level[]).map(l => <button key={l} className={level === l ? 'cur' : ''} style={{ background: LEVEL_COLORS[l] }} onClick={() => rate(word.id, l === 4 && level < 4 ? 3 : l)}>{LEVEL_NAMES[l]}{l === 4 && level < 4 ? ' 🔒' : ''}</button>)}

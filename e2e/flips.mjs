@@ -19,6 +19,12 @@ try {
   await page.reload(); await page.waitForSelector('[data-testid=start-weak]')
   await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')
   assert.equal(await n(), 2); ok('刷新后计数仍在')
+  // 词库里打开词条也计数（搜索结果同理）
+  await page.tap('text=‹ 返回'); await page.tap('[data-testid=tab-library]'); await page.fill('[data-testid=search]', 'ช่วย')
+  await page.tap('[data-testid=word-row]'); await page.waitForSelector('[data-testid=flips-sheet]'); await page.waitForTimeout(300)
+  const c1 = Number((await page.textContent('[data-testid=flips-sheet]')).match(/\d+/)[0]); assert.equal(c1, 1); ok('词库里打开词条 → 已翻 1 次')
+  await page.tap('[data-testid=sheet-close]'); await page.tap('[data-testid=word-row]'); await page.waitForTimeout(300)
+  assert.equal(Number((await page.textContent('[data-testid=flips-sheet]')).match(/\d+/)[0]), 2); ok('再打开一次 → 2')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/flips-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
