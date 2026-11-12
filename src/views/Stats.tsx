@@ -7,7 +7,7 @@ import Records from './Records'
 import { summarize } from '../lib/habits'
 
 export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: string[]) => void }) {
-  const { logs, words, progress, settings, daily, flips, plays } = useApp()
+  const { logs, words, progress, settings, daily, flips, plays, parkedSet } = useApp()
   const days = useMemo(() => {
     const t = today(); const out: { d: string; n: number }[] = []
     for (let i = 13; i >= 0; i--) {
@@ -25,7 +25,7 @@ export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: s
     }
     return out
   }, [logs, daily])
-  const hab = useMemo(() => summarize({ logs, daily, flips, plays, progress, words, settings }), [logs, daily, flips, plays, progress, words, settings])
+  const hab = useMemo(() => summarize({ parkedN: parkedSet.size, logs, daily, flips, plays, progress, words, settings }), [logs, daily, flips, plays, progress, words, settings, parkedSet])
   const counts = [0, 0, 0, 0, 0]; words.forEach(w => counts[progress.get(w.id)?.level ?? 0]++)
   const max = Math.max(settings.dailyGoal, ...days.map(d => d.n))
   const todayN = days[days.length - 1].n

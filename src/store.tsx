@@ -15,6 +15,7 @@ interface Ctx {
   plays: Record<string, number>; countPlay(wordId: string): void
   exPlays: Record<string, number>; countExPlay(wordId: string): void
   daily: Record<string, DailyCount>
+  parked: Record<string, string>; parkedSet: Set<string>; parkWord(wordId: string, days?: number): void; unparkWord(wordId: string): void
   rate(wordId: string, level: Level): Promise<void>
   updateSettings(p: Partial<Settings>): Promise<void>
   addWords(words: Word[], lessonAdds: { day: number; wordIds: string[] }[]): Promise<void>
@@ -53,6 +54,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const playsRef = useRef(plays); playsRef.current = plays
   const [exPlays, setExPlays] = useState<Record<string, number>>({})
   const exRef = useRef(exPlays); exRef.current = exPlays
+  const [parked, setParked] = useState<Record<string, string>>({})
+  const parkedRef = useRef(parked); parkedRef.current = parked
+  // 「近期用不上」的词：到期日之前不进新词、不进复习
+  const skipNow = () => new Set(Object.entries(parkedRef.current).filter(([, u]) => u > today()).map(([id]) => id))
+  const parkedSet = useMemo(() => new Set(Object.entries(parked).filter(([, u]) => u > today()).map(([id]) => id)), [parked, todayStr])
   const [daily, setDaily] = useState<Record<string, DailyCount>>({})
   const dailyRef = useRef(daily); dailyRef.current = daily
   const bumpDaily = useCallback((field: keyof DailyCount) => {
@@ -86,6 +92,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (async () => {
       try {
         const data = await loadAll()
+        { const pk = (await (await db()).get('meta', 'parked')) as Record<string, string> | undefined; parkedRef.current = pk ?? {}; setParked(pk ?? {}) }
         const seed = seedData()
         let s = data.settings
         let ws = data.words, ls = data.lessons
@@ -120,7 +127,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const ratedToday = data.logs.some(l => l.date === date)
         if (!cur || ((cur.ver ?? 1) < SESSION_VER && !ratedToday)) {
           // 没有今天的课程，或是旧规则生成且今天还没学过 → 按日历课程日重新生成
-          const ns = buildSession({ words: ws, lessons: ls, progress: pg, settings: s, sessions: sess })
+          const ns = buildSession({ words: ws, lessons: ls, progress: pg, settings: s, sessions: sess, skip: skipNow() })
           await put('sessions', ns); sess = [...sess.filter(x => x.date !== date), ns]
         } else if ((cur.ver ?? 1) < SESSION_VER) {
           const fixed = { ...cur, dayNo: calendarDay(s, date), ver: SESSION_VER }   // 今天已学过：保留词表，只校正第几天
@@ -140,9 +147,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return
     const cur = sessions.find(x => x.date === todayStr); if (!cur) return
-    const up = topUpSession(cur, { words, lessons, progress, settings })
+    const up = topUpSession(cur, { words, lessons, progress, settings, skip: parkedSet })
     if (up !== cur) { setSessions(ss => ss.map(x => x.date === up.date ? up : x)); put('sessions', up) }
-  }, [ready, todayStr, words, lessons, progress, sessions, settings])
+  }, [ready, todayStr, words, lessons, progress, sessions, settings, parkedSet])
 
   // 跨天：回到应用/应用保持打开过了零点 → 更新日期，并自动生成新一天的课程（漏掉的日子在「学习记录」里可见）
   useEffect(() => {
@@ -155,7 +162,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!ready) return
     const c = ref.current
     if (c.sessions.some(x => x.date === todayStr)) return
-    const ns = buildSession({ words: c.words, lessons: c.lessons, progress: c.progress, settings: c.settings, sessions: c.sessions, date: todayStr })
+    const ns = buildSession({ words: c.words, lessons: c.lessons, progress: c.progress, settings: c.settings, sessions: c.sessions, date: todayStr, skip: skipNow() })
     setSessions(ss => ss.some(x => x.date === todayStr) ? ss : [...ss, ns]); put('sessions', ns)
   }, [ready, todayStr, sessions])
 
@@ -219,13 +226,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await put('words', nw); setWords(p => p.map(x => x.id === nw.id ? nw : x))
   }, [])
 
+  const parkWord = useCallback((id: string, days = 60) => {
+    const n = { ...parkedRef.current, [id]: addDays(today(), days) }
+    parkedRef.current = n; setParked(n); void put('meta', n, 'parked')
+    // 今天的任务里去掉它（新词位会由 topUp 自动补上别的词）
+    const cur = ref.current.sessions.find(x => x.date === today())
+    if (cur) {
+      const up = { ...cur, newIds: cur.newIds.filter(i => i !== id), reviewIds: cur.reviewIds.filter(i => i !== id), wordIds: cur.wordIds.filter(i => i !== id) }
+      setSessions(ss => ss.map(x => x.date === up.date ? up : x)); void put('sessions', up)
+    }
+  }, [])
+  const unparkWord = useCallback((id: string) => {
+    const n = { ...parkedRef.current }; delete n[id]
+    parkedRef.current = n; setParked(n); void put('meta', n, 'parked')
+  }, [])
+
   const exportBackup = useCallback((): Backup => {
     const c = ref.current
-    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings, flips: flipsRef.current, plays: playsRef.current, exPlays: exRef.current, daily: dailyRef.current }
+    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings, flips: flipsRef.current, plays: playsRef.current, exPlays: exRef.current, daily: dailyRef.current, parked: parkedRef.current }
   }, [])
 
   const restoreBackup = useCallback(async (b: Backup, mode: 'replace' | 'merge') => {
     const c = ref.current
+    if (b.parked) { const f = mode === 'replace' ? { ...b.parked } : { ...parkedRef.current, ...b.parked }; parkedRef.current = f; setParked(f); await put('meta', f, 'parked') }
     if (b.exPlays) {
       const f: Record<string, number> = mode === 'replace' ? { ...b.exPlays } : { ...exRef.current }
       if (mode !== 'replace') for (const [k, v] of Object.entries(b.exPlays)) f[k] = Math.max(f[k] ?? 0, v)
@@ -267,7 +290,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const rebuildSession = useCallback(async () => {
     const c = ref.current
-    const ns = buildSession({ words: c.words, lessons: c.lessons, progress: c.progress, settings: c.settings, sessions: c.sessions })
+    const ns = buildSession({ words: c.words, lessons: c.lessons, progress: c.progress, settings: c.settings, sessions: c.sessions, skip: skipNow() })
     await put('sessions', ns); setSessions(s => [...s.filter(x => x.date !== ns.date), ns])
   }, [])
 
@@ -276,7 +299,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const c = ref.current
     const cur = c.sessions.find(x => x.date === today()); if (!cur) return
     const have = new Set(cur.wordIds)
-    const more = dueWords(c.progress).map(p => p.wordId).filter(id => !have.has(id)).slice(0, Math.max(0, cap - cur.reviewIds.length))
+    const more = dueWords(c.progress, undefined, 4, skipNow()).map(p => p.wordId).filter(id => !have.has(id)).slice(0, Math.max(0, cap - cur.reviewIds.length))
     if (!more.length) return
     const ns = { ...cur, reviewIds: [...cur.reviewIds, ...more], wordIds: [...cur.wordIds, ...more] }
     await put('sessions', ns); setSessions(ss => ss.map(x => x.date === ns.date ? ns : x))
@@ -284,7 +307,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const wordMap = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
   const session = sessions.find(s => s.date === todayStr) ?? null
-  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, plays, countPlay, exPlays, countExPlay, daily, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
+  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, plays, countPlay, exPlays, countExPlay, daily, parked, parkedSet, parkWord, unparkWord, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
   return <C.Provider value={value}>{children}</C.Provider>
 }
 export { wordIdFor }

@@ -10,12 +10,12 @@ const ROUND = 10
 
 /** 升级通道：验收（陌生/不熟悉 → 升一级）、举一反三（熟悉 → 精通）。一个词的题全对才升级，错了保持原级别。 */
 export default function Practice({ kind, onClose }: { kind: PracticeKind; onClose: () => void }) {
-  const { words, wordMap, progress, rate } = useApp()
+  const { words, wordMap, progress, rate, parkedSet } = useApp()
   const sp = useSpeaker()
   const lvOf = (id: string) => progress.get(id)?.level ?? 0
   const ids = useMemo(() => {
     const ok = (l: number) => kind === 'master' ? l === 3 : l === 1 || l === 2
-    return [...progress.values()].filter(p => ok(p.level) && wordMap.has(p.wordId))
+    return [...progress.values()].filter(p => ok(p.level) && wordMap.has(p.wordId) && !parkedSet.has(p.wordId))
       .sort((a, b) => (a.due ?? '').localeCompare(b.due ?? '')).map(p => p.wordId).slice(0, ROUND)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const plan = useMemo(() => ids.map(id => (kind === 'master' ? masterQuestions : verifyQuestions)(wordMap.get(id)!, words)), [ids]) // eslint-disable-line react-hooks/exhaustive-deps

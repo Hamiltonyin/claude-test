@@ -25,6 +25,7 @@ export interface Backup {
   plays?: Record<string, number>
   exPlays?: Record<string, number>
   daily?: Record<string, DailyCount>
+  parked?: Record<string, string>
 }
 export const LEVEL_NAMES = ['未标记', '陌生', '不熟悉', '熟悉', '精通'] as const
 export const LEVEL_COLORS = ['#c7ccd6', '#ff3b30', '#ff9500', '#007aff', '#34c759'] as const

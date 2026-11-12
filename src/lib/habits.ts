@@ -15,7 +15,7 @@ const WD = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'
 const part = (h: number) => h >= 5 && h < 9 ? '清晨' : h < 12 && h >= 9 ? '上午' : h >= 12 && h < 18 ? '下午' : h >= 18 && h < 23 ? '晚上' : '深夜'
 
 /** 从学习日志、每日计数、翻卡次数里总结学习习惯（全部在本机计算）。 */
-export function summarize(a: { logs: ReviewLog[]; daily: Record<string, DailyCount>; flips: Record<string, number>; plays: Record<string, number>; progress: Map<string, Progress>; words: Word[]; settings: Settings }): Habits {
+export function summarize(a: { parkedN?: number; logs: ReviewLog[]; daily: Record<string, DailyCount>; flips: Record<string, number>; plays: Record<string, number>; progress: Map<string, Progress>; words: Word[]; settings: Settings }): Habits {
   const { logs, flips, plays, progress, words, settings } = a
   const byHour = Array(24).fill(0), byWeekday = Array(7).fill(0)
   for (const l of logs) { byHour[new Date(l.ts).getHours()]++; byWeekday[new Date(l.date + 'T00:00:00').getDay()]++ }
@@ -53,6 +53,7 @@ export function summarize(a: { logs: ReviewLog[]; daily: Record<string, DailyCou
   if (totalFlips + totalPlays > 0) insights.push(`听与看：累计翻卡 ${totalFlips} 次、听发音 ${totalPlays} 次${totalPlays < totalFlips ? '——听得比看得少，建议多开自动连读练耳朵。' : '。'}`)
   if (hardest.length) insights.push(`最费劲的词：${hardest.map(h => `${wm.get(h.id)!.thai}（翻 ${h.flips} 次）`).join('、')}，建议放进「验收」里重点练。`)
   if (topics.length) insights.push(`学得最多的主题：${topics.map(x => `${x.theme} ${x.n} 词`).join('、')}。`)
+  if ((a.parkedN ?? 0) > 0) insights.push(`搁置：有 ${a.parkedN} 个词被你标成「近期用不上」，它们暂时不进新词和复习，到期（60 天）或你手动恢复后才回来。`)
   if (overdue > 0) insights.push(`有 ${overdue} 个已学过的词逾期没复习，先清一清再学新词，记得更牢。`)
   return { hasData: logs.length > 0, byHour, byWeekday, activeDays30, longest, avgPerDay, mix, hardest, topics, overdue, insights }
 }

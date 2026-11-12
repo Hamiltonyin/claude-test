@@ -43,7 +43,8 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
 }
 
 export default function Library({ onStudy, startMine, onMineShown, initialQuery, onQueryUsed }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free', startIdx?: number) => void; startMine?: boolean; onMineShown?: () => void; initialQuery?: string; onQueryUsed?: () => void }) {
-  const { words, progress, lessons, wordMap } = useApp()
+  const { words, progress, lessons, wordMap, parkedSet } = useApp()
+  const [parkedOnly, setParkedOnly] = useState(false)
   const [tab, setTab] = useState<'words' | 'days'>('words')
   const [q, setQ] = useState(initialQuery ?? '')
   useEffect(() => { if (initialQuery) onQueryUsed?.() }, [])
@@ -82,6 +83,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
     const s = q.trim().toLowerCase(), ns = strip(q.trim())
     const out = words.filter(w => {
       if (mine && !mineSet.has(w.id)) return false
+      if (parkedOnly && !parkedSet.has(w.id)) return false
       if (lv !== null && (progress.get(w.id)?.level ?? 0) !== lv) return false
       if (theme && w.theme !== theme) return false
       if (!s) return true
@@ -89,7 +91,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
       return w.thai.includes(q.trim()) || w.roman.toLowerCase().includes(s) || (ns.length > 0 && strip(w.roman).includes(ns))
     })
     return isZh ? out.sort((a, b) => (hits.get(b.id)?.score ?? 0) - (hits.get(a.id)?.score ?? 0)) : out
-  }, [words, progress, q, lv, theme, mine, mineSet, isZh, hits])
+  }, [words, progress, q, lv, theme, mine, mineSet, isZh, hits, parkedOnly, parkedSet])
 
   const Row = ({ w, i }: { w: Word; i: number }) => {
     const l = progress.get(w.id)?.level ?? 0
@@ -123,6 +125,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
         <input className="search" placeholder="搜索中文 / 泰文 / 拼音" value={q} onChange={e => setQ(e.target.value)} data-testid="search" />
         <div className="chips" style={{ marginBottom: 8 }}>
           <button className={'chip' + (mine ? ' on' : '')} onClick={() => setMine(!mine)} data-testid="chip-mine">📝 我录入的词<small>{mineIds.length}</small></button>
+          <button className={'chip' + (parkedOnly ? ' on' : '')} onClick={() => setParkedOnly(!parkedOnly)} data-testid="chip-parked">⏸ 近期用不上<small>{parkedSet.size}</small></button>
           {[1, 2, 3, 4, 0].map(l => <button key={l} className={'chip' + (lv === l ? ' on' : '')} onClick={() => setLv(lv === l ? null : l)}>{LEVEL_NAMES[l]}</button>)}
         </div>
         <div className="chips" style={{ marginBottom: 10 }}>

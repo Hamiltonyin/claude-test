@@ -25,14 +25,14 @@ export function applyRating(p: Progress | undefined, wordId: string, level: Leve
 const isDue = (p: Progress, date: string) => p.level > 0 && (p.due ?? date) <= date
 
 /** 到期复习词，陌生/不熟悉优先，其次越逾期越靠前 */
-export function dueWords(progress: Map<string, Progress>, date = today(), maxLevel: Level = 4): Progress[] {
+export function dueWords(progress: Map<string, Progress>, date = today(), maxLevel: Level = 4, skip?: Set<string>): Progress[] {
   // 只复习「在 App 里真正学过」的词（reps>0）：初始自评的词没学过就不会逼你复习
-  return [...progress.values()].filter(p => p.level > 0 && p.reps > 0 && p.level <= maxLevel && isDue(p, date))
+  return [...progress.values()].filter(p => p.level > 0 && p.reps > 0 && p.level <= maxLevel && isDue(p, date) && !skip?.has(p.wordId))
     .sort((a, b) => a.level - b.level || (a.due ?? '').localeCompare(b.due ?? '') || a.wordId.localeCompare(b.wordId))
 }
 /** 重点复习：所有陌生 + 不熟悉词（不论是否到期），陌生在前 */
-export function weakWords(progress: Map<string, Progress>): Progress[] {
-  return [...progress.values()].filter(p => p.level === 1 || p.level === 2)
+export function weakWords(progress: Map<string, Progress>, skip?: Set<string>): Progress[] {
+  return [...progress.values()].filter(p => (p.level === 1 || p.level === 2) && !skip?.has(p.wordId))
     .sort((a, b) => a.level - b.level || (a.due ?? '').localeCompare(b.due ?? ''))
 }
 
@@ -41,11 +41,11 @@ export const calendarDay = (settings: Settings, date: string) =>
   settings.dayOffset + 1 + Math.max(0, diffDays(date, settings.startDate))
 
 /** 新词池：从未评过级的词。优先「今天及之后的课程」，再是不在课程里的词，最后才是更早课程里漏掉的词（那些走「补学」入口）。 */
-export function newPool(words: Word[], lessons: Lesson[], progress: Map<string, Progress>, fromDay = 0): string[] {
+export function newPool(words: Word[], lessons: Lesson[], progress: Map<string, Progress>, fromDay = 0, skip?: Set<string>): string[] {
   const later: string[] = [], earlier: string[] = [], seen = new Set<string>()
   for (const l of [...lessons].sort((a, b) => a.day - b.day)) for (const id of l.wordIds) if (!seen.has(id)) { seen.add(id); (l.day >= fromDay ? later : earlier).push(id) }
   const orphan = words.map(w => w.id).filter(id => !seen.has(id))
-  return [...later, ...orphan, ...earlier].filter(id => (progress.get(id)?.level ?? 0) === 0)
+  return [...later, ...orphan, ...earlier].filter(id => (progress.get(id)?.level ?? 0) === 0 && !skip?.has(id))
 }
 
 export const newPerDay = (s: Settings) => s.newPerDay ?? 30
@@ -57,28 +57,28 @@ export const MINE_PER_DAY = 15
 
 /** 今天的新词名单：先放「我录入的词」（最多 MINE_PER_DAY 个，不管今天是第几天），
  *  再放今天（日历第 N 天）课程里还没学过的词，不足 newPerDay 时按顺序补满。 */
-function desiredNew(a: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings }, dayNo: number, existingNew: string[] = []): string[] {
+function desiredNew(a: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings; skip?: Set<string> }, dayNo: number, existingNew: string[] = []): string[] {
   const lv = (id: string) => a.progress.get(id)?.level ?? 0
   const mineAll = myAddedIds(a.lessons)
   const mineAllSet = new Set(mineAll)
   // 每天「我录入的词」总共不超过 MINE_PER_DAY：今天名单里已有的（不管学没学）都占名额，学完一个不会再补新的
   const mineHave = existingNew.filter(id => mineAllSet.has(id))
   const room = Math.max(0, MINE_PER_DAY - mineHave.length)
-  const mine = [...mineHave.filter(id => lv(id) === 0), ...mineAll.filter(id => lv(id) === 0 && !mineHave.includes(id)).slice(0, room)]
+  const mine = [...mineHave.filter(id => lv(id) === 0 && !a.skip?.has(id)), ...mineAll.filter(id => lv(id) === 0 && !mineHave.includes(id) && !a.skip?.has(id)).slice(0, room)]
   const n = newPerDay(a.settings)
-  const base = (a.lessons.find(l => l.day === dayNo)?.wordIds ?? []).filter(id => lv(id) === 0 && !mineAllSet.has(id))
-  for (const id of newPool(a.words, a.lessons, a.progress, dayNo)) { if (base.length >= n) break; if (!mineAllSet.has(id) && !base.includes(id)) base.push(id) }
+  const base = (a.lessons.find(l => l.day === dayNo)?.wordIds ?? []).filter(id => lv(id) === 0 && !mineAllSet.has(id) && !a.skip?.has(id))
+  for (const id of newPool(a.words, a.lessons, a.progress, dayNo, a.skip)) { if (base.length >= n) break; if (!mineAllSet.has(id) && !base.includes(id)) base.push(id) }
   base.length = Math.min(base.length, n)
   return [...mine, ...base]
 }
 
 /** 生成某天的课程：新词（见 desiredNew）+ 到期复习词（陌生/不熟悉优先，上限 reviewCap）。 */
 export function buildSession(args: {
-  words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings; sessions: Session[]; date?: string
+  words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings; sessions: Session[]; date?: string; skip?: Set<string>
 }): Session {
   const date = args.date ?? today()
   const dayNo = calendarDay(args.settings, date)
-  const due = dueWords(args.progress, date).map(p => p.wordId)
+  const due = dueWords(args.progress, date, 4, args.skip).map(p => p.wordId)
   const reviewIds = due.slice(0, args.settings.reviewCap)
   const newIds = desiredNew(args, dayNo)
   return { date, dayNo, wordIds: [...reviewIds, ...newIds], reviewIds, newIds, ver: SESSION_VER }
@@ -86,14 +86,15 @@ export function buildSession(args: {
 
 /** 课程内容后来才变化时（合并了新课程、新增了「我录入的词」）校正今天的新词名单：
  *  已经学过（评过级）的词保留；没学过、又不在目标名单里的凑数词被换掉；缺的词补进来。幂等。 */
-export function topUpSession(session: Session, args: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings }): Session {
+export function topUpSession(session: Session, args: { words: Word[]; lessons: Lesson[]; progress: Map<string, Progress>; settings: Settings; skip?: Set<string> }): Session {
   const lv = (id: string) => args.progress.get(id)?.level ?? 0
   const desired = desiredNew(args, session.dayNo, session.newIds)
   const done = session.newIds.filter(id => lv(id) > 0)
   const newIds = [...done, ...desired.filter(id => !done.includes(id))]
-  const wordIds = [...session.reviewIds, ...newIds]
-  if (newIds.length === session.newIds.length && newIds.every((id, i) => id === session.newIds[i]) && wordIds.length === session.wordIds.length) return session
-  return { ...session, wordIds, newIds }
+  const reviewIds = session.reviewIds.filter(id => !args.skip?.has(id))
+  const wordIds = [...reviewIds, ...newIds]
+  if (newIds.length === session.newIds.length && newIds.every((id, i) => id === session.newIds[i]) && wordIds.length === session.wordIds.length && reviewIds.length === session.reviewIds.length) return session
+  return { ...session, wordIds, newIds, reviewIds }
 }
 
 /** 「我录入的词」：第 18 天起的课程（我跟泰国人学到的词，或在 App 里自己添加的词）。第 1~17 天是内置的 500 词课程。 */

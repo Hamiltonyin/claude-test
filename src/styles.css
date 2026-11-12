@@ -236,3 +236,9 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .hbar i{display:block;width:100%;min-height:2px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#6a8dff,#3b6bff)}
 .hbar.wk{height:70px;gap:8px}.hbar.wk span{font-size:11px;color:var(--sub);margin-top:2px}
 .hlab{display:flex;justify-content:space-between;font-size:10px;color:var(--sub);margin-top:2px}
+
+.parkrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 16px 6px}
+.parkrow .flipcnt2{margin:0;text-align:left}
+.parkbtn{font-size:12px;color:#8a93a3;background:#f1f3f7;border-radius:12px;padding:5px 10px}.parkbtn.on{color:#c2570c;background:#fff3e0}
+.parktoast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 84px);z-index:62;background:#2d3340;color:#fff;border-radius:16px;padding:10px 14px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap}
+.parktoast button{margin-left:10px;color:#ffd666;font-weight:700}

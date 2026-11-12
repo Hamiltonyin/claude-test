@@ -81,9 +81,9 @@ function UnlockModal({ list, onClose }: { list: BadgeState[]; onClose: () => voi
 
 export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void }) {
   const [hq, setHq] = useState('')
-  const { progress, words, settings, sessions, lessons, logs, session, flips, plays, exPlays, daily } = useApp()
+  const { progress, words, settings, sessions, lessons, logs, session, flips, plays, exPlays, daily, parkedSet } = useApp()
   const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
-  const due = dueWords(progress).length
+  const due = dueWords(progress, undefined, 4, parkedSet).length
   const counts = useMemo(() => {
     const c = [0, 0, 0, 0, 0]
     for (const w of words) c[progress.get(w.id)?.level ?? 0]++
