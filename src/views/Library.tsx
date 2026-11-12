@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from '../types'
+import { loadClusters } from '../lib/clusters'
 import { LevelPill, Sheet, CountBadge, ExampleBlock, loadPhrases, SpeakButtons, ToneChips, useSpeaker, Chev } from '../ui'
 import { THEMES } from '../data/seed'
 import { myAddedIds } from '../lib/srs'
@@ -45,6 +46,9 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
 export default function Library({ onStudy, startMine, onMineShown, initialQuery, onQueryUsed }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free', startIdx?: number) => void; startMine?: boolean; onMineShown?: () => void; initialQuery?: string; onQueryUsed?: () => void }) {
   const { words, progress, lessons, wordMap, parkedSet } = useApp()
   const [parkedOnly, setParkedOnly] = useState(false)
+  const [byCluster, setByCluster] = useState(false)
+  const [clOrder, setClOrder] = useState<Map<string, number>>(new Map())
+  useEffect(() => { let on = true; loadClusters().then(cs => { if (!on) return; const m = new Map<string, number>(); let i = 0; for (const c of cs) for (const t of c.words) if (!m.has(t)) m.set(t, i++); setClOrder(m) }); return () => { on = false } }, [])
   const [tab, setTab] = useState<'words' | 'days'>('words')
   const [q, setQ] = useState(initialQuery ?? '')
   useEffect(() => { if (initialQuery) onQueryUsed?.() }, [])
@@ -90,8 +94,10 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
       if (isZh) return hits.has(w.id)
       return w.thai.includes(q.trim()) || w.roman.toLowerCase().includes(s) || (ns.length > 0 && strip(w.roman).includes(ns))
     })
-    return isZh ? out.sort((a, b) => (hits.get(b.id)?.score ?? 0) - (hits.get(a.id)?.score ?? 0)) : out
-  }, [words, progress, q, lv, theme, mine, mineSet, isZh, hits, parkedOnly, parkedSet])
+    if (isZh) return out.sort((a, b) => (hits.get(b.id)?.score ?? 0) - (hits.get(a.id)?.score ?? 0))
+    // 按关联排序：近义/反义/同类的词挨在一起，没分组的排最后
+    return byCluster ? out.sort((a, b) => (clOrder.get(a.thai) ?? 1e6) - (clOrder.get(b.thai) ?? 1e6)) : out
+  }, [words, progress, q, lv, theme, mine, mineSet, isZh, hits, parkedOnly, parkedSet, byCluster, clOrder])
 
   const Row = ({ w, i }: { w: Word; i: number }) => {
     const l = progress.get(w.id)?.level ?? 0
@@ -125,6 +131,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
         <input className="search" placeholder="搜索中文 / 泰文 / 拼音" value={q} onChange={e => setQ(e.target.value)} data-testid="search" />
         <div className="chips" style={{ marginBottom: 8 }}>
           <button className={'chip' + (mine ? ' on' : '')} onClick={() => setMine(!mine)} data-testid="chip-mine">📝 我录入的词<small>{mineIds.length}</small></button>
+          <button className={'chip' + (byCluster ? ' on' : '')} onClick={() => setByCluster(!byCluster)} data-testid="chip-cluster">🔗 按关联排序</button>
           <button className={'chip' + (parkedOnly ? ' on' : '')} onClick={() => setParkedOnly(!parkedOnly)} data-testid="chip-parked">⏸ 已忽略<small>{parkedSet.size}</small></button>
           {[1, 2, 3, 4, 0].map(l => <button key={l} className={'chip' + (lv === l ? ' on' : '')} onClick={() => setLv(lv === l ? null : l)}>{LEVEL_NAMES[l]}</button>)}
         </div>

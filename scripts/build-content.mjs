@@ -62,7 +62,7 @@ writeFileSync('public/content/clips.json', JSON.stringify({ words: clips }))
 if (existsSync('content/categories.json')) {
   const src = JSON.parse(readFileSync('content/categories.json', 'utf8'))
   let miss = 0
-  const groups = src.groups.map(g => ({ name: g.name, icon: g.icon, own: !!g.own, cats: g.cats.map(c => {
+  const groups = src.groups.map(g => ({ name: g.name, icon: g.icon, own: !!g.own, cluster: !!g.cluster, cats: g.cats.map(c => {
     const list = [...new Set(c.words.split(/\s+/).filter(Boolean).map(normThai))]
     for (const t of list) if (!byThai.has(t)) { console.error(`✗ 分类「${c.name}」里的「${t}」不在词库中`); miss++ }
     return { id: c.id, name: c.name, emoji: c.emoji, words: list.filter(t => byThai.has(t)) }

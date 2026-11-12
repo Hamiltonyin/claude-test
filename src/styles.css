@@ -252,3 +252,7 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .autonav .peek,.autonav .know,.autonav .ghost{display:none}
 
 .zhtoggle2{display:flex;justify-content:center;gap:18px}
+
+.related{width:100%;margin-top:10px;text-align:left}.rel{background:#f4f7fb;border-radius:14px;padding:8px 10px;margin-bottom:8px}
+.relh{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}.relw{display:flex;flex-wrap:wrap;gap:6px}
+.relchip{display:inline-flex;align-items:baseline;gap:5px;background:#fff;border-radius:10px;padding:3px 8px;box-shadow:0 1px 3px rgba(20,40,80,.06)}.relchip b{font-size:15px}.relchip i{font-style:normal;font-size:11px;color:var(--sub)}

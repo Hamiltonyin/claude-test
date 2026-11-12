@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from './types'
 import { AudioError, playFile, playSystem, stopAudio, systemVoiceAvailable } from './lib/audio'
 import { useApp } from './store'
+import { loadClusters, type Cluster } from './lib/clusters'
 import { TONE_SYMBOL, TONE_ZH, toneCodes, toneDescription } from './lib/tone'
 
 export const Speaker = () => (
@@ -208,6 +209,26 @@ export function Burst({ k, big = false }: { k: number; big?: boolean }) {
         return <span key={i} style={{ ['--dx' as any]: `${Math.cos(a) * d}px`, ['--dy' as any]: `${Math.sin(a) * d - 40}px`, ['--rot' as any]: `${Math.random() * 540 - 270}deg`, background: BURST_COLORS[i % BURST_COLORS.length], animationDelay: `${Math.random() * 80}ms` }} />
       })}
       <em>{big ? '🎉' : '✨'}</em>
+    </div>
+  )
+}
+
+/** 卡片背面：和这个词关联的词（近义/反义/同类），一眼看出它和谁是一组 */
+export function RelatedWords({ word }: { word: Word }) {
+  const { words } = useApp()
+  const [cl, setCl] = useState<Cluster[]>([])
+  useEffect(() => { let on = true; loadClusters().then(c => on && setCl(c)); return () => { on = false } }, [])
+  const mine = cl.filter(c => c.words.includes(word.thai)).slice(0, 2)
+  if (!mine.length) return null
+  const byThai = new Map(words.map(w => [w.thai, w]))
+  return (
+    <div className="related" data-testid="related">
+      {mine.map(c => (
+        <div key={c.id} className="rel">
+          <div className="relh">{c.emoji} {c.name}</div>
+          <div className="relw">{c.words.filter(t => t !== word.thai && byThai.has(t)).slice(0, 9).map(t => <span key={t} className="relchip"><b className="th" lang="th">{t}</b><i>{byThai.get(t)!.zh.split(/[；;（(]/)[0]}</i></span>)}</div>
+        </div>
+      ))}
     </div>
   )
 }
