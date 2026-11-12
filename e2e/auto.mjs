@@ -29,7 +29,7 @@ try {
   const id0 = plays[0].replace('.mp3', '')
   assert.equal(plays[1], id0 + '_zh.mp3'); ok('第 1 遍泰语之后读中文意思：' + plays[1])
   assert(plays[2] === plays[0] && plays[3] === plays[0]); ok('然后再读 2 遍泰语：泰语 → 中文 → 泰语 → 泰语')
-  assert(plays[4] !== plays[0] && !plays[4].includes('_zh')); ok('接着自动换到下一个词：' + plays[4])
+  assert(/_ex\.mp3/.test(plays[4]), '第 5 个应是例句：' + plays[4]); ok('三遍泰语之后接着读例句：' + plays[4])
   const label = await page.textContent('[data-testid=auto-read]'); assert(label.includes('停止连读')); ok('读的时候按钮变成「停止连读 · …」：' + label.trim())
   assert(await page.evaluate(() => document.querySelector('.card').classList.contains('flip'))); ok('连读时卡片自动翻到背面，能看到读音和意思')
   await page.tap('[data-testid=auto-read]'); await page.waitForTimeout(300)

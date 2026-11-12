@@ -42,7 +42,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   })
   const [flip, setFlip] = useState(false)
   const [finished, setFinished] = useState(false)
-  const [auto, setAuto] = useState<{ rep: number; zh?: boolean } | null>(null)
+  const [auto, setAuto] = useState<{ rep: number; zh?: boolean; ex?: boolean } | null>(null)
   const [autoMsg, setAutoMsg] = useState<{ t: 'ok' | 'err'; s: string } | null>(null)
   const autoTok = useRef(0)
   const touch = useRef<{ x: number; y: number } | null>(null)
@@ -88,6 +88,14 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
               await sleep(700)
               if (autoTok.current !== tok) return
             }
+          }
+          // 三遍读完，接着把例句也读出来（泰语 → 中文 → 泰语 → 泰语 → 例句）
+          if (settings.readEx !== false) {
+            if (autoTok.current !== tok) return
+            setAuto({ rep: AUTO_REPEATS, ex: true }); setExSig(x => x + 1); countExPlay(w.id)
+            await playExample(w)
+            if (autoTok.current !== tok) return
+            await sleep(700)
           }
           await sleep(300)
           if (autoTok.current !== tok) return
@@ -201,9 +209,12 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
       </div>
       <div className="autorow">
         <button className={'autobtn' + (auto ? ' on' : '')} onClick={() => auto ? stopAuto() : startAuto(idx)} data-testid="auto-read">
-          {auto ? `⏹ 停止连读 · ${auto.zh ? '读中文' : `泰语第 ${auto.rep}/${AUTO_REPEATS} 遍`} · ${uniquePos}/${uniqueTotal}` : `▶ 自动连读：每个词 泰语${AUTO_REPEATS}遍${settings.readZh !== false ? ' + 中文' : ''}`}
+          {auto ? `⏹ 停止连读 · ${auto.ex ? '读例句' : auto.zh ? '读中文' : `泰语第 ${auto.rep}/${AUTO_REPEATS} 遍`} · ${uniquePos}/${uniqueTotal}` : `▶ 自动连读：每个词 泰语${AUTO_REPEATS}遍${settings.readZh !== false ? ' + 中文' : ''}${settings.readEx !== false ? ' + 例句' : ''}`}
         </button>
-        <label className="zhtoggle"><input type="checkbox" checked={settings.readZh !== false} onChange={e => updateSettings({ readZh: e.target.checked })} data-testid="read-zh" /> 同时读中文意思</label>
+        <div className="zhtoggle2">
+          <label className="zhtoggle"><input type="checkbox" checked={settings.readZh !== false} onChange={e => updateSettings({ readZh: e.target.checked })} data-testid="read-zh" /> 读中文意思</label>
+          <label className="zhtoggle"><input type="checkbox" checked={settings.readEx !== false} onChange={e => updateSettings({ readEx: e.target.checked })} data-testid="read-ex" /> 读例句</label>
+        </div>
         {autoMsg && <div className={'note ' + autoMsg.t} style={{ marginTop: 6 }} role="status" data-testid="auto-msg">{autoMsg.s}</div>}
       </div>
       <div className="stage">
