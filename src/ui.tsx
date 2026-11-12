@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from './types'
 import { AudioError, playFile, playSystem, stopAudio, systemVoiceAvailable } from './lib/audio'
 import { useApp } from './store'
@@ -144,14 +144,17 @@ export function usePhrases(word: Word): Phrase[] {
 }
 
 /** 例句（可发音）+ 常用词组（可发音）。signal 每变一次，例句卡片就「翻」一下（自动朗读时触发），并有自己的计数。 */
-export function ExampleBlock({ word, signal = 0 }: { word: Word; signal?: number }) {
+/** 例句出场动画（每次随机一种）：翻转 / 虚化变实 / 左右擦除 / 翻书页 / 缩放旋转 / 上下擦除 */
+const FX = ['rot', 'blur', 'wipel', 'wiper', 'page', 'spin', 'wiped'] as const
+export function ExampleBlock({ word, signal = 0, show }: { word: Word; signal?: number; show?: boolean }) {   // show 未传 = 静态显示；传了 = 先隐藏、等 true 时用随机动画出场
   const phrases = usePhrases(word)
   const { exPlays, countExPlay } = useApp()
   const [manual, setManual] = useState(0)
   const key = signal + manual
+  const fx = useMemo(() => FX[Math.floor(Math.random() * FX.length)], [key, show])   // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
-      <div key={'ex' + key} className={'ex' + (key ? ' exflip' : '')} data-testid="example">
+      <div key={'ex' + key + String(show)} className={'ex' + (show ? ' exfx fx-' + fx : '')} style={show === false ? { visibility: 'hidden' } : undefined} data-testid="example" data-fx={show ? fx : ''}>
         <ToneLegend />
         <div className="exrow"><div className="th" lang="th">{word.exTh}</div><ClipButton id={word.id} suffix="_ex" text={word.exTh} label="播放例句" onPlay={() => { countExPlay(word.id); setManual(m => m + 1) }} /></div>
         <ColorRoman roman={word.exRoman} />
@@ -159,7 +162,7 @@ export function ExampleBlock({ word, signal = 0 }: { word: Word; signal?: number
         <ExCount n={exPlays[word.id] ?? 0} />
       </div>
       {phrases.length > 0 && (
-        <div className="ex phr" data-testid="phrases">
+        <div className={'ex phr' + (show ? ' phrin' : '')} style={show === false ? { visibility: 'hidden' } : undefined} data-testid="phrases">
           <div className="phrh">常用词组</div>
           {phrases.map((x, i) => (
             <div key={i} className="phrow">

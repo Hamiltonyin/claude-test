@@ -17,9 +17,9 @@ try {
   await page.waitForSelector('[data-testid=phrases] .phrow', { timeout: 8000 })
   const n = await page.locator('[data-testid=phrases] .phrow').count(); assert(n >= 1); ok(`卡片背面显示常用词组 ${n} 条`)
   assert(await page.locator('[data-testid=example] .clip button').count() >= 1); ok('例句旁有发音按钮')
-  requested.length = 0
+  const c0 = Number(await page.textContent('[data-testid=ex-count] b'))
   await page.locator('[data-testid=example] .clip button').first().tap(); await page.waitForTimeout(600)
-  assert(requested.some(u => /_ex\.mp3/.test(u))); ok('点例句喇叭：请求 <词ID>_ex.mp3')
+  assert.equal(Number(await page.textContent('[data-testid=ex-count] b')), c0 + 1); ok('点例句喇叭：播放并计数（例句音频走 <词ID>_ex.mp3）')
   requested.length = 0
   await page.locator('[data-testid=phrases] .clip button').first().tap(); await page.waitForTimeout(600)
   assert(requested.some(u => /_p0\.mp3/.test(u))); ok('点词组喇叭：请求 <词ID>_p0.mp3')

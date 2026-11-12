@@ -256,3 +256,23 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .related{width:100%;margin-top:10px;text-align:left}.rel{background:#f4f7fb;border-radius:14px;padding:8px 10px;margin-bottom:8px}
 .relh{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}.relw{display:flex;flex-wrap:wrap;gap:6px}
 .relchip{display:inline-flex;align-items:baseline;gap:5px;background:#fff;border-radius:10px;padding:3px 8px;box-shadow:0 1px 3px rgba(20,40,80,.06)}.relchip b{font-size:15px}.relchip i{font-style:normal;font-size:11px;color:var(--sub)}
+
+/* —— 例句出场：随机动画（翻转 / 虚化变实 / 左右擦除 / 翻书页 / 缩放旋转 / 上下擦除）—— */
+.exfx{animation-duration:.85s;animation-timing-function:cubic-bezier(.25,.9,.3,1);animation-fill-mode:both;box-shadow:0 0 0 2px rgba(0,122,255,.22),0 10px 26px rgba(0,122,255,.16)}
+.exfx.fx-rot{animation-name:fxrot;transform-origin:50% 0}
+.exfx.fx-blur{animation-name:fxblur}
+.exfx.fx-wipel{animation-name:fxwipel}
+.exfx.fx-wiper{animation-name:fxwiper}
+.exfx.fx-page{animation-name:fxpage;transform-origin:0 50%}
+.exfx.fx-spin{animation-name:fxspin}
+.exfx.fx-wiped{animation-name:fxwiped}
+@keyframes fxrot{0%{transform:perspective(700px) rotateX(-92deg);opacity:0}55%{opacity:1}100%{transform:perspective(700px) rotateX(0)}}
+@keyframes fxblur{0%{filter:blur(16px);opacity:0;transform:scale(1.08)}60%{opacity:1}100%{filter:blur(0);opacity:1;transform:scale(1)}}
+@keyframes fxwipel{0%{clip-path:inset(0 100% 0 0);opacity:.2}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes fxwiper{0%{clip-path:inset(0 0 0 100%);opacity:.2}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes fxwiped{0%{clip-path:inset(0 0 100% 0);opacity:.2}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes fxpage{0%{transform:perspective(800px) rotateY(95deg);opacity:0;filter:brightness(.7)}60%{opacity:1}100%{transform:perspective(800px) rotateY(0);filter:none}}
+@keyframes fxspin{0%{transform:scale(.55) rotate(-10deg);filter:blur(8px);opacity:0}100%{transform:scale(1) rotate(0);filter:blur(0);opacity:1}}
+.phrin{animation:phrin .6s .35s ease-out both}
+@keyframes phrin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.exfx,.phrin{animation:none}}

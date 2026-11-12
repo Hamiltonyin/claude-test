@@ -22,6 +22,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   const { wordMap, progress, logs, rate, settings, updateSettings, countFlip, countPlay, countExPlay, parkWord, unparkWord, parkedSet } = useApp()
   const [burst, setBurst] = useState(0)
   const [exSig, setExSig] = useState(0)
+  const [exShown, setExShown] = useState(false)           // 例句出场：翻到背面先只有单词，读完单词再用随机动画出现例句
   const manual = settings.manualRate === true          // 「我的」里可打开手动标熟练度；默认由翻卡行为自动判断
   const viewFlips = useRef(0)                            // 这一张卡这一次看了几次背面
   const committed = useRef(new Set<number>())            // 已经判定过的队列位置
@@ -70,7 +71,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
       try {
         for (let i = from; i < list.length; i++) {
           const w = wordMap.get(list[i]); if (!w) continue
-          setIdx(i); setFlip(true)
+          setIdx(i); setFlip(true); setExShown(false)
           for (let r = 1; r <= AUTO_REPEATS; r++) {
             if (autoTok.current !== tok) return
             setAuto({ rep: r })
@@ -89,10 +90,11 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
               if (autoTok.current !== tok) return
             }
           }
+          if (settings.readEx === false) setExShown(true)
           // 三遍读完，接着把例句也读出来（泰语 → 中文 → 泰语 → 泰语 → 例句）
           if (settings.readEx !== false) {
             if (autoTok.current !== tok) return
-            setAuto({ rep: AUTO_REPEATS, ex: true }); setExSig(x => x + 1); countExPlay(w.id)
+            setAuto({ rep: AUTO_REPEATS, ex: true }); setExShown(true); setExSig(x => x + 1); countExPlay(w.id)
             await playExample(w)
             if (autoTok.current !== tok) return
             await sleep(700)
@@ -135,7 +137,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   }
   const go = (to: number) => {
     const len = to > idx ? commitCurrent() : queue.length
-    exTok.current++; stopAuto(); sp.stop(); setFlip(false)
+    exTok.current++; setExShown(false); stopAuto(); sp.stop(); setFlip(false)
     if (to >= len) { if (to > idx) setFinished(true); return }
     if (to < 0) return
     setIdx(to)
@@ -146,12 +148,15 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
     if (nf && word) { countFlip(word.id); viewFlips.current++ }
     // 翻到背面时自动朗读（在点击回调里同步触发，iPhone 才允许）；可在「我的」里关闭
     exTok.current++
+    setExShown(false)
+    const plainReveal = !(settings.autoPlay && settings.autoEx !== false)
+    if (nf && word && plainReveal) { const tk = exTok.current; setTimeout(() => { if (tk === exTok.current) { setExShown(true); setExSig(x => x + 1) } }, 550) }
     if (nf && word && settings.autoPlay) {
       // 翻面：先读单词；读完接着自动读例句（不用点），例句卡片「翻」一下并单独计数
       const tok = exTok.current, w = word
       void sp.play(w, false).then(() => {
         if (settings.autoEx === false || tok !== exTok.current) return
-        setExSig(x => x + 1); countExPlay(w.id)
+        setExShown(true); setExSig(x => x + 1); countExPlay(w.id)
         void playExample(w)
       })
     }
@@ -243,7 +248,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             <div className="zh">{word.zh}</div>
             <div className="rom" style={{ fontSize: 22, color: 'var(--blue)', fontWeight: 600 }} data-testid="roman">{word.roman}</div>
             <ToneChips roman={word.roman} />
-            <ExampleBlock word={word} signal={exSig} />
+            <ExampleBlock word={word} signal={exSig} show={exShown} />
             <RelatedWords word={word} />
             <div className="hint">{word.theme}{p ? ` · 已复习 ${p.reps} 次` : ' · 新词'}</div>
           </div>
