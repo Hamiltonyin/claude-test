@@ -242,3 +242,11 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .parkbtn{font-size:12px;color:#8a93a3;background:#f1f3f7;border-radius:12px;padding:5px 10px}.parkbtn.on{color:#c2570c;background:#fff3e0}
 .parktoast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 84px);z-index:62;background:#2d3340;color:#fff;border-radius:16px;padding:10px 14px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap}
 .parktoast button{margin-left:10px;color:#ffd666;font-weight:700}
+
+/* —— 底部翻页条：小巧的悬浮胶囊 —— */
+.autonav{display:grid;grid-template-columns:44px 1fr 1.25fr;gap:8px;align-items:center;margin:2px 18px calc(var(--sab) + 12px);padding:6px;border-radius:30px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 26px rgba(30,60,120,.14),0 0 0 1px rgba(30,60,120,.06)}
+.autonav button{min-height:44px;height:44px;border-radius:22px;font-size:15px;font-weight:600;transition:transform .12s,background .2s}.autonav button:active{transform:scale(.94)}
+.autonav .pv{background:#eef1f6;color:#5b6475;font-size:24px;line-height:1;padding:0 0 3px}.autonav .pv:disabled{opacity:.35}
+.autonav .ign{background:transparent;color:#8a93a3;font-size:14px;font-weight:500;letter-spacing:.5px}.autonav .ign:active{background:#f1f3f7}.autonav .ign.on{background:#fff3e0;color:#c2570c;font-weight:600}
+.autonav .nx{background:linear-gradient(135deg,#3b82ff,#6a5cff);color:#fff;box-shadow:0 5px 14px rgba(70,90,255,.38);letter-spacing:.5px}
+.autonav .peek,.autonav .know,.autonav .ghost{display:none}

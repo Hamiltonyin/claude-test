@@ -125,7 +125,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
         <input className="search" placeholder="搜索中文 / 泰文 / 拼音" value={q} onChange={e => setQ(e.target.value)} data-testid="search" />
         <div className="chips" style={{ marginBottom: 8 }}>
           <button className={'chip' + (mine ? ' on' : '')} onClick={() => setMine(!mine)} data-testid="chip-mine">📝 我录入的词<small>{mineIds.length}</small></button>
-          <button className={'chip' + (parkedOnly ? ' on' : '')} onClick={() => setParkedOnly(!parkedOnly)} data-testid="chip-parked">⏸ 近期用不上<small>{parkedSet.size}</small></button>
+          <button className={'chip' + (parkedOnly ? ' on' : '')} onClick={() => setParkedOnly(!parkedOnly)} data-testid="chip-parked">⏸ 已忽略<small>{parkedSet.size}</small></button>
           {[1, 2, 3, 4, 0].map(l => <button key={l} className={'chip' + (lv === l ? ' on' : '')} onClick={() => setLv(lv === l ? null : l)}>{LEVEL_NAMES[l]}</button>)}
         </div>
         <div className="chips" style={{ marginBottom: 10 }}>

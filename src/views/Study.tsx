@@ -214,7 +214,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             const t = touch.current; if (!t) return
             const dx = e.changedTouches[0].clientX - t.x, dy = e.changedTouches[0].clientY - t.y
             if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) { swiped.current = true; go(dx < 0 ? idx + 1 : idx - 1) }
-            else if (!flip && dy < -80 && Math.abs(dy) > Math.abs(dx) * 1.5) { swiped.current = true; park() }   // 正面上滑 = 近期用不上（背面上下滑是滚动）
+            else if (!flip && dy < -80 && Math.abs(dy) > Math.abs(dx) * 1.5) { swiped.current = true; park() }   // 正面上滑 = 忽略（背面上下滑是滚动）
             touch.current = null
           }}>
           <div className="face front">
@@ -222,7 +222,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
-            <div className="hint">{manual ? '点击卡片翻面 · 左右滑动切换' : '认识就直接下一个 · 点卡片看答案 · 上滑 = 近期用不上'}</div>
+            <div className="hint">{manual ? '点击卡片翻面 · 左右滑动切换' : '认识就直接下一个 · 点卡片看答案 · 上滑忽略'}</div>
           </div>
           <div className="face back">
             {manual && level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
@@ -237,12 +237,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
           </div>
         </div>
       </div>
-      <div className="parkrow">
-        <CountBadge id={word.id} className="flipcnt2" />
-        {parkedSet.has(word.id)
-          ? <button className="parkbtn on" onClick={() => unparkWord(word.id)} data-testid="unpark">▶ 已搁置 · 点这里恢复</button>
-          : <button className="parkbtn" onClick={park} data-testid="park">⏸ 近期用不上</button>}
-      </div>
+      <CountBadge id={word.id} className="flipcnt2" />
       {manual ? (<>
       <div className={'rates' + (flip ? '' : ' off')} aria-label="选择熟练度">
         {([1, 2, 3, 4] as Level[]).map(l => (
@@ -256,10 +251,13 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
         <button onClick={() => go(idx + 1)} data-testid="next">下一词 ›</button>
       </div></>) : (
       <div className="autonav">
-        <button className="ghost" onClick={() => go(idx - 1)} disabled={idx === 0} data-testid="prev">‹ 上一个</button>
-        <button className="know" onClick={() => go(idx + 1)} data-testid="next">下一个 ›</button>
+        <button className="pv" onClick={() => go(idx - 1)} disabled={idx === 0} data-testid="prev" aria-label="上一个">‹</button>
+        {parkedSet.has(word.id)
+          ? <button className="ign on" onClick={() => unparkWord(word.id)} data-testid="unpark">▶ 恢复</button>
+          : <button className="ign" onClick={park} data-testid="park">忽略</button>}
+        <button className="nx" onClick={() => go(idx + 1)} data-testid="next">下一个 ›</button>
       </div>)}
-      {parkMsg && <div className="parktoast" data-testid="park-toast">⏸ 已搁置 60 天，不再出现 <button onClick={undoPark} data-testid="park-undo">撤销</button></div>}
+      {parkMsg && <div className="parktoast" data-testid="park-toast">⏸ 已忽略 60 天，不再出现 <button onClick={undoPark} data-testid="park-undo">撤销</button></div>}
       {judge && <div key={judge.k} className={'judge lv' + judge.lv} data-testid="judge">{judge.lv >= 3 ? '✓ 认识' : judge.lv === 2 ? '再熟悉一下' : '多看几遍'}</div>}
       {sp.toast}
       <Burst k={burst} />

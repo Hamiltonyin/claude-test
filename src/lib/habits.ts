@@ -53,7 +53,7 @@ export function summarize(a: { parkedN?: number; logs: ReviewLog[]; daily: Recor
   if (totalFlips + totalPlays > 0) insights.push(`听与看：累计翻卡 ${totalFlips} 次、听发音 ${totalPlays} 次${totalPlays < totalFlips ? '——听得比看得少，建议多开自动连读练耳朵。' : '。'}`)
   if (hardest.length) insights.push(`最费劲的词：${hardest.map(h => `${wm.get(h.id)!.thai}（翻 ${h.flips} 次）`).join('、')}，建议放进「验收」里重点练。`)
   if (topics.length) insights.push(`学得最多的主题：${topics.map(x => `${x.theme} ${x.n} 词`).join('、')}。`)
-  if ((a.parkedN ?? 0) > 0) insights.push(`搁置：有 ${a.parkedN} 个词被你标成「近期用不上」，它们暂时不进新词和复习，到期（60 天）或你手动恢复后才回来。`)
+  if ((a.parkedN ?? 0) > 0) insights.push(`搁置：有 ${a.parkedN} 个词被你「忽略」了（近期用不上），它们暂时不进新词和复习，到期（60 天）或你手动恢复后才回来。`)
   if (overdue > 0) insights.push(`有 ${overdue} 个已学过的词逾期没复习，先清一清再学新词，记得更牢。`)
   return { hasData: logs.length > 0, byHour, byWeekday, activeDays30, longest, avgPerDay, mix, hardest, topics, overdue, insights }
 }
