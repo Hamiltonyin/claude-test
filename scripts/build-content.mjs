@@ -73,6 +73,14 @@ if (existsSync('content/categories.json')) {
   writeFileSync('public/content/categories.json', JSON.stringify({ groups }))
   console.log(`分类：${groups.reduce((a, g) => a + g.cats.length, 0)} 个；未归入任何分类的词 ${left.length} 个：${left.join(' ')}`)
 }
+// 元音发音页：content/vowels.json（例词必须在词库里；carrier 是合成语音用的示范音节；clip 是老师视频里的起止秒数，视频本身不进仓库）
+if (existsSync('content/vowels.json')) {
+  const v = JSON.parse(readFileSync('content/vowels.json', 'utf8'))
+  for (const e of v.vowels) for (const t of e.ex) if (!byThai.has(normThai(t))) { console.error(`✗ 元音 ${e.id} 的例词「${t}」不在词库中`); bad++ }
+  writeFileSync('public/content/vowels.json', JSON.stringify(v))
+  for (const e of v.vowels) if (e.carrier) clips.push({ id: `vow-${e.id}`, th: e.carrier })
+  console.log(`元音：${v.vowels.length} 个`)
+}
 // 情景对话：content/dialogues/*.txt。首行 `# id|标题|场景|emoji`；`== 小节名`；每行 `说话人|泰文|拼音|中文`（说话人「我」显示在右边）
 const dialogues = []
 const dirD = 'content/dialogues'

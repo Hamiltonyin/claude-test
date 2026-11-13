@@ -46,3 +46,5 @@ export async function clearStores(names: string[]) {
   await Promise.all([...names.map(n => tx.objectStore(n).clear()), tx.done])
 }
 export const saveSettings = (s: Settings) => put('meta', s, 'settings')
+export async function get<T = unknown>(store: string, key: IDBValidKey) { const d = await db(); return (await d.get(store, key)) as T | undefined }
+export async function del(store: string, key: IDBValidKey) { const d = await db(); await d.delete(store, key) }

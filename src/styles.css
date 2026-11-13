@@ -302,3 +302,16 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .bub.on .bbody{box-shadow:0 0 0 2px rgba(0,122,255,.45),0 8px 22px rgba(0,122,255,.25);transform:scale(1.015)}
 .bplay{display:flex;gap:6px;padding:0 4px}.bplay button{width:30px;height:30px;border-radius:15px;background:#e6edfb;color:var(--blue);display:grid;place-items:center;font-size:13px}.bplay button svg{width:15px;height:15px}.bplay .slow{background:#eef1f6}
 .dlgbar{padding:6px 18px calc(var(--sab) + 12px)}.dlgbar .nx{width:100%;height:48px;border-radius:24px;background:linear-gradient(135deg,#3b82ff,#6a5cff);color:#fff;font-weight:700;font-size:16px;box-shadow:0 6px 16px rgba(70,90,255,.35)}.dlgbar .nx.stop{background:#ff6b6b;box-shadow:0 6px 16px rgba(255,80,80,.3)}
+
+.vowpage{background:#f4f6fb}.vowlist{padding:8px 14px 30px;overflow-y:auto;flex:1}
+.vowintro{background:#fff;border-radius:18px;padding:12px 14px;margin-bottom:6px;font-size:13px;box-shadow:0 2px 8px rgba(20,40,80,.05)}.vowintro p{margin:4px 0}
+.vowimport{display:block;margin:8px 0;padding:11px;border:1.5px dashed #b7c4e6;border-radius:14px;text-align:center;color:#3b6fff;font-weight:600;cursor:pointer}.vowimport input{position:absolute;opacity:0;width:1px;height:1px}
+.vowvid video{width:100%;max-height:200px;border-radius:12px;background:#000;margin-top:6px}
+.vowh{margin:14px 4px 6px;font-size:14px;color:var(--sub)}
+.vowcard{background:#fff;border-radius:16px;margin-bottom:8px;box-shadow:0 2px 8px rgba(20,40,80,.05);overflow:hidden}
+.vowtop{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;text-align:left}
+.vowform{font-size:30px;min-width:76px;line-height:1.3}.vowmeta b{display:block;font-size:15px}.vowmeta i{font-style:normal;font-size:11.5px;color:var(--sub)}.vowipa{margin-left:auto;color:var(--sub);font-size:13px}.vowtop em{font-style:normal;color:#b7bdc9}
+.vowbody{padding:0 14px 12px}.vowhint{margin:0 0 8px;font-size:13.5px;line-height:1.5}
+.vowbtns{display:flex;gap:8px;flex-wrap:wrap}.vowbtns button{background:#eef3ff;color:#2f5be0;border-radius:12px;padding:8px 12px;font-size:13.5px;font-weight:600}.vowbtns .clip{background:#fff1e0;color:#d9730d}
+.vowex{margin-top:10px;border-top:1px solid var(--line)}.vowexrow{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.vowexrow .th{font-size:20px}.vowexrow .z{margin-left:auto;font-size:13px}
+.vmark{color:#e5484d;font-weight:700}
