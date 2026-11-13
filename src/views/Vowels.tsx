@@ -79,14 +79,15 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
     <div className="study vowpage" role="dialog" aria-label="元音发音">
       <div className="sthead"><button className="close" onClick={onClose}>‹ 返回</button><div className="prog"><b>🔤 元音发音练习</b></div><div className="cnt">{data?.vowels.length ?? 0} 个</div></div>
       <div className="vowlist">
-        <div className="vowintro">
-          <b>怎么用</b>
-          <p>点元音卡片展开：先听「示范音」（合成语音），有视频的话再点「🎬 老师这一段」对照听。红色字母 = 元音；短音收得快，长音拉长约两倍。</p>
-          {url ? <div className="vowvid">
+        {url && <div className="vowvid">
             <video ref={vid} src={url} controls playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => setPlaying(null)} data-testid="vow-video" />
             <button className="link" onClick={removeVideo}>移除本机视频</button> <button className="link" onClick={() => void exportClips()} data-testid="vow-export">复制全部时间轴</button>
             {cal && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{cal}</p>}
-          </div> : <label className="vowimport">
+          </div>}
+        <div className="vowintro">
+          <b>怎么用</b>
+          <p>点元音卡片展开：先听「示范音」（合成语音），有视频的话再点「🎬 老师这一段」对照听。红色字母 = 元音；短音收得快，长音拉长约两倍。</p>
+          {!url && <label className="vowimport">
             <input type="file" accept="video/*" onChange={e => void importVideo(e.target.files?.[0])} data-testid="vow-file" />
             <span>{busy ? '导入中…' : '📥 导入老师的教学视频（只存在你这台手机里，不会上传）'}</span>
           </label>}

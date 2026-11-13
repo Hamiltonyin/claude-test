@@ -34,6 +34,9 @@ try {
   await page.reload(); await page.waitForSelector('[data-testid=open-vowels]'); await page.tap('[data-testid=open-vowels]')
   await page.locator('[data-testid=vowel] .vowtop').nth(11).tap(); await page.waitForSelector('[data-testid=vow-range]')
   assert((await page.textContent('[data-testid=vow-range]')).startsWith('3.0')); ok('刷新后校准仍在（存本机）')
+  await page.evaluate(() => { document.querySelector('.vowlist').scrollTop = 900 }); await page.waitForTimeout(200)
+  const top = await page.evaluate(() => Math.round(document.querySelector('.vowvid').getBoundingClientRect().top - document.querySelector('.vowlist').getBoundingClientRect().top))
+  assert(top === 0, 'top=' + top); ok('向下滚动时视频窗口固定在顶部')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/vow-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
