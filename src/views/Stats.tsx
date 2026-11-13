@@ -5,9 +5,10 @@ import { addDays, today } from '../lib/dates'
 import { StatsHeader, streakOf } from './Home'
 import Records from './Records'
 import { summarize } from '../lib/habits'
+import { analyzeMemory } from '../lib/memory'
 
 export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: string[]) => void }) {
-  const { logs, words, progress, settings, daily, flips, plays, parkedSet } = useApp()
+  const { logs, words, progress, settings, daily, flips, plays, parkedSet, wordDaily } = useApp()
   const days = useMemo(() => {
     const t = today(); const out: { d: string; n: number }[] = []
     for (let i = 13; i >= 0; i--) {
@@ -26,6 +27,7 @@ export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: s
     return out
   }, [logs, daily])
   const hab = useMemo(() => summarize({ parkedN: parkedSet.size, logs, daily, flips, plays, progress, words, settings }), [logs, daily, flips, plays, progress, words, settings, parkedSet])
+  const mem = useMemo(() => analyzeMemory(logs, wordDaily), [logs, wordDaily])
   const counts = [0, 0, 0, 0, 0]; words.forEach(w => counts[progress.get(w.id)?.level ?? 0]++)
   const max = Math.max(settings.dailyGoal, ...days.map(d => d.n))
   const todayN = days[days.length - 1].n
@@ -57,6 +59,18 @@ export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: s
           <p className="sub" style={{ margin: '10px 0 4px' }}>一周中的学习分布</p>
           <div className="hbar wk">{hab.byWeekday.map((n, d) => <div key={d}><i style={{ height: `${(n / Math.max(1, ...hab.byWeekday)) * 100}%` }} /><span>{['日', '一', '二', '三', '四', '五', '六'][d]}</span></div>)}</div>
         </>}
+      </div>
+      <div className="panel" data-testid="memory-panel"><h3>我的记忆曲线</h3>
+        <p className="sub" style={{ margin: '4px 0 8px' }}>用你自己的学习日志估计：记熟一个词要几天、隔多久还记得、每天读几次最快。数据越多越准。</p>
+        <div className="dgrid today">
+          {([['有记录的词', mem.words], ['一眼认识', mem.instant], ['需要学的', mem.learned.length], ['平均记熟(天)', mem.avgDays ?? '—'], ['中位数(天)', mem.medianDays ?? '—']] as [string, number | string][]).map(([k, v]) => <div key={k}><b>{v}</b><span>{k}</span></div>)}
+        </div>
+        <p className="sub" style={{ margin: '10px 0 4px' }}>遗忘曲线：隔几天再看到，还「认识」的比例</p>
+        <div className="curve">{mem.curve.map(c => <div key={c.label}><span className="cv">{c.n ? Math.round((c.ok / c.n) * 100) + '%' : '—'}</span><i style={{ height: `${c.n ? (c.ok / c.n) * 100 : 0}%` }} /><span className="cl">{c.label}</span><small>n={c.n}</small></div>)}</div>
+        <p className="sub" style={{ margin: '12px 0 4px' }}>每天读几次，几天记熟？（记熟前每个学习日的听读次数）</p>
+        <table className="dtable"><thead><tr><th style={{ textAlign: 'left' }}>频率</th><th>词数</th><th>平均记熟(天)</th></tr></thead>
+          <tbody>{mem.byRate.map(r => <tr key={r.label}><td style={{ textAlign: 'left' }}>{r.label}</td><td>{r.n}</td><td>{r.n ? r.avgDays : '—'}</td></tr>)}</tbody></table>
+        <p className="mrec" data-testid="memory-rec">{mem.best ? `目前你的数据里「${mem.best.label}」记得最快（平均 ${mem.best.avgDays} 天记熟，${mem.best.n} 个词）。` : mem.learned.length < 3 ? '数据还不够。先正常学一阵：每个词每次出现时让它被听读几次，记下来的「听读次数」和「几天记熟」就会在这里对上号。' : '不同频率的样本还不够对比，继续学，每组攒到 3 个词以上就会给出建议。'}</p>
       </div>
       <div className="panel"><h3>近 14 天（每天评级的不同词数）</h3>
         <div className="chart">{days.map(d => <div key={d.d}><span>{d.n || ''}</span><i style={{ height: `${(d.n / max) * 80}%`, background: d.n >= settings.dailyGoal ? 'var(--green)' : 'var(--blue)' }} /></div>)}</div>

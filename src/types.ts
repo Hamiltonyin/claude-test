@@ -18,6 +18,9 @@ export interface Settings {
 }
 /** 每天的行为计数（翻卡 / 单词发音 / 例句发音），用于「每日学习量」 */
 export interface DailyCount { flips: number; plays: number; ex: number }
+/** 每个词每天的行为：f 翻卡、p 单词发音、e 例句发音（用来研究「每天读几次记得最快」） */
+export interface WordDay { f: number; p: number; e: number }
+export type WordDaily = Record<string, Record<string, WordDay>>
 export interface Backup {
   app: 'thai30'; version: 1; exportedAt: number
   words: Word[]; lessons: Lesson[]; progress: Progress[]; logs: ReviewLog[]; sessions: Session[]; settings: Settings
@@ -26,6 +29,7 @@ export interface Backup {
   exPlays?: Record<string, number>
   daily?: Record<string, DailyCount>
   parked?: Record<string, string>
+  wordDaily?: WordDaily
 }
 export const LEVEL_NAMES = ['未标记', '陌生', '不熟悉', '熟悉', '精通'] as const
 export const LEVEL_COLORS = ['#c7ccd6', '#ff3b30', '#ff9500', '#007aff', '#34c759'] as const

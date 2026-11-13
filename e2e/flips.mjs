@@ -9,7 +9,7 @@ const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
-const n = async () => Number(await page.locator('[data-testid=counts] b').first().textContent())
+const n = async () => Number(await page.locator('[data-testid=counts] b').nth(2).textContent())   // 计数条顺序：今日听读 · 累计听读 · 翻卡
 try {
   await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-weak]')
   await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')
@@ -22,14 +22,15 @@ try {
   // 词库/搜索里点开词条 = 翻牌学习界面，同样计数；发音也计数
   await page.tap('text=‹ 返回'); await page.tap('[data-testid=tab-library]'); await page.fill('[data-testid=search]', 'ช่วย')
   await page.tap('[data-testid=word-row]'); await page.waitForSelector('[data-testid=card]')
-  const cnt = async (i) => Number(await page.locator('[data-testid=counts] b').nth(i).textContent())
-  const f0 = await cnt(0)
-  await page.tap('[data-testid=card]'); await page.waitForTimeout(600); assert.equal(await cnt(0), f0 + 1); ok('搜索结果里也能翻卡，计数 +1')
-  const p0 = await cnt(1)   // 翻面时会自动朗读一次（已计入）
+  const cnt = async (i) => Number(await page.locator('[data-testid=counts] b').nth(i).textContent())   // 0 今日听读 1 累计听读 2 翻卡
+  const f0 = await cnt(2)
+  await page.tap('[data-testid=card]'); await page.waitForTimeout(600); assert.equal(await cnt(2), f0 + 1); ok('搜索结果里也能翻卡，计数 +1')
+  await page.waitForTimeout(1500)   // 等翻面自动朗读（单词 + 例句）都读完、都已计入
+  const p0 = await cnt(1), t0 = await cnt(0)
   await page.locator('.study .face.back .spk button[aria-label="播放发音"]').tap(); await page.waitForTimeout(500)
-  assert.equal(await cnt(1), p0 + 1); ok('点发音一次 → 已听 +1')
+  assert.equal(await cnt(1), p0 + 1); assert.equal(await cnt(0), t0 + 1); ok('点发音一次 → 累计听读 +1、今日听读 +1')
   await page.locator('.study .face.back .spk button.slow').tap(); await page.waitForTimeout(500)
-  assert.equal(await cnt(1), p0 + 2, 'plays ' + await cnt(1)); ok('慢速发音也计入')
+  assert.equal(await cnt(1), p0 + 2, 'plays ' + await cnt(1)); assert.equal(await cnt(0), t0 + 2); ok('慢速发音也计入（今日 +2）')
   await page.tap('[data-testid=study-detail]'); await page.waitForSelector('[data-testid=sheet-close]'); ok('翻卡界面里可进入「详情」（编辑词条）')
   await page.tap('[data-testid=sheet-close]')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from './types'
 import { AudioError, playFile, playSystem, stopAudio, systemVoiceAvailable } from './lib/audio'
 import { useApp } from './store'
+import { today } from './lib/dates'
 import { loadClusters, type Cluster } from './lib/clusters'
 import { TONE_SYMBOL, TONE_ZH, toneCodes, toneDescription } from './lib/tone'
 
@@ -196,8 +197,11 @@ function Num({ n, label }: { n: number; label: string }) {
   )
 }
 export function CountBadge({ id, className = 'flipcnt' }: { id: string; className?: string }) {
-  const { flips, plays } = useApp()
-  return <div className={className} data-testid="counts"><Num n={flips[id] ?? 0} label="已翻" /> · <Num n={plays[id] ?? 0} label="已听" /></div>
+  const { flips, plays, exPlays, wordDaily } = useApp()
+  const day = wordDaily[id]?.[today()]
+  const todayN = (day?.p ?? 0) + (day?.e ?? 0)                 // 今日听读 = 今天单词发音 + 例句发音
+  const total = (plays[id] ?? 0) + (exPlays[id] ?? 0)          // 累计听读
+  return <div className={className} data-testid="counts"><Num n={todayN} label="今日听读" /> · <Num n={total} label="累计听读" /> · <Num n={flips[id] ?? 0} label="翻卡" /></div>
 }
 
 /** 小庆祝特效：彩纸/星星从中间向四周飘散。k 每变一次触发一次；big = 更多更大。 */

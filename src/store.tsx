@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import type { Backup, DailyCount, Level, Lesson, Progress, ReviewLog, Session, Settings, Word } from './types'
+import type { Backup, DailyCount, WordDaily, WordDay, Level, Lesson, Progress, ReviewLog, Session, Settings, Word } from './types'
 import { clearStores, db, loadAll, put, putMany, saveSettings } from './lib/db'
 import { SEED_LESSONS, SEED_LEVELS, SEED_VERSION, SEED_WORDS } from './data/seed'
 import { applyRating, buildSession, topUpSession, calendarDay, dueWords, SESSION_VER } from './lib/srs'
@@ -14,7 +14,7 @@ interface Ctx {
   flips: Record<string, number>; countFlip(wordId: string): void
   plays: Record<string, number>; countPlay(wordId: string): void
   exPlays: Record<string, number>; countExPlay(wordId: string): void
-  daily: Record<string, DailyCount>
+  daily: Record<string, DailyCount>; wordDaily: WordDaily
   parked: Record<string, string>; parkedSet: Set<string>; parkWord(wordId: string, days?: number): void; unparkWord(wordId: string): void
   rate(wordId: string, level: Level): Promise<void>
   updateSettings(p: Partial<Settings>): Promise<void>
@@ -54,6 +54,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const playsRef = useRef(plays); playsRef.current = plays
   const [exPlays, setExPlays] = useState<Record<string, number>>({})
   const exRef = useRef(exPlays); exRef.current = exPlays
+  const [wordDaily, setWordDaily] = useState<WordDaily>({})
+  const wdRef = useRef(wordDaily); wdRef.current = wordDaily
+  const bumpWord = useCallback((id: string, f: keyof WordDay) => {
+    const d = today(), cur = wdRef.current[id]?.[d] ?? { f: 0, p: 0, e: 0 }
+    const n = { ...wdRef.current, [id]: { ...(wdRef.current[id] ?? {}), [d]: { ...cur, [f]: cur[f] + 1 } } }
+    wdRef.current = n; setWordDaily(n); void put('meta', n, 'wordDaily')
+  }, [])
   const [parked, setParked] = useState<Record<string, string>>({})
   const parkedRef = useRef(parked); parkedRef.current = parked
   // 「近期用不上」的词：到期日之前不进新词、不进复习
@@ -73,20 +80,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // 发音计数：每次播放这个词的发音 +1（正常/慢速/连读都算）
   const countPlay = useCallback((id: string) => {
     const n = { ...playsRef.current, [id]: (playsRef.current[id] ?? 0) + 1 }
-    playsRef.current = n; setPlays(n); void put('meta', n, 'plays'); bumpDaily('plays')
-  }, [bumpDaily])
+    playsRef.current = n; setPlays(n); void put('meta', n, 'plays'); bumpDaily('plays'); bumpWord(id, 'p')
+  }, [bumpDaily, bumpWord])
   // 例句发音计数（自动朗读和点小喇叭都算），和单词发音分开统计
   const countExPlay = useCallback((id: string) => {
     const n = { ...exRef.current, [id]: (exRef.current[id] ?? 0) + 1 }
-    exRef.current = n; setExPlays(n); void put('meta', n, 'exPlays'); bumpDaily('ex')
-  }, [bumpDaily])
-  useEffect(() => { db().then(async d => { const [e, dl] = await Promise.all([d.get('meta', 'exPlays'), d.get('meta', 'daily')]); if (e) setExPlays(cur => ({ ...e, ...cur })); if (dl) setDaily(cur => ({ ...dl, ...cur })) }).catch(() => {}) }, [])
+    exRef.current = n; setExPlays(n); void put('meta', n, 'exPlays'); bumpDaily('ex'); bumpWord(id, 'e')
+  }, [bumpDaily, bumpWord])
+  useEffect(() => { db().then(async d => { const [e, dl, wd] = await Promise.all([d.get('meta', 'exPlays'), d.get('meta', 'daily'), d.get('meta', 'wordDaily')]); if (e) setExPlays(cur => ({ ...e, ...cur })); if (dl) setDaily(cur => ({ ...dl, ...cur })); if (wd) { wdRef.current = { ...wd, ...wdRef.current }; setWordDaily(wdRef.current) } }).catch(() => {}) }, [])
   useEffect(() => { db().then(d => d.get('meta', 'flips')).then(f => { if (f) setFlips(cur => ({ ...f, ...cur })) }).catch(() => {}) }, [])
   // 翻卡计数：每个词每翻到背面一次 +1，存在本机（meta/flips），备份时一起导出
   const countFlip = useCallback((id: string) => {
     const n = { ...flipsRef.current, [id]: (flipsRef.current[id] ?? 0) + 1 }
-    flipsRef.current = n; setFlips(n); void put('meta', n, 'flips'); bumpDaily('flips')
-  }, [bumpDaily])
+    flipsRef.current = n; setFlips(n); void put('meta', n, 'flips'); bumpDaily('flips'); bumpWord(id, 'f')
+  }, [bumpDaily, bumpWord])
 
   useEffect(() => {
     (async () => {
@@ -243,11 +250,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const exportBackup = useCallback((): Backup => {
     const c = ref.current
-    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings, flips: flipsRef.current, plays: playsRef.current, exPlays: exRef.current, daily: dailyRef.current, parked: parkedRef.current }
+    return { app: 'thai30', version: 1, exportedAt: Date.now(), words: c.words, lessons: c.lessons, progress: [...c.progress.values()], logs: c.logs, sessions: c.sessions, settings: c.settings, flips: flipsRef.current, plays: playsRef.current, exPlays: exRef.current, daily: dailyRef.current, parked: parkedRef.current, wordDaily: wdRef.current }
   }, [])
 
   const restoreBackup = useCallback(async (b: Backup, mode: 'replace' | 'merge') => {
     const c = ref.current
+    if (b.wordDaily) {
+      const f: WordDaily = mode === 'replace' ? { ...b.wordDaily } : { ...wdRef.current }
+      if (mode !== 'replace') for (const [id, days] of Object.entries(b.wordDaily)) { f[id] = { ...(f[id] ?? {}) }; for (const [dt, v] of Object.entries(days)) { const c = f[id][dt]; f[id][dt] = c ? { f: Math.max(c.f, v.f), p: Math.max(c.p, v.p), e: Math.max(c.e, v.e) } : v } }
+      wdRef.current = f; setWordDaily(f); await put('meta', f, 'wordDaily')
+    }
     if (b.parked) { const f = mode === 'replace' ? { ...b.parked } : { ...parkedRef.current, ...b.parked }; parkedRef.current = f; setParked(f); await put('meta', f, 'parked') }
     if (b.exPlays) {
       const f: Record<string, number> = mode === 'replace' ? { ...b.exPlays } : { ...exRef.current }
@@ -307,7 +319,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const wordMap = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
   const session = sessions.find(s => s.date === todayStr) ?? null
-  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, plays, countPlay, exPlays, countExPlay, daily, parked, parkedSet, parkWord, unparkWord, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
+  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, plays, countPlay, exPlays, countExPlay, daily, wordDaily, parked, parkedSet, parkWord, unparkWord, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
   return <C.Provider value={value}>{children}</C.Provider>
 }
 export { wordIdFor }

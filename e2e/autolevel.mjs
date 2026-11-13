@@ -31,6 +31,7 @@ try {
   await page.tap('[data-testid=tab-stats]'); await page.waitForSelector('[data-testid=habits-panel]')
   const hp = await page.textContent('[data-testid=habits-panel]'); assert(hp.includes('学习习惯总结') && hp.includes('时间：') && hp.includes('坚持：')); ok('统计页「学习习惯总结」：时段/坚持/量/判断 等自动总结')
   assert(await page.locator('.hbar i').count() >= 24); ok('有学习时段柱状图')
+  const mp = await page.textContent('[data-testid=memory-panel]'); assert(mp.includes('我的记忆曲线') && mp.includes('遗忘曲线') && mp.includes('每天读几次')); ok('统计页「我的记忆曲线」：遗忘曲线 + 每天读几次对比')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/autolevel-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
