@@ -26,3 +26,7 @@
 ## 常用词组（content/phrases/*.txt）
 每行：`词|词组泰文|声调码|带声调拼音|中文`（声调码 M中 L低 F降 H高 R升，须与拼音符号一致；词组必须包含该词）。
 构建时生成 `public/content/phrases.json` 与 `clips.json`；部署时自动为每条例句（`<词ID>_ex.mp3`）和词组（`<词ID>_p<N>.mp3`）生成真人发音。
+
+## 情景对话（content/dialogues/*.txt）
+每个文件一段对话。首行 `# id|标题|场景|emoji`，小节用 `== 小节名`，每句一行：`说话人|泰文|拼音|中文`（说话人写「我」的显示在右边，其他人在左边）。
+构建时生成 `public/content/dialogues.json`；部署时为每句生成真人发音 `dlg-<id>-<序号>.mp3`（「我」用男声，其他人用女声）。

@@ -73,5 +73,25 @@ if (existsSync('content/categories.json')) {
   writeFileSync('public/content/categories.json', JSON.stringify({ groups }))
   console.log(`分类：${groups.reduce((a, g) => a + g.cats.length, 0)} 个；未归入任何分类的词 ${left.length} 个：${left.join(' ')}`)
 }
+// 情景对话：content/dialogues/*.txt。首行 `# id|标题|场景|emoji`；`== 小节名`；每行 `说话人|泰文|拼音|中文`（说话人「我」显示在右边）
+const dialogues = []
+const dirD = 'content/dialogues'
+if (existsSync(dirD)) for (const f of readdirSync(dirD).filter(f => f.endsWith('.txt')).sort()) {
+  let cur = null, n = 0
+  for (const [i, raw] of readFileSync(`${dirD}/${f}`, 'utf8').split('\n').entries()) {
+    const line = raw.trim(); if (!line) continue
+    if (line.startsWith('# ')) { const [id, title, scene, emoji] = line.slice(2).split('|').map(x => x.trim()); cur = { id, title, scene, emoji, items: [] }; dialogues.push(cur); n = 0; continue }
+    if (!cur) { console.error(`✗ ${f}:${i + 1} 缺少对话头 # id|标题|场景|emoji`); bad++; continue }
+    if (line.startsWith('== ')) { cur.items.push({ sec: line.slice(3).trim() }); continue }
+    const c = line.split('|').map(x => x.trim().normalize('NFC'))
+    if (c.length !== 4 || c.some(x => !x)) { console.error(`✗ ${f}:${i + 1} 需要 4 段：说话人|泰文|拼音|中文`); bad++; continue }
+    n++; cur.items.push({ n, who: c[0], me: c[0] === '我', th: c[1], roman: c[2], zh: c[3], clip: `dlg-${cur.id}-${String(n).padStart(2, '0')}` })
+  }
+}
+if (bad) { console.error(`${bad} 行对话校验失败，已中止`); process.exit(1) }
+writeFileSync('public/content/dialogues.json', JSON.stringify(dialogues))
+for (const d of dialogues) for (const it of d.items) if (it.clip) clips.push({ id: it.clip, th: it.th, ...(it.me ? { voice: 'th-TH-NiwatNeural' } : {}) })
+writeFileSync('public/content/clips.json', JSON.stringify({ words: clips }))
+console.log(`对话：${dialogues.length} 段，共 ${dialogues.reduce((a, d) => a + d.items.filter(x => x.clip).length, 0)} 句`)
 console.log(`词组：${Object.keys(phrases).length} 个词有词组，共 ${Object.values(phrases).reduce((a, e) => a + e.items.length, 0)} 条`)
 console.log(`library.json: ${words.length} 词，${lessons.length} 天`)

@@ -51,7 +51,7 @@ async def synth(w, tmp):
     errs = []
     if edge_tts:
         try:
-            await asyncio.wait_for(edge_tts.Communicate(text_of(w), a.voice, rate=a.rate).save(tmp), 25)
+            await asyncio.wait_for(edge_tts.Communicate(text_of(w), w.get('voice') or a.voice, rate=a.rate).save(tmp), 25)
             if os.path.getsize(tmp) > 1000: return 'edge-tts'
             errs.append('edge-tts: 音频过小')
         except Exception as e:

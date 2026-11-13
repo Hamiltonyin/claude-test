@@ -1,0 +1,37 @@
+# rent-h2|租房：物业与房东|租房|🏠
+== 和物业聊
+物业|มีห้องว่างวันที่ 26 ธันวา|mii hɔ̂ɔng-wâang wan-thîi yîi-sìp-hòk than-waa|12月26日有空房。
+物业|อยู่ในตึกเดียวกับคุณ เป็นห้องข้างบน|yùu nai tɯ̀k diao-kan kàp khun, pen hɔ̂ɔng khâang-bon|就在您同一栋楼，是楼上的房间。
+物业|ห้องใหญ่กว่าห้องของคุณ ราคา 13,000 บาท|hɔ̂ɔng yài kwàa hɔ̂ɔng khɔ̌ɔng khun, raa-khaa sìp-sǎam-phan bàat|比您现在的房间大，价格13,000泰铢。
+我|คนนี้เป็นเจ้าของห้องหรือเป็นนายหน้าครับ|khon níi pen jâo-khɔ̌ɔng-hɔ̂ɔng rɯ̌ɯ pen naai-nâa khráp|这位是房东，还是中介？
+我|นิติฯ มีข้อมูลของห้องนี้ครับ|ní-tì mii khɔ̂ɔ-muun khɔ̌ɔng hɔ̂ɔng níi khráp|物业那边有这个房间的资料。
+物业|ห้องว่างวันที่ 29 ธันวาคม|hɔ̂ɔng-wâang wan-thîi yîi-sìp-kâao than-waa-khom|空房是12月29日。
+我|ได้ครับ|dâi khráp|好的。
+我|ผมขอเข้าอยู่วันที่ 10 มกราคมนะครับ|phǒm khɔ̌ɔ khâo-yùu wan-thîi sìp má-ká-raa-khom ná khráp|我想1月10日入住哦。
+物业|แต่เขาเคร่งเรื่องบุหรี่|tɛ̀ɛ khǎo khrêng rɯ̂ang bù-rìi|不过他对烟很严格。
+物业|ห้ามสูบในห้อง|hâam sùup nai hɔ̂ɔng|房间里禁止吸烟。
+我|ห้องที่ผมอยู่ตอนนี้ก็ห้ามสูบบุหรี่เหมือนกันครับ|hɔ̂ɔng thîi phǒm yùu tɔɔn-níi kɔ̂ɔ hâam sùup bù-rìi mɯ̌an-kan khráp|我现在住的房间也禁烟。
+我|ผมตั้งใจจะเช่า 1 ปีครับ|phǒm tâng-jai jà châo nɯ̀ng pii khráp|我打算租1年。
+我|พอจะต่อรองค่าเช่าได้ไหมครับ|phɔɔ-jà tɔ̀ɔ-rɔɔng khâa-châo dâi mǎi khráp|房租能稍微讲讲价吗？
+我|ผมมีงบเดือนละ 9,000 ถึง 11,000 บาทครับ|phǒm mii ngóp dɯan lá kâao-phan thɯ̌ng sìp-èt-phan bàat khráp|我的预算是每月9,000到11,000泰铢。
+物业|คุณต้องคุยเรื่องนี้กับเขา|khun tɔ̂ng khui rɯ̂ang níi kàp khǎo|这件事您得跟他谈。
+物业|คุณมีคอนแท็กเขาอยู่|khun mii khɔn-thɛ́k khǎo yùu|您有他的联系方式。
+我|ช่วยแชร์โปรไฟล์ LINE ของเขามาให้ผมหน่อยได้ไหมครับ|chûai chɛɛ proo-fai lai khɔ̌ɔng khǎo maa hâi phǒm nɔ̀i dâi mǎi khráp|能帮我把他的 LINE 名片发给我吗？
+我|เดี๋ยวผมแอดเขาเองครับ|dǐao phǒm ɛ̀ɛt khǎo eeng khráp|我自己加他。
+== 加上房东的 LINE 之后
+我|สวัสดีครับ|sà-wàt-dii khráp|您好。
+我|ผมได้ไลน์ของคุณมาจากนิติฯ ของ H2 ครับ|phǒm dâi lai khɔ̌ɔng khun maa jàak ní-tì khɔ̌ɔng H2 khráp|我从 H2 的物业那里拿到了您的 LINE。
+我|เขาบอกว่าคุณมีห้องว่างให้เช่าครับ|khǎo bɔ̀ɔk wâa khun mii hɔ̂ɔng-wâang hâi-châo khráp|他说您有空房出租。
+我|ผมอยู่ที่ H2 มา 2 ปีแล้วครับ|phǒm yùu thîi H2 maa sɔ̌ɔng pii lɛ́ɛo khráp|我在 H2 住了2年了。
+我|ตอนนี้กำลังหาห้องใหม่และอยากเช่า 1 ปีครับ|tɔɔn-níi kam-lang hǎa hɔ̂ɔng mài lɛ́ yàak châo nɯ̀ng pii khráp|现在正在找新房间，想租1年。
+我|ขอถามหน่อยครับ|khɔ̌ɔ thǎam nɔ̀i khráp|想请问一下。
+我|คุณเป็นเจ้าของห้องเองหรือเป็นนายหน้าครับ|khun pen jâo-khɔ̌ɔng-hɔ̂ɔng eeng rɯ̌ɯ pen naai-nâa khráp|您是房东本人，还是中介？
+我|ห้องจะพร้อมให้เข้าอยู่ก่อนวันที่ 10 มกราคมใช่ไหมครับ|hɔ̂ɔng jà phrɔ́ɔm hâi khâo-yùu kɔ̀ɔn wan-thîi sìp má-ká-raa-khom châi mǎi khráp|房间1月10日之前可以入住，对吗？
+我|พอดีผมวางแผนจะย้ายเข้าวันที่ 10 มกราคมครับ|phɔɔ-dii phǒm waang-phɛ̌ɛn jà yáai khâo wan-thîi sìp má-ká-raa-khom khráp|正好我计划1月10日搬进去。
+房东|ใช่ครับ|châi khráp|是的。
+我|มีรูปห้องไหมครับ|mii rûup hɔ̂ɔng mǎi khráp|有房间的照片吗？
+我|ถ้ามี รบกวนส่งให้ผมดูหน่อยครับ|thâa mii róp-kuan sòng hâi phǒm duu nɔ̀i khráp|如果有，麻烦发给我看看。
+房东|ไว้สะดวกส่งให้นะ|wái sà-dùak sòng hâi ná|等方便了再发给你哦。
+房东|ขับรถทางไกล|khàp rót thaang-klai|我在开长途车。
+我|ได้ครับ|dâi khráp|好的。
+我|ขับรถปลอดภัยนะครับ|khàp rót plɔ̀ɔt-phai ná khráp|开车注意安全哦。
