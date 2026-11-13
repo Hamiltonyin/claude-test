@@ -24,9 +24,12 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
   const [url, setUrl] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [playing, setPlaying] = useState<string | null>(null)
+  const [ov, setOv] = useState<Record<string, [number, number]>>({})   // 你校准过的起止秒数（只存在本机）
+  const [cal, setCal] = useState('')
   const vid = useRef<HTMLVideoElement>(null)
   const stopAt = useRef<number | null>(null)
   useEffect(() => { let on = true; load().then(d => on && setData(d)); return () => { on = false } }, [])
+  useEffect(() => { get<Record<string, [number, number]>>('meta', 'vowelClips').then(o => o && setOv(o)).catch(() => {}) }, [])
   useEffect(() => { let u: string | null = null; get('meta', 'vowelVideo').then((b: unknown) => { if (b instanceof Blob) { u = URL.createObjectURL(b); setUrl(u) } }).catch(() => {}); return () => { if (u) URL.revokeObjectURL(u); stopAudio() } }, [])
   const byThai = useMemo(() => new Map(words.map(w => [w.thai, w])), [words])
 
@@ -42,11 +45,23 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
     try { await playFile(`vow-${v.id}`, slow) } catch { try { await playSystem(v.carrier || v.form, slow) } catch { /* 没有语音 */ } }
     setPlaying(p => (p === v.id ? null : p))
   }
+  const clipOf = (v: Vowel): [number, number] => ov[v.id] ?? v.clip
+  const setClip = (v: Vowel, c: [number, number]) => {
+    const n = { ...ov, [v.id]: [Math.max(0, +c[0].toFixed(2)), Math.max(0, +c[1].toFixed(2))] as [number, number] }
+    setOv(n); void put('meta', n, 'vowelClips')
+  }
+  const resetClip = (v: Vowel) => { const n = { ...ov }; delete n[v.id]; setOv(n); void put('meta', n, 'vowelClips') }
+  const exportClips = async () => {
+    const all = Object.fromEntries((data?.vowels ?? []).map(v => [v.id, clipOf(v)]))
+    const t = JSON.stringify(all)
+    try { await navigator.clipboard.writeText(t); setCal('已复制全部时间轴，发给我就能固化进网站') } catch { setCal(t) }
+  }
   const playClip = (v: Vowel) => {
     const el = vid.current; if (!el) return
     stopAudio(); setPlaying('clip-' + v.id)
-    stopAt.current = v.clip[1]
-    el.currentTime = v.clip[0]
+    const [a, b] = clipOf(v)
+    stopAt.current = b
+    el.currentTime = a
     void el.play().catch(() => setPlaying(null))
   }
   const onTime = () => {
@@ -68,8 +83,9 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
           <b>怎么用</b>
           <p>点元音卡片展开：先听「示范音」（合成语音），有视频的话再点「🎬 老师这一段」对照听。红色字母 = 元音；短音收得快，长音拉长约两倍。</p>
           {url ? <div className="vowvid">
-            <video ref={vid} src={url} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => setPlaying(null)} data-testid="vow-video" />
-            <button className="link" onClick={removeVideo}>移除本机视频</button>
+            <video ref={vid} src={url} controls playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => setPlaying(null)} data-testid="vow-video" />
+            <button className="link" onClick={removeVideo}>移除本机视频</button> <button className="link" onClick={() => void exportClips()} data-testid="vow-export">复制全部时间轴</button>
+            {cal && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{cal}</p>}
           </div> : <label className="vowimport">
             <input type="file" accept="video/*" onChange={e => void importVideo(e.target.files?.[0])} data-testid="vow-file" />
             <span>{busy ? '导入中…' : '📥 导入老师的教学视频（只存在你这台手机里，不会上传）'}</span>
@@ -96,6 +112,17 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
                       <button onClick={() => void sayTts(v, true)}>🐢 慢速</button>
                       {url && <button className="clip" onClick={() => playClip(v)} data-testid="vow-clip">🎬 老师这一段{playing === 'clip-' + v.id ? '…' : ''}</button>}
                     </div>
+                    {url && (() => { const [a, b] = clipOf(v); const cur = () => vid.current?.currentTime ?? 0; return (
+                      <div className="vowcal" data-testid="vow-cal">
+                        <div className="vowcalh">时间轴 <b data-testid="vow-range">{a.toFixed(2)}s – {b.toFixed(2)}s</b>{ov[v.id] && <button className="link" onClick={() => resetClip(v)}>还原</button>}</div>
+                        <div className="vowcalr"><span>起点</span>
+                          <button onClick={() => setClip(v, [a - 0.1, b])}>-0.1</button><button onClick={() => setClip(v, [a + 0.1, b])}>+0.1</button>
+                          <button className="set" onClick={() => setClip(v, [cur(), b])} data-testid="vow-setstart">设为视频当前位置</button></div>
+                        <div className="vowcalr"><span>终点</span>
+                          <button onClick={() => setClip(v, [a, b - 0.1])}>-0.1</button><button onClick={() => setClip(v, [a, b + 0.1])}>+0.1</button>
+                          <button className="set" onClick={() => setClip(v, [a, cur()])} data-testid="vow-setend">设为视频当前位置</button></div>
+                        <p className="sub" style={{ fontSize: 11.5, margin: '4px 0 0' }}>做法：拖上面的视频到这个元音刚开始读的位置 → 点「起点·设为当前位置」；再拖到读完 → 点「终点」；然后点「🎬 老师这一段」试听。</p>
+                      </div>) })()}
                     {v.ex.length > 0 && <div className="vowex">
                       {v.ex.map(t => { const w = byThai.get(t); return w ? (
                         <div key={t} className="vowexrow"><span className="th" lang="th"><MarkVowels text={w.thai} /></span><ColorRoman roman={w.roman} /><span className="z">{w.zh}</span></div>) : null })}

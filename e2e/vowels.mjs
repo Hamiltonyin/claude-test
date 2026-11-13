@@ -27,6 +27,13 @@ try {
   const t = await page.evaluate(() => document.querySelector('[data-testid=vow-video]').currentTime)
   assert(t >= 19.6 - 0.01 || t >= 7.9, 't=' + t)  // 测试视频只有 8 秒，会被夹到末尾
   ok('点击后视频跳到该元音的起始秒数（currentTime=' + t.toFixed(1) + '）')
+  await page.waitForSelector('[data-testid=vow-cal]'); const r0 = await page.textContent('[data-testid=vow-range]')
+  await page.evaluate(() => { document.querySelector('[data-testid=vow-video]').currentTime = 3 }); await page.waitForTimeout(300)
+  await page.tap('[data-testid=vow-setstart]'); await page.waitForTimeout(200)
+  const r1 = await page.textContent('[data-testid=vow-range]'); assert(r1.startsWith('3.0') && r1 !== r0, r1); ok('校准：起点设为视频当前位置 → ' + r1)
+  await page.reload(); await page.waitForSelector('[data-testid=open-vowels]'); await page.tap('[data-testid=open-vowels]')
+  await page.locator('[data-testid=vowel] .vowtop').nth(11).tap(); await page.waitForSelector('[data-testid=vow-range]')
+  assert((await page.textContent('[data-testid=vow-range]')).startsWith('3.0')); ok('刷新后校准仍在（存本机）')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/vow-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)

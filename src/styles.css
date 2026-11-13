@@ -315,3 +315,5 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .vowbtns{display:flex;gap:8px;flex-wrap:wrap}.vowbtns button{background:#eef3ff;color:#2f5be0;border-radius:12px;padding:8px 12px;font-size:13.5px;font-weight:600}.vowbtns .clip{background:#fff1e0;color:#d9730d}
 .vowex{margin-top:10px;border-top:1px solid var(--line)}.vowexrow{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.vowexrow .th{font-size:20px}.vowexrow .z{margin-left:auto;font-size:13px}
 .vmark{color:#e5484d;font-weight:700}
+.vowcal{margin-top:10px;background:#fafbfe;border:1px solid var(--line);border-radius:12px;padding:8px 10px}.vowcalh{font-size:12.5px;color:var(--sub);display:flex;gap:8px;align-items:center}.vowcalh b{color:var(--text,#222)}
+.vowcalr{display:flex;gap:6px;align-items:center;margin-top:6px;font-size:12.5px}.vowcalr span{width:32px;color:var(--sub)}.vowcalr button{background:#eef1f7;border-radius:9px;padding:6px 9px;font-size:12.5px}.vowcalr .set{background:#e6f0ff;color:#2f5be0;font-weight:600}
