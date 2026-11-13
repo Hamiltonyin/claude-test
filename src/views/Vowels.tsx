@@ -18,7 +18,7 @@ export function MarkVowels({ text }: { text: string }) {
 
 /** 元音发音练习：每个元音配「机器合成的示范音节」，并且可以在本机导入老师的教学视频，点哪个元音就播放视频里对应的那一段。 */
 export default function Vowels({ onClose }: { onClose: () => void }) {
-  const { words } = useApp()
+  const { words, countPlay } = useApp()
   const [data, setData] = useState<Data | null>(null)
   const [open, setOpen] = useState<string | null>(null)
   const [url, setUrl] = useState<string | null>(null)
@@ -26,6 +26,7 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
   const [playing, setPlaying] = useState<string | null>(null)
   const [ov, setOv] = useState<Record<string, [number, number]>>({})   // 你校准过的起止秒数（只存在本机）
   const [cal, setCal] = useState('')
+  const [calOpen, setCalOpen] = useState<string | null>(null)   // 正在校准的元音（默认折叠）
   const vid = useRef<HTMLVideoElement>(null)
   const stopAt = useRef<number | null>(null)
   useEffect(() => { let on = true; load().then(d => on && setData(d)); return () => { on = false } }, [])
@@ -44,6 +45,10 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
     setPlaying(v.id)
     try { await playFile(`vow-${v.id}`, slow) } catch { try { await playSystem(v.carrier || v.form, slow) } catch { /* 没有语音 */ } }
     setPlaying(p => (p === v.id ? null : p))
+  }
+  const sayWord = async (w: { id: string; thai: string }, slow: boolean) => {
+    countPlay(w.id)
+    try { await playFile(w.id, slow) } catch { try { await playSystem(w.thai, slow) } catch { /* 没有语音 */ } }
   }
   const clipOf = (v: Vowel): [number, number] => ov[v.id] ?? v.clip
   const setClip = (v: Vowel, c: [number, number]) => {
@@ -113,7 +118,8 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
                       <button onClick={() => void sayTts(v, true)}>🐢 慢速</button>
                       {url && <button className="clip" onClick={() => playClip(v)} data-testid="vow-clip">🎬 老师这一段{playing === 'clip-' + v.id ? '…' : ''}</button>}
                     </div>
-                    {url && (() => { const [a, b] = clipOf(v); const cur = () => vid.current?.currentTime ?? 0; return (
+                    {url && <button className="calbtn" onClick={() => setCalOpen(calOpen === v.id ? null : v.id)} data-testid="vow-calbtn">⚙ 校准时间轴{ov[v.id] ? '（已校准）' : ''} {calOpen === v.id ? '⌃' : '⌄'}</button>}
+                    {url && calOpen === v.id && (() => { const [a, b] = clipOf(v); const cur = () => vid.current?.currentTime ?? 0; return (
                       <div className="vowcal" data-testid="vow-cal">
                         <div className="vowcalh">时间轴 <b data-testid="vow-range">{a.toFixed(2)}s – {b.toFixed(2)}s</b>{ov[v.id] && <button className="link" onClick={() => resetClip(v)}>还原</button>}</div>
                         <div className="vowcalr"><span>起点</span>
@@ -126,7 +132,8 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
                       </div>) })()}
                     {v.ex.length > 0 && <div className="vowex">
                       {v.ex.map(t => { const w = byThai.get(t); return w ? (
-                        <div key={t} className="vowexrow"><span className="th" lang="th"><MarkVowels text={w.thai} /></span><ColorRoman roman={w.roman} /><span className="z">{w.zh}</span></div>) : null })}
+                        <div key={t} className="vowexrow"><span className="th" lang="th"><MarkVowels text={w.thai} /></span>
+                          <button className="wplay" onClick={() => void sayWord(w, false)} aria-label={'播放 ' + w.thai} data-testid="vow-wplay"><Speaker /></button><button className="wplay" onClick={() => void sayWord(w, true)} aria-label="慢速">🐢</button><ColorRoman roman={w.roman} /><span className="z">{w.zh}</span></div>) : null })}
                     </div>}
                   </div>}
                 </div>)
