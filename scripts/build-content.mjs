@@ -81,6 +81,17 @@ if (existsSync('content/vowels.json')) {
   for (const e of v.vowels) if (e.carrier) clips.push({ id: `vow-${e.id}`, th: e.carrier })
   console.log(`元音：${v.vowels.length} 个`)
 }
+// 声调校对页：content/tones.json（每个词必须在词库里，且标注的声调必须和词库拼音一致）
+if (existsSync('content/tones.json')) {
+  const t = JSON.parse(readFileSync('content/tones.json', 'utf8'))
+  for (const st of t.sets) for (const it of st.items) {
+    const w = words.find(x => x.thai === normThai(it.th))
+    if (!w) { console.error(`✗ 声调页 ${st.id} 的「${it.th}」不在词库中`); bad++ }
+    else if (toneCodes(w.roman) !== it.tone) { console.error(`✗ 声调页「${it.th}」标注 ${it.tone}，词库拼音 ${w.roman} 是 ${toneCodes(w.roman)}`); bad++ }
+  }
+  writeFileSync('public/content/tones.json', JSON.stringify(t))
+  console.log(`声调对比：${t.sets.length} 组`)
+}
 // 情景对话：content/dialogues/*.txt。首行 `# id|标题|场景|emoji`；`== 小节名`；每行 `说话人|泰文|拼音|中文`（说话人「我」显示在右边）
 const dialogues = []
 const dirD = 'content/dialogues'
