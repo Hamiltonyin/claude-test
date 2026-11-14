@@ -1,8 +1,9 @@
 // 声调校对：5 组 → 卡片播放 → 整组连读 → 听音辨调（答题、结果）
 import { chromium, devices } from 'playwright'
-import { spawn } from 'child_process'
+import { spawn, execSync } from 'child_process'
 import assert from 'assert'
 const port = 5800 + Math.floor(Math.random() * 90)
+execSync('ffmpeg -v error -y -f lavfi -i testsrc=size=160x120:rate=10 -f lavfi -i sine=frequency=440 -t 8 -pix_fmt yuv420p -c:v libx264 -c:a aac /tmp/tone-test.mp4')
 const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
@@ -27,6 +28,21 @@ try {
     await page.tap('[data-testid=tq-next]'); await page.waitForTimeout(80)
   }
   await page.waitForSelector('[data-testid=tq-result]'); ok('10 题答完出现结果：' + (await page.textContent('[data-testid=tq-result] h2')))
+  await page.tap('.close'); await page.waitForSelector('[data-testid=tone-set]')
+  assert(await page.locator('[data-testid=tone-vclip]').count() === 0); ok('没导入视频时没有视频按钮')
+  await page.setInputFiles('[data-testid=tone-file]', '/tmp/tone-test.mp4'); await page.waitForSelector('[data-testid=tone-video]'); ok('导入视频')
+  await page.locator('[data-testid=tone-calbtn]').first().tap(); await page.waitForSelector('[data-testid=tone-cal]')
+  assert((await page.locator('[data-testid=tone-range]').first().textContent()) === '未设置'); ok('校准默认折叠，打开后显示「未设置」')
+  await page.evaluate(() => { document.querySelector('[data-testid=tone-video]').currentTime = 2 }); await page.waitForTimeout(300)
+  await page.locator('[data-testid=tone-setstart]').first().tap(); await page.waitForTimeout(150)
+  await page.evaluate(() => { document.querySelector('[data-testid=tone-video]').currentTime = 3.5 }); await page.waitForTimeout(300)
+  await page.locator('[data-testid=tone-setend]').first().tap(); await page.waitForTimeout(150)
+  const rg = await page.locator('[data-testid=tone-range]').first().textContent(); assert(/^2\.0\d?s – 3\.[45]/.test(rg), rg); ok('设起点 2s、终点 3.5s → ' + rg)
+  await page.locator('[data-testid=tone-vclip]').first().tap(); await page.waitForTimeout(400)
+  const t = await page.evaluate(() => document.querySelector('[data-testid=tone-video]').currentTime); assert(t >= 1.9, 't=' + t); ok('点 🎬 播放该段（currentTime=' + t.toFixed(1) + '）')
+  await page.reload(); await page.waitForSelector('[data-testid=open-tones]'); await page.tap('[data-testid=open-tones]'); await page.waitForSelector('[data-testid=tone-video]')
+  await page.locator('[data-testid=tone-calbtn]').first().tap(); await page.waitForSelector('[data-testid=tone-range]')
+  assert(/^2\./.test(await page.locator('[data-testid=tone-range]').first().textContent())); ok('刷新后视频和时间轴仍在')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/tone-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
