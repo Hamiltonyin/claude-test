@@ -79,7 +79,7 @@ function UnlockModal({ list, onClose }: { list: BadgeState[]; onClose: () => voi
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch, onDialogues, onVowels, onTones }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void; onDialogues: () => void; onVowels: () => void; onTones: () => void }) {
+export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch, onDialogues, onVowels, onTones, onLyrics }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void; onDialogues: () => void; onVowels: () => void; onTones: () => void; onLyrics: () => void }) {
   const [hq, setHq] = useState('')
   const { progress, words, settings, sessions, lessons, logs, session, flips, plays, exPlays, daily, parkedSet } = useApp()
   const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
@@ -219,6 +219,7 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         <button className="mini" onClick={onDialogues} data-testid="open-dialogues"><i style={{ background: '#0a84ff' }}>💬</i><b>情景对话</b><span>一句一句学整段对话</span></button>
         <button className="mini" onClick={onVowels} data-testid="open-vowels"><i style={{ background: '#ff9f0a' }}>🔤</i><b>元音发音</b><span>32 个元音 · 配老师视频</span></button>
         <button className="mini" onClick={onTones} data-testid="open-tones"><i style={{ background: '#8e44ad' }}>🎼</i><b>声调校对</b><span>同音异调 · 听音辨调</span></button>
+        <button className="mini" onClick={onLyrics} data-testid="open-lyrics"><i style={{ background: '#ff375f' }}>🎤</i><b>歌词背诵</b><span>用歌词记句子</span></button>
         <button className="mini" onClick={onLibrary} data-testid="open-library"><i style={{ background: 'var(--green)' }}>🗂</i><b>全部词库</b><span>{words.length} 词 · 今日到期 {due}</span></button>
         {backlog.length > 0 && (
           <button className="mini alert" onClick={() => onCatchup('漏学补学', backlog.slice(0, 30))} data-testid="start-catchup"><i style={{ background: 'var(--red)' }}>⏰</i><b>漏学补学</b><span>{backlog.length} 个没学 · 漏学 {missed} 天</span></button>

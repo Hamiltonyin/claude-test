@@ -92,6 +92,21 @@ if (existsSync('content/tones.json')) {
   writeFileSync('public/content/tones.json', JSON.stringify(t))
   console.log(`声调对比：${t.sets.length} 组`)
 }
+// 歌词背诵：content/lyrics/*.txt。首行 `# id|标题|简介|emoji`；`== 小节名`；每行 `泰文|拼音（｜ 分词组）|中文`
+const lyrics = []
+const dirL = 'content/lyrics'
+if (existsSync(dirL)) for (const f of readdirSync(dirL).filter(f => f.endsWith('.txt')).sort()) {
+  let cur = null, n = 0
+  for (const [i, raw] of readFileSync(`${dirL}/${f}`, 'utf8').split('\n').entries()) {
+    const line = raw.trim(); if (!line) continue
+    if (line.startsWith('# ')) { const [id, title, intro, emoji] = line.slice(2).split('|').map(x => x.trim()); cur = { id, title, intro, emoji, items: [] }; lyrics.push(cur); n = 0; continue }
+    if (!cur) { console.error(`✗ ${f}:${i + 1} 缺少歌词头 # id|标题|简介|emoji`); bad++; continue }
+    if (line.startsWith('== ')) { cur.items.push({ sec: line.slice(3).trim() }); continue }
+    const c = line.split('|').map(x => x.trim().normalize('NFC'))
+    if (c.length !== 3 || c.some(x => !x)) { console.error(`✗ ${f}:${i + 1} 需要 3 段：泰文|拼音|中文`); bad++; continue }
+    n++; cur.items.push({ n, th: c[0], roman: c[1], zh: c[2], clip: `lyr-${cur.id}-${String(n).padStart(2, '0')}` })
+  }
+}
 // 情景对话：content/dialogues/*.txt。首行 `# id|标题|场景|emoji`；`== 小节名`；每行 `说话人|泰文|拼音|中文`（说话人「我」显示在右边）
 const dialogues = []
 const dirD = 'content/dialogues'
@@ -109,8 +124,11 @@ if (existsSync(dirD)) for (const f of readdirSync(dirD).filter(f => f.endsWith('
 }
 if (bad) { console.error(`${bad} 行对话校验失败，已中止`); process.exit(1) }
 writeFileSync('public/content/dialogues.json', JSON.stringify(dialogues))
+writeFileSync('public/content/lyrics.json', JSON.stringify(lyrics))
+for (const d of lyrics) for (const it of d.items) if (it.clip) clips.push({ id: it.clip, th: it.th })
 for (const d of dialogues) for (const it of d.items) if (it.clip) clips.push({ id: it.clip, th: it.th, ...(it.me ? { voice: 'th-TH-NiwatNeural' } : {}) })
 writeFileSync('public/content/clips.json', JSON.stringify({ words: clips }))
+console.log(`歌词：${lyrics.length} 首，共 ${lyrics.reduce((a, d) => a + d.items.filter(x => x.clip).length, 0)} 句`)
 console.log(`对话：${dialogues.length} 段，共 ${dialogues.reduce((a, d) => a + d.items.filter(x => x.clip).length, 0)} 句`)
 console.log(`词组：${Object.keys(phrases).length} 个词有词组，共 ${Object.values(phrases).reduce((a, e) => a + e.items.length, 0)} 条`)
 console.log(`library.json: ${words.length} 词，${lessons.length} 天`)
