@@ -5,7 +5,7 @@ import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
 interface Vowel { id: string; group: string; form: string; video: string; ipa: string; len: string; carrier: string; hint: string; ex: string[]; clip: [number, number]; pair: string | null }
-interface Data { source: string; vowels: Vowel[] }
+interface Data { source: string; vowels: Vowel[]; groupNotes?: Record<string, string> }
 
 let cache: Promise<Data | null> | null = null
 const load = () => (cache ??= fetch(`${import.meta.env.BASE_URL}content/vowels.json`).then(r => r.ok ? r.json() : null).catch(() => { cache = null; return null }))
@@ -124,10 +124,11 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
         {groups.map(([g, list]) => (
           <section key={g}>
             <h3 className="vowh">{g}</h3>
+            {data?.groupNotes?.[g] && <p className="vownote">{data.groupNotes[g]}</p>}
             {list.map(v => {
               const on = open.includes(v.id)
               return (
-                <div key={v.id} className={'vowcard' + (on ? ' on' : '')} data-testid="vowel">
+                <div key={v.id} data-vid={v.id} className={'vowcard' + (on ? ' on' : '')} data-testid="vowel">
                   <button className="vowtop" onClick={() => toggle(v.id)}>
                     <span className="vowform th" lang="th">{v.form}</span>
                     <span className="vowmeta"><b>{v.video}</b><i>{v.len}</i></span>
