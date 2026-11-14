@@ -26,6 +26,7 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
   const [playing, setPlaying] = useState<string | null>(null)
   const [ov, setOv] = useState<Record<string, [number, number]>>({})   // 你校准过的起止秒数（只存在本机）
   const [cal, setCal] = useState('')
+  const [exPlaying, setExPlaying] = useState<string | null>(null)
   const [cmpBusy, setCmpBusy] = useState(false)
   const cmpTok = useRef(0)
   const [calOpen, setCalOpen] = useState<string | null>(null)   // 正在校准的元音（默认折叠）
@@ -49,8 +50,9 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
     setPlaying(p => (p === v.id ? null : p))
   }
   const sayWord = async (w: { id: string; thai: string }, slow: boolean) => {
-    countPlay(w.id)
+    countPlay(w.id); setExPlaying(w.thai)
     try { await playFile(w.id, slow) } catch { try { await playSystem(w.thai, slow) } catch { /* 没有语音 */ } }
+    setExPlaying(p => (p === w.thai ? null : p))
   }
   const clipOf = (v: Vowel): [number, number] => ov[v.id] ?? v.clip
   const setClip = (v: Vowel, c: [number, number]) => {
@@ -153,8 +155,12 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
                       </div>) })()}
                     {v.ex.length > 0 && <div className="vowex">
                       {v.ex.map(t => { const w = byThai.get(t); return w ? (
-                        <div key={t} className="vowexrow"><span className="th" lang="th"><MarkVowels text={w.thai} /></span>
-                          <button className="wplay" onClick={() => void sayWord(w, false)} aria-label={'播放 ' + w.thai} data-testid="vow-wplay"><Speaker /></button><button className="wplay" onClick={() => void sayWord(w, true)} aria-label="慢速">🐢</button><ColorRoman roman={w.roman} /><span className="z">{w.zh}</span></div>) : null })}
+                        <div key={t} className={'vowexrow' + (exPlaying === t ? ' on' : '')} role="button" tabIndex={0} onClick={() => void sayWord(w, false)} onKeyDown={e => { if (e.key === 'Enter') void sayWord(w, false) }} data-testid="vow-wplay">
+                          <span className="th" lang="th"><MarkVowels text={w.thai} /></span>
+                          <span className="vowexmid"><ColorRoman roman={w.roman} /><span className="z">{w.zh}</span></span>
+                          <button className="wplay" onClick={e => { e.stopPropagation(); void sayWord(w, true) }} aria-label="慢速">🐢</button>
+                          <span className="wspk" aria-hidden><Speaker /></span>
+                        </div>) : null })}
                     </div>}
                   </div>}
                 </div>)
