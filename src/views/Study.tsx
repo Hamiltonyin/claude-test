@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
-import { Burst, CountBadge, ExampleBlock, RelatedWords, SpeakButtons, ToneChips, WordParts, Mnemonics, playExample, useSpeaker } from '../ui'
+import { Burst, ColorRoman, CountBadge, ExampleBlock, RelatedWords, SpeakButtons, ToneChips, WordParts, Mnemonics, playExample, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
 import { inferLevel } from '../lib/srs'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
@@ -238,6 +238,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
+            {settings.frontRoman !== false && <ColorRoman roman={word.roman} className="frontrom" />}
             <div className="hint">{manual ? '点击卡片翻面 · 左右滑动切换' : '认识就直接下一个 · 点卡片看答案 · 上滑忽略'}</div>
           </div>
           <div className="face back">

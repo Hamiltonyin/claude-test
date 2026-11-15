@@ -361,3 +361,4 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 
 .mnbox{width:100%;margin-top:10px;background:#f1f5ff;border-radius:14px;padding:8px 10px;text-align:left}.mnh{font-size:12px;font-weight:600;color:#3b5bb5;margin-bottom:6px}
 .mnrow{display:flex;gap:8px;align-items:flex-start;margin-top:4px;font-size:13.5px;line-height:1.55}.mntag{flex:none;color:#fff;font-size:11px;font-weight:600;border-radius:8px;padding:1px 7px;margin-top:2px}.mntx{flex:1;color:#27324d}
+.frontrom{font-size:22px;margin-top:6px;font-weight:600}
