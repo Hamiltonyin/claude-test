@@ -13,6 +13,7 @@ import Dialogues from './views/Dialogues'
 import Vowels from './views/Vowels'
 import Tones from './views/Tones'
 import Lyrics from './views/Lyrics'
+import Roots from './views/Roots'
 
 type Tab = 'home' | 'cats' | 'library' | 'stats' | 'me'
 interface StudyState { title: string; ids: string[]; mode: StudyMode; startIdx?: number }
@@ -35,6 +36,7 @@ function Shell() {
   const [vow, setVow] = useState(false)
   const [tonePg, setTonePg] = useState(false)
   const [lyr, setLyr] = useState(false)
+  const [roots, setRoots] = useState(false)
   const [detail, setDetail] = useState<string | null>(null)
   const [practice, setPractice] = useState<PracticeKind | null>(null)
   const [libMine, setLibMine] = useState(false)
@@ -54,7 +56,7 @@ function Shell() {
   return (
     <div className="app">
       <div className="scroll">
-        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
+        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
         {tab === 'cats' && <Categories onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
         {tab === 'library' && <Library key={libNonce} initialQuery={libQuery} onQueryUsed={() => setLibQuery('')} startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode, startIdx) => setStudy({ title, ids, mode, startIdx })} />}
         {tab === 'stats' && <Stats onCatchup={startCatchup} />}
@@ -71,6 +73,7 @@ function Shell() {
       {vow && <Vowels onClose={() => setVow(false)} />}
       {tonePg && <Tones onClose={() => setTonePg(false)} />}
       {lyr && <Lyrics onClose={() => setLyr(false)} />}
+      {roots && <Roots onClose={() => setRoots(false)} />}
       {practice && <Practice key={practice} kind={practice} onClose={() => setPractice(null)} />}
       {study && <Study key={study.title + study.ids.length + (study.startIdx ?? '')} {...study} onClose={() => setStudy(null)} onDetail={study.mode === 'free' ? setDetail : undefined} />}
       {detail && wordMap.get(detail) && <WordSheet word={wordMap.get(detail)!} onClose={() => setDetail(null)} />}

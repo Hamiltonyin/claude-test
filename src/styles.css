@@ -352,3 +352,9 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .partsh{font-size:12px;font-weight:600;color:#a46a12;margin-bottom:6px}.partsrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.partwrap{display:inline-flex;align-items:center;gap:4px}
 .plus{font-style:normal;color:#c58a2b;font-weight:700}.partchip{display:inline-flex;flex-direction:column;align-items:flex-start;background:#fff;border-radius:10px;padding:5px 9px;box-shadow:0 1px 3px rgba(120,80,20,.12);border:0;text-align:left;min-width:56px}.partchip:active,.partchip.on{background:#fff1d8}
 .partchip b{font-size:17px}.partchip .relrom{font-size:11.5px;line-height:1.2;font-weight:600}.partchip i{font-style:normal;font-size:11px;color:var(--sub)}
+.partswhy{margin-top:8px;font-size:13px;line-height:1.55;color:#6b4a10;border-top:1px dashed #e8cf9f;padding-top:6px}
+
+.rootpage{background:#f4f6fb}.rootlist{padding:8px 14px 30px;overflow-y:auto;flex:1}
+.rootcard{background:#fff;border-radius:18px;padding:10px 12px;margin-top:10px;box-shadow:0 2px 8px rgba(20,40,80,.05)}
+.roothead{width:100%;display:flex;align-items:center;gap:10px;text-align:left}.roothead .big{font-size:28px;min-width:64px}.rootmid{flex:1;display:flex;flex-direction:column}.rootmid .z{font-size:12.5px;color:var(--sub)}.rootn{font-size:12px;color:var(--sub)}
+.rootrule{margin:6px 0 8px;font-size:13.5px;line-height:1.55;background:#fff8ec;border-radius:10px;padding:7px 10px;color:#6b4a10}.rootmem{display:flex;flex-wrap:wrap;gap:6px}

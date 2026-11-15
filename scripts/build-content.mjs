@@ -100,6 +100,7 @@ if (existsSync('content/parts.txt')) {
   for (const [i, raw] of readFileSync('content/parts.txt', 'utf8').split('\n').entries()) {
     const line = raw.trim(); if (!line || line.startsWith('#')) continue
     const [th0, rest, note] = line.split('|'); const th = normThai(th0)
+    if (!rest) { console.error(`✗ parts.txt:${i + 1} 格式错误`); bad++; continue }
     if (!lib.has(th)) { console.error(`✗ parts.txt:${i + 1} 「${th}」不在词库中`); bad++; continue }
     if (rest === '整词') { partsOut[th] = { whole: true, note: note || '' }; continue }
     const parts = []
@@ -114,9 +115,23 @@ if (existsSync('content/parts.txt')) {
       parts.push({ th: pth, roman: roman.normalize('NFC'), zh, id })
     }
     if (parts.map(x => x.th).join('') !== th) { console.error(`✗ parts.txt:${i + 1} 「${th}」拼起来是「${parts.map(x => x.th).join('')}」`); bad++; continue }
-    partsOut[th] = { parts }
+    partsOut[th] = { parts, ...(note ? { why: note } : {}) }
   }
   writeFileSync('public/content/parts.json', JSON.stringify(partsOut))
+  // 构词规律：content/roots.txt（部件|规律）；自动统计每个部件出现在哪些词里
+  const roots = []
+  if (existsSync('content/roots.txt')) for (const [i, raw] of readFileSync('content/roots.txt', 'utf8').split('\n').entries()) {
+    const line = raw.trim(); if (!line || line.startsWith('#')) continue
+    const [rth, rule] = line.split('|'); const th = normThai(rth)
+    const members = Object.entries(partsOut).filter(([, v]) => v.parts?.some(p => p.th === th)).map(([w]) => w)
+    const anyPart = Object.values(partsOut).flatMap(v => v.parts ?? []).find(p => p.th === th)
+    const lw = words.find(w => w.thai === th)
+    if (!anyPart && !lw) { console.error(`✗ roots.txt:${i + 1} 「${th}」没有出现在任何拆解里`); bad++; continue }
+    roots.push({ th, roman: lw?.roman ?? anyPart.roman, zh: lw?.zh.split('；')[0] ?? anyPart.zh, id: lw?.id ?? anyPart.id, rule, members })
+  }
+  roots.sort((a, b) => b.members.length - a.members.length)
+  writeFileSync('public/content/roots.json', JSON.stringify(roots))
+  console.log(`构词规律：${roots.length} 个部件`)
 }
 // 歌词背诵：content/lyrics/*.txt。首行 `# id|标题|简介|emoji`；`== 小节名`；每行 `泰文|拼音（｜ 分词组）|中文`
 const lyrics = []

@@ -254,7 +254,7 @@ export function RelatedWords({ word }: { word: Word }) {
 }
 
 
-interface PartInfo { parts?: { th: string; roman: string; zh: string; id: string }[]; whole?: boolean; note?: string }
+interface PartInfo { parts?: { th: string; roman: string; zh: string; id: string }[]; whole?: boolean; note?: string; why?: string }
 let partsCache: Promise<Record<string, PartInfo>> | null = null
 const loadParts = () => (partsCache ??= fetch(`${import.meta.env.BASE_URL}content/parts.json`).then(r => r.ok ? r.json() : {}).catch(() => { partsCache = null; return {} }))
 
@@ -288,6 +288,7 @@ export function WordParts({ word }: { word: Word }) {
             </button>
           </span>))}
       </div>
+      {info.why && <div className="partswhy" data-testid="parts-why">💡 {info.why}</div>}
     </div>
   )
 }
