@@ -225,6 +225,14 @@ export function RelatedWords({ word }: { word: Word }) {
   const { words } = useApp()
   const [cl, setCl] = useState<Cluster[]>([])
   useEffect(() => { let on = true; loadClusters().then(c => on && setCl(c)); return () => { on = false } }, [])
+  const { countPlay } = useApp()
+  const stopProp = (e: React.SyntheticEvent) => e.stopPropagation()
+  const [busy, setBusy] = useState<string | null>(null)
+  const say = async (w: Word) => {
+    countPlay(w.id); setBusy(w.id)
+    try { await playFile(w.id, false) } catch { try { await playSystem(w.thai, false) } catch { /* 没有语音 */ } }
+    setBusy(b => (b === w.id ? null : b))
+  }
   const mine = cl.filter(c => c.words.includes(word.thai)).slice(0, 2)
   if (!mine.length) return null
   const byThai = new Map(words.map(w => [w.thai, w]))
@@ -233,7 +241,12 @@ export function RelatedWords({ word }: { word: Word }) {
       {mine.map(c => (
         <div key={c.id} className="rel">
           <div className="relh">{c.emoji} {c.name}</div>
-          <div className="relw">{c.words.filter(t => t !== word.thai && byThai.has(t)).slice(0, 9).map(t => <span key={t} className="relchip"><b className="th" lang="th">{t}</b><i>{byThai.get(t)!.zh.split(/[；;（(]/)[0]}</i></span>)}</div>
+          <div className="relw" onClick={stopProp} onTouchEnd={stopProp}>{c.words.filter(t => t !== word.thai && byThai.has(t)).slice(0, 9).map(t => { const w = byThai.get(t)!; return (
+            <button key={t} className={'relchip' + (busy === w.id ? ' on' : '')} onClick={() => void say(w)} aria-label={'播放 ' + t} data-testid="rel-chip">
+              <b className="th" lang="th">{t}</b>
+              <ColorRoman roman={w.roman} className="relrom" />
+              <i>{w.zh.split(/[；;（(]/)[0]}</i>
+            </button>) })}</div>
         </div>
       ))}
     </div>
