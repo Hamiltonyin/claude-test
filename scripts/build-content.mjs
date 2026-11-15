@@ -133,6 +133,21 @@ if (existsSync('content/parts.txt')) {
   writeFileSync('public/content/roots.json', JSON.stringify(roots))
   console.log(`构词规律：${roots.length} 个部件`)
 }
+// 记忆法：content/mnemonics.txt，`词|类型|一句话`，同一个词可多行
+{
+  const mn = {}
+  if (existsSync('content/mnemonics.txt')) {
+    const lib = new Set(words.map(w => w.thai))
+    for (const [i, raw] of readFileSync('content/mnemonics.txt', 'utf8').split('\n').entries()) {
+      const line = raw.trim(); if (!line || line.startsWith('#')) continue
+      const [th0, t, ...rest] = line.split('|'); const th = normThai(th0); const x = rest.join('|').trim()
+      if (!lib.has(th) || !t || !x) { console.error(`✗ mnemonics.txt:${i + 1} 「${th}」不在词库或缺内容`); bad++; continue }
+      ;(mn[th] ??= []).push({ t: t.trim(), x })
+    }
+  }
+  writeFileSync('public/content/mnemonics.json', JSON.stringify(mn))
+  console.log(`记忆法：${Object.keys(mn).length} 个词`)
+}
 // 歌词背诵：content/lyrics/*.txt。首行 `# id|标题|简介|emoji`；`== 小节名`；每行 `泰文|拼音（｜ 分词组）|中文`
 const lyrics = []
 const dirL = 'content/lyrics'

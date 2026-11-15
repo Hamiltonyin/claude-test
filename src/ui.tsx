@@ -292,3 +292,24 @@ export function WordParts({ word }: { word: Word }) {
     </div>
   )
 }
+
+
+let mnCache: Promise<Record<string, { t: string; x: string }[]>> | null = null
+const loadMn = () => (mnCache ??= fetch(`${import.meta.env.BASE_URL}content/mnemonics.json`).then(r => r.ok ? r.json() : {}).catch(() => { mnCache = null; return {} }))
+const MN_COLOR: Record<string, string> = { '借词': '#0a84ff', '同源': '#30a46c', '谐音': '#d9730d', '联想': '#8e44ad' }
+
+/** 记忆法：借词（英语/汉语方言）、与汉语同源、谐音、联想。是帮助记忆的小窍门，不是词源。内容在 content/mnemonics.txt。 */
+export function Mnemonics({ word }: { word: Word }) {
+  const [data, setData] = useState<Record<string, { t: string; x: string }[]>>({})
+  useEffect(() => { let on = true; loadMn().then(d => on && setData(d)); return () => { on = false } }, [])
+  const items = data[word.thai]
+  if (!items?.length) return null
+  const stopProp = (e: React.SyntheticEvent) => e.stopPropagation()
+  return (
+    <div className="mnbox" data-testid="mnemonics" onClick={stopProp} onTouchEnd={stopProp}>
+      <div className="mnh">🧠 记忆法</div>
+      {items.map((m, i) => (
+        <div key={i} className="mnrow"><span className="mntag" style={{ background: MN_COLOR[m.t.slice(0, 2)] ?? '#888' }}>{m.t}</span><span className="mntx">{m.x}</span></div>))}
+    </div>
+  )
+}

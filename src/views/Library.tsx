@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level, type Word } from '../types'
 import { loadClusters } from '../lib/clusters'
-import { LevelPill, Sheet, CountBadge, ExampleBlock, loadPhrases, SpeakButtons, ToneChips, WordParts, useSpeaker, Chev } from '../ui'
+import { LevelPill, Sheet, CountBadge, ExampleBlock, loadPhrases, SpeakButtons, ToneChips, WordParts, Mnemonics, useSpeaker, Chev } from '../ui'
 import { THEMES } from '../data/seed'
 import { myAddedIds } from '../lib/srs'
 
@@ -26,6 +26,7 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
         <div className="rom" style={{ fontSize: 20, color: 'var(--blue)', fontWeight: 600 }}>{word.roman}</div>
         <ToneChips roman={word.roman} />
         <WordParts word={word} />
+        <Mnemonics word={word} />
         <div style={{ textAlign: 'left' }}><ExampleBlock word={word} /></div>
         <CountBadge id={word.id} className="flipline" />
         <p className="sub">{word.theme} · {days.length ? '出现在第 ' + days.join('、') + ' 天' : '未归入课程'}{p ? ` · 复习 ${p.reps} 次 · 遗忘 ${p.lapses} 次 · 下次 ${p.due}` : ''}</p>

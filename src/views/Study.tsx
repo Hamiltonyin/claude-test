@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES, type Level } from '../types'
-import { Burst, CountBadge, ExampleBlock, RelatedWords, SpeakButtons, ToneChips, WordParts, playExample, useSpeaker } from '../ui'
+import { Burst, CountBadge, ExampleBlock, RelatedWords, SpeakButtons, ToneChips, WordParts, Mnemonics, playExample, useSpeaker } from '../ui'
 import { today } from '../lib/dates'
 import { inferLevel } from '../lib/srs'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
@@ -249,6 +249,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             <div className="rom" style={{ fontSize: 22, color: 'var(--blue)', fontWeight: 600 }} data-testid="roman">{word.roman}</div>
             <ToneChips roman={word.roman} />
             <WordParts word={word} />
+            <Mnemonics word={word} />
             <ExampleBlock word={word} signal={exSig} show={exShown} />
             <RelatedWords word={word} />
             <div className="hint">{word.theme}{p ? ` · 已复习 ${p.reps} 次` : ' · 新词'}</div>

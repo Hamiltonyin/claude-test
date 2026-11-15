@@ -21,6 +21,11 @@ try {
   await page.locator('[data-testid=word-row]').first().tap(); await page.waitForSelector('[data-testid=card]'); await page.tap('[data-testid=card]')
   await page.waitForSelector('[data-testid=parts-why]', { timeout: 6000 })
   assert((await page.textContent('[data-testid=parts-why]')).includes('有水的房间')); ok('卡片：💡 房间+水 →「有水的房间」')
+  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('.tabbar')
+  await page.tap('.tabbar button:nth-child(3)'); await page.fill('input', 'ขอบคุณ'); await page.waitForTimeout(400)
+  await page.locator('[data-testid=word-row]').first().tap(); await page.waitForSelector('[data-testid=card]'); await page.tap('[data-testid=card]')
+  await page.waitForSelector('[data-testid=mnemonics]', { timeout: 6000 })
+  const mt = await page.textContent('[data-testid=mnemonics]'); assert(mt.includes('记忆法')); ok('卡片：🧠 记忆法 —— ' + mt.replace('🧠 记忆法', '').slice(0, 40))
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/roots-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
