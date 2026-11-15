@@ -1,0 +1,21 @@
+ได้|ได้ไหมครับ|FHH|dâi mái khráp|可以吗？
+ได้|ไม่ได้เหรอครับ|FFRH|mâi dâi rə̌ə khráp|不行吗？
+ได้|ส่งได้ไหมครับ|LFHH|sòng dâi mái khráp|可以送吗？
+ไม่ได้|ไม่ได้เหรอครับ|FFRH|mâi dâi rə̌ə khráp|不行吗？
+ได้ไหม|ส่งได้ไหมครับ|LFHH|sòng dâi mái khráp|可以送吗？
+ส่ง|ส่งได้ไหมครับ|LFHH|sòng dâi mái khráp|可以送吗？
+ส่ง|ส่งหรือยังครับ|LRMH|sòng rɯ̌ɯ yang khráp|送了没有？
+ส่ง|ส่งแล้วเหรอครับ|LHRH|sòng lɛ́ɛo rə̌ə khráp|已经送了啊？
+ส่ง|ส่งแล้วใช่ไหมครับ|LHFHH|sòng lɛ́ɛo châi mái khráp|已经送了，对吧？
+หรือยัง|ส่งหรือยังครับ|LRMH|sòng rɯ̌ɯ yang khráp|送了没有？
+หรือยัง|ถึงป้อมยามหรือยังครับ|RFMRMH|thɯ̌ng pɔ̂ɔm yaam rɯ̌ɯ yang khráp|到保安亭了没有？
+เหรอ|ไม่ได้เหรอครับ|FFRH|mâi dâi rə̌ə khráp|不行吗？
+เหรอ|ส่งแล้วเหรอครับ|LHRH|sòng lɛ́ɛo rə̌ə khráp|已经送了啊？
+แล้วเหรอ|ส่งแล้วเหรอครับ|LHRH|sòng lɛ́ɛo rə̌ə khráp|已经送了啊？
+แล้ว|ส่งแล้วเหรอครับ|LHRH|sòng lɛ́ɛo rə̌ə khráp|已经送了啊？
+แล้ว|ส่งแล้วใช่ไหมครับ|LHFHH|sòng lɛ́ɛo châi mái khráp|已经送了，对吧？
+ใช่ไหม|ส่งแล้วใช่ไหมครับ|LHFHH|sòng lɛ́ɛo châi mái khráp|已经送了，对吧？
+ถึง|ถึงป้อมยามหรือยังครับ|RFMRMH|thɯ̌ng pɔ̂ɔm yaam rɯ̌ɯ yang khráp|到保安亭了没有？
+ป้อมยาม|ถึงป้อมยามหรือยังครับ|RFMRMH|thɯ̌ng pɔ̂ɔm yaam rɯ̌ɯ yang khráp|到保安亭了没有？
+ยาม|ถึงป้อมยามหรือยังครับ|RFMRMH|thɯ̌ng pɔ̂ɔm yaam rɯ̌ɯ yang khráp|到保安亭了没有？
+ยัง|ส่งหรือยังครับ|LRMH|sòng rɯ̌ɯ yang khráp|送了没有？
