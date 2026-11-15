@@ -135,12 +135,18 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
     unparkWord(parkMsg.id); committed.current.delete(parkMsg.idx)
     setFinished(false); setIdx(parkMsg.idx); setFlip(false); setParkMsg(null)
   }
+  /** 切到另一个词时直接把它读一次（在点击/滑动回调里同步触发，iPhone 才允许）；可在「我的」里关闭 */
+  const readNew = (wid?: string) => {
+    if (settings.nextRead === false || !wid) return
+    const w = wordMap.get(wid); if (w) void sp.play(w, false)
+  }
   const go = (to: number) => {
     const len = to > idx ? commitCurrent() : queue.length
     exTok.current++; setExShown(false); stopAuto(); sp.stop(); setFlip(false)
     if (to >= len) { if (to > idx) setFinished(true); return }
     if (to < 0) return
     setIdx(to)
+    readNew(queue[to])
   }
   const toggle = () => {
     if (auto) { stopAuto(); return }          // 连读时点卡片 = 停止连读
@@ -175,7 +181,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
       q = [...queue]; q.splice(Math.min(idx + 6, q.length), 0, word.id); setQueue(q)
     }
     exTok.current++; stopAuto(); sp.stop(); setFlip(false)
-    if (idx + 1 >= q.length) setFinished(true); else setIdx(idx + 1)
+    if (idx + 1 >= q.length) setFinished(true); else { setIdx(idx + 1); readNew(q[idx + 1]) }
   }
 
   useEffect(() => {
