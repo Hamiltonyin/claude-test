@@ -347,3 +347,8 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .dlgtools select{font-size:13px;margin-left:4px}
 .relchip{display:inline-flex;flex-direction:column;align-items:flex-start;gap:0;padding:5px 9px;border:0;text-align:left;min-width:64px}.relchip:active,.relchip.on{background:#e6efff}
 .relchip .relrom{font-size:11.5px;line-height:1.2;font-weight:600}.relchip .relrom span{font-weight:600}.relchip i{margin-top:1px}
+
+.partsbox{width:100%;margin-top:10px;background:#fff8ec;border-radius:14px;padding:8px 10px;text-align:left}.partsbox.whole{font-size:12.5px;color:#8a5a14;line-height:1.5}
+.partsh{font-size:12px;font-weight:600;color:#a46a12;margin-bottom:6px}.partsrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.partwrap{display:inline-flex;align-items:center;gap:4px}
+.plus{font-style:normal;color:#c58a2b;font-weight:700}.partchip{display:inline-flex;flex-direction:column;align-items:flex-start;background:#fff;border-radius:10px;padding:5px 9px;box-shadow:0 1px 3px rgba(120,80,20,.12);border:0;text-align:left;min-width:56px}.partchip:active,.partchip.on{background:#fff1d8}
+.partchip b{font-size:17px}.partchip .relrom{font-size:11.5px;line-height:1.2;font-weight:600}.partchip i{font-style:normal;font-size:11px;color:var(--sub)}

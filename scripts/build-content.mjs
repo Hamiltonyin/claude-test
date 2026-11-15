@@ -92,6 +92,32 @@ if (existsSync('content/tones.json')) {
   writeFileSync('public/content/tones.json', JSON.stringify(t))
   console.log(`声调对比：${t.sets.length} 组`)
 }
+// 词语拆解：content/parts.txt。`词|部分1+部分2`（部分：泰文 | 泰文=释义 | 泰文/拼音=释义）；`词|整词|说明`
+const partsOut = {}
+const partClips = new Map()
+if (existsSync('content/parts.txt')) {
+  const lib = new Map(words.map(w => [w.thai, w]))
+  for (const [i, raw] of readFileSync('content/parts.txt', 'utf8').split('\n').entries()) {
+    const line = raw.trim(); if (!line || line.startsWith('#')) continue
+    const [th0, rest, note] = line.split('|'); const th = normThai(th0)
+    if (!lib.has(th)) { console.error(`✗ parts.txt:${i + 1} 「${th}」不在词库中`); bad++; continue }
+    if (rest === '整词') { partsOut[th] = { whole: true, note: note || '' }; continue }
+    const parts = []
+    for (const seg of rest.split('+')) {
+      const m = seg.match(/^([^/=]+)(?:\/([^=]+))?(?:=(.+))?$/)
+      if (!m) { console.error(`✗ parts.txt:${i + 1} 无法解析「${seg}」`); bad++; continue }
+      const pth = normThai(m[1]); const w = lib.get(pth)
+      const roman = m[2] || w?.roman; const zh = m[3] || w?.zh.split('；')[0]
+      if (!roman || !zh) { console.error(`✗ parts.txt:${i + 1} 「${pth}」缺拼音或释义（词库里没有这个词，要写 泰文/拼音=释义）`); bad++; continue }
+      let id = w?.id
+      if (!id) { id = 'prt-' + wordIdFor(pth); partClips.set(id, pth) }
+      parts.push({ th: pth, roman: roman.normalize('NFC'), zh, id })
+    }
+    if (parts.map(x => x.th).join('') !== th) { console.error(`✗ parts.txt:${i + 1} 「${th}」拼起来是「${parts.map(x => x.th).join('')}」`); bad++; continue }
+    partsOut[th] = { parts }
+  }
+  writeFileSync('public/content/parts.json', JSON.stringify(partsOut))
+}
 // 歌词背诵：content/lyrics/*.txt。首行 `# id|标题|简介|emoji`；`== 小节名`；每行 `泰文|拼音（｜ 分词组）|中文`
 const lyrics = []
 const dirL = 'content/lyrics'
@@ -124,10 +150,12 @@ if (existsSync(dirD)) for (const f of readdirSync(dirD).filter(f => f.endsWith('
 }
 if (bad) { console.error(`${bad} 行对话校验失败，已中止`); process.exit(1) }
 writeFileSync('public/content/dialogues.json', JSON.stringify(dialogues))
+for (const [id, th] of partClips) clips.push({ id, th })
 writeFileSync('public/content/lyrics.json', JSON.stringify(lyrics))
 for (const d of lyrics) for (const it of d.items) if (it.clip) clips.push({ id: it.clip, th: it.th })
 for (const d of dialogues) for (const it of d.items) if (it.clip) clips.push({ id: it.clip, th: it.th, ...(it.me ? { voice: 'th-TH-NiwatNeural' } : {}) })
 writeFileSync('public/content/clips.json', JSON.stringify({ words: clips }))
+console.log(`拆解：${Object.values(partsOut).filter(x => x.parts).length} 个词可拆，${Object.values(partsOut).filter(x => x.whole).length} 个整词说明，${partClips.size} 个新部件音频`)
 console.log(`歌词：${lyrics.length} 首，共 ${lyrics.reduce((a, d) => a + d.items.filter(x => x.clip).length, 0)} 句`)
 console.log(`对话：${dialogues.length} 段，共 ${dialogues.reduce((a, d) => a + d.items.filter(x => x.clip).length, 0)} 句`)
 console.log(`词组：${Object.keys(phrases).length} 个词有词组，共 ${Object.values(phrases).reduce((a, e) => a + e.items.length, 0)} 条`)

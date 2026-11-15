@@ -252,3 +252,42 @@ export function RelatedWords({ word }: { word: Word }) {
     </div>
   )
 }
+
+
+interface PartInfo { parts?: { th: string; roman: string; zh: string; id: string }[]; whole?: boolean; note?: string }
+let partsCache: Promise<Record<string, PartInfo>> | null = null
+const loadParts = () => (partsCache ??= fetch(`${import.meta.env.BASE_URL}content/parts.json`).then(r => r.ok ? r.json() : {}).catch(() => { partsCache = null; return {} }))
+
+/** 词语拆解：把复合词拆成有意思的部分（泰文 + 拼音 + 释义，点一下读音）；借词/整词则说明「整个记」。数据在 content/parts.txt。 */
+export function WordParts({ word }: { word: Word }) {
+  const { countPlay } = useApp()
+  const [data, setData] = useState<Record<string, PartInfo>>({})
+  const [busy, setBusy] = useState<string | null>(null)
+  useEffect(() => { let on = true; loadParts().then(d => on && setData(d)); return () => { on = false } }, [])
+  const info = data[word.thai]
+  if (!info) return null
+  const stopProp = (e: React.SyntheticEvent) => e.stopPropagation()
+  const say = async (p: { th: string; id: string }) => {
+    if (!p.id.startsWith('prt-')) countPlay(p.id)
+    setBusy(p.id)
+    try { await playFile(p.id, false) } catch { try { await playSystem(p.th, false) } catch { /* 没有语音 */ } }
+    setBusy(b => (b === p.id ? null : b))
+  }
+  if (info.whole) return <div className="partsbox whole" data-testid="parts-whole" onClick={stopProp} onTouchEnd={stopProp}><b>🧩 整词</b> {info.note}</div>
+  return (
+    <div className="partsbox" data-testid="parts" onClick={stopProp} onTouchEnd={stopProp}>
+      <div className="partsh">🧩 拆开记</div>
+      <div className="partsrow">
+        {info.parts!.map((p, i) => (
+          <span key={i} className="partwrap">
+            {i > 0 && <em className="plus">+</em>}
+            <button className={'partchip' + (busy === p.id ? ' on' : '')} onClick={() => void say(p)} aria-label={'播放 ' + p.th} data-testid="part-chip">
+              <b className="th" lang="th">{p.th}</b>
+              <ColorRoman roman={p.roman} className="relrom" />
+              <i>{p.zh}</i>
+            </button>
+          </span>))}
+      </div>
+    </div>
+  )
+}
