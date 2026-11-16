@@ -10,7 +10,7 @@ const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=tab-cats]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=tab-cats]')
   await page.tap('[data-testid=tab-cats]'); await page.waitForSelector('[data-testid=cat-food]')
   assert((await page.textContent('[data-testid=cat-food]')).includes('已学')); ok('分类页：已解锁分类卡片显示「已学 x/N」')
   assert(await page.locator('.catcard.locked').count() >= 1 && await page.locator('[data-testid=cat-beauty]').isDisabled()); ok('没有词的分类显示为未解锁（美容美发）')

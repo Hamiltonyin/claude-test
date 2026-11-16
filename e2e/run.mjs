@@ -13,7 +13,7 @@ execSync(`ffmpeg -y -loglevel error -f lavfi -i "sine=frequency=440:duration=0.6
 const port = 4400 + Math.floor(Math.random() * 500)
 const srv = spawn('npx', ['vite', 'preview', '--outDir', tmp + '/dist', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
-const URL = `http://localhost:${port}/`
+const URL = `http://localhost:${port}/?home=full`
 const results = []
 const ok = (name) => { results.push(name); console.log('✓', name) }
 const iphone = devices['iPhone 14']

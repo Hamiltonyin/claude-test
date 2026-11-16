@@ -18,7 +18,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 await page.addInitScript(() => { window.__plays = []; const o = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { window.__plays.push(this.src.split('/').pop()); return o.call(this) } })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-today]')
   await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
   await page.tap('[data-testid=start-today]'); await page.waitForSelector('[data-testid=auto-read]')
   const first = (await page.textContent('[data-testid=thai]')).trim()

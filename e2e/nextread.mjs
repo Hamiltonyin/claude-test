@@ -15,7 +15,7 @@ const openStudy = async () => {
   await page.locator('[data-testid=word-row]').first().tap(); await page.waitForSelector('[data-testid=next]')
 }
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('.tabbar')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('.tabbar')
   await openStudy(); await page.waitForTimeout(400); req.length = 0
   await page.tap('[data-testid=next]'); await page.waitForTimeout(700)
   assert(req.length === 1, '请求 ' + req.join(',')); ok('点「下一个」：直接读新词一次（' + req[0] + '）')

@@ -10,7 +10,7 @@ const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-today]')
   await page.tap('[data-testid=start-today]'); await page.waitForSelector('[data-testid=thai]')
   const t1 = await page.textContent('[data-testid=thai]')
   await page.tap('[data-testid=park]'); await page.waitForSelector('[data-testid=park-toast]'); ok('点「近期用不上」→ 提示已搁置，可撤销')

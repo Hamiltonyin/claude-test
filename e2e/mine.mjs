@@ -10,7 +10,7 @@ const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if (m.type() === 'error' && !/Failed to load|404|audio/i.test(m.text())) errors.push(m.text()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=open-mine]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=open-mine]')
   await page.waitForFunction(() => /共 \d+ 个/.test(document.querySelector('[data-testid=open-mine]')?.textContent || ''), null, { timeout: 8000 })
   const t = await page.textContent('[data-testid=open-mine]'); const n = Number(t.match(/共 (\d+) 个/)[1]); assert(n >= 40); ok(`首页「我录入的词」入口：共 ${n} 个`)
   await page.tap('[data-testid=open-mine]'); await page.waitForSelector('[data-testid=chip-mine].on')

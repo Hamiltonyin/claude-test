@@ -22,7 +22,7 @@ const runWord = async (right) => {
   }
 }
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-master]'); await manualOn(page)
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-master]'); await manualOn(page)
   assert((await page.textContent('[data-testid=start-master]')).includes('熟悉 9')); ok('首页：熟悉 9 个，有「熟悉→精通」入口')
   // 学习里点精通 → 先记为熟悉
   await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')

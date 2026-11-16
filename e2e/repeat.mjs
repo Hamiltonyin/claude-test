@@ -12,7 +12,7 @@ const rate = async (n) => { await page.tap('[data-testid=card]'); await page.wai
 const manualOn = async (pg) => { await pg.tap('[data-testid=tab-me]'); await pg.locator('[data-testid=manual-rate]').check(); await pg.tap('[data-testid=tab-home]') }
 
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]'); await manualOn(page)
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-today]'); await manualOn(page)
   await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
   await page.tap('[data-testid=start-today]'); await page.waitForSelector('[data-testid=thai]')
   const first = await page.textContent('[data-testid=thai]')

@@ -10,7 +10,7 @@ const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=pick-day]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=pick-day]')
   await page.waitForFunction(() => document.querySelector('[data-testid=start-today]')?.textContent.includes('新词 45 个'), null, { timeout: 8000 })
   await page.tap('[data-testid=pick-day]'); await page.waitForSelector('[data-testid=pick-1]')
   const n = await page.locator('[data-testid^=pick-]').count(); assert(n >= 17); ok(`天数列表：共 ${n} 天（含第1~17天）`)

@@ -11,7 +11,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const req = []; page.on('request', r => { if (/audio\/dlg-/.test(r.url())) req.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=open-dialogues]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=open-dialogues]')
   await page.tap('[data-testid=open-dialogues]'); await page.waitForSelector('[data-testid=dlg-rent-h2]')
   assert((await page.textContent('[data-testid=dlg-rent-h2]')).includes('租房')); ok('首页「情景对话」→ 对话列表（租房：物业与房东）')
   await page.tap('[data-testid=dlg-rent-h2]'); await page.waitForSelector('[data-testid=bubble]')

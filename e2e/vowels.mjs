@@ -12,7 +12,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const req = []; page.on('request', r => { if (/audio\//.test(r.url())) req.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=open-vowels]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=open-vowels]')
   await page.tap('[data-testid=open-vowels]'); await page.waitForSelector('[data-testid=vowel]')
   const n = await page.locator('[data-testid=vowel]').count(); assert(n === 32); ok(`元音 ${n} 个`)
   assert(await page.locator('[data-testid=vow-clip]').count() === 0); ok('没导入视频时不显示视频按钮')

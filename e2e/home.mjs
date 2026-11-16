@@ -12,7 +12,7 @@ const page = await ctx.newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=unlock]', { timeout: 8000 })
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=unlock]', { timeout: 8000 })
   assert((await page.textContent('[data-testid=unlock]')).includes('解锁新成就')); ok('首次打开：弹出「解锁新成就」（用初始数据算出的成就）')
   await page.tap('.ucard .btn'); await page.waitForTimeout(300)
   assert.equal(await page.locator('[data-testid=unlock]').count(), 0); ok('点「太棒了」关闭弹窗')

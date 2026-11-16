@@ -11,7 +11,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 const n = async () => Number(await page.locator('[data-testid=counts] b').nth(2).textContent())   // 计数条顺序：今日听读 · 累计听读 · 翻卡
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-weak]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-weak]')
   await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')
   assert.equal(await n(), 0); ok('新词翻卡计数 0')
   await page.tap('[data-testid=card]'); await page.waitForTimeout(300); assert.equal(await n(), 1); ok('翻一次 → 1')

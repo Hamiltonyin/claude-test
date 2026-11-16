@@ -11,7 +11,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const req = []; page.on('request', r => { if (/audio\//.test(r.url())) req.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=open-pictures]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=open-pictures]')
   await page.tap('[data-testid=open-pictures]'); await page.waitForSelector('[data-testid=body-fig]')
   const nb = await page.locator('[data-testid=body-fig] [data-testid=pic-tag]').count(); assert(nb >= 19); ok(`人体图：${nb} 个部位标签`)
   const nf = await page.locator('[data-testid=face-fig] [data-testid=pic-tag]').count(); assert(nf >= 12); ok(`脸部放大图：${nf} 个标签`)

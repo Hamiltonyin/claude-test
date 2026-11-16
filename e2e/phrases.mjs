@@ -11,7 +11,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const requested = []; page.on('request', r => { if (/audio\//.test(r.url())) requested.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-weak]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-weak]')
   await page.tap('[data-testid=start-weak]'); await page.waitForSelector('[data-testid=card]')
   await page.tap('[data-testid=card]')
   await page.waitForSelector('[data-testid=phrases] .phrow', { timeout: 8000 })

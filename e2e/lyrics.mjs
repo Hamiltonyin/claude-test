@@ -11,7 +11,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const req = []; page.on('request', r => { if (/audio\/lyr-/.test(r.url())) req.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=open-lyrics]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=open-lyrics]')
   await page.tap('[data-testid=open-lyrics]'); await page.waitForSelector('[data-testid=lyr-ngao-jung-bei]'); ok('首页「歌词背诵」→ 歌曲列表')
   await page.tap('[data-testid=lyr-ngao-jung-bei]'); await page.waitForSelector('[data-testid=lyr-line]')
   assert(await page.locator('[data-testid=lyr-line]').count() === 19); ok('19 句歌词')

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AppProvider, useApp } from './store'
-import Home from './views/Home'
+import Home, { type HomeView } from './views/Home'
 import Library, { WordSheet } from './views/Library'
 import Stats from './views/Stats'
 import Me from './views/Me'
@@ -26,10 +26,11 @@ const icons: Record<Tab, string> = {
   stats: 'M5 20V10h3v10zm5.5 0V4h3v16zM16 20v-7h3v7z',
   me: 'M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4 0-8 2-8 5v3h16v-3c0-3-4-5-8-5z',
 }
-const labels: Record<Tab, string> = { home: '首页', cats: '分类', library: '词库', stats: '统计', me: '我的' }
+const labels: Record<Tab, string> = { home: '首页', cats: '学习', library: '词库', stats: '统计', me: '我的' }
 
 function Shell() {
   const { ready, error, session, progress, words, lessons, wordMap, parkedSet } = useApp()
+  const legacy = useMemo(() => { try { return new URLSearchParams(location.search).get('home') === 'full' } catch { return false } }, [])   // ?home=full：旧版整页首页，仅供自动化测试使用
   const [tab, setTab] = useState<Tab>('home')
   const [study, setStudy] = useState<StudyState | null>(null)
   const [picking, setPicking] = useState(false)
@@ -58,10 +59,16 @@ function Shell() {
   return (
     <div className="app">
       <div className="scroll">
-        {tab === 'home' && <Home onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
-        {tab === 'cats' && <Categories onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />}
+        {tab === 'home' && <Home view={legacy ? 'full' : 'search'} onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
+        {tab === 'cats' && <>
+          {!legacy && <Home view="learn" onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
+          <Categories onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />
+        </>}
         {tab === 'library' && <Library key={libNonce} initialQuery={libQuery} onQueryUsed={() => setLibQuery('')} startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode, startIdx) => setStudy({ title, ids, mode, startIdx })} />}
-        {tab === 'stats' && <Stats onCatchup={startCatchup} />}
+        {tab === 'stats' && <>
+          {!legacy && <Home view="progress" onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
+          <Stats onCatchup={startCatchup} />
+        </>}
         {tab === 'me' && <Me />}
       </div>
       <nav className="tabbar">

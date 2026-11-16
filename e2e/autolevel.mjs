@@ -10,7 +10,7 @@ const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-today]')
   const rv = await page.textContent('[data-testid=start-review]'); assert(rv.includes('学过的词到期后'), rv); ok('没学过新词时：不安排复习（初始自评的词不算）')
   await page.tap('[data-testid=start-today]'); await page.waitForSelector('[data-testid=card]')
   assert.equal(await page.locator('[data-testid=rate1]').count(), 0); ok('学习界面没有 陌生/不熟悉/熟悉/精通 按钮')

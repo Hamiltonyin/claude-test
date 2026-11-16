@@ -7,7 +7,7 @@ const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 let bad = 0
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=start-today]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=start-today]')
   await page.tap('[data-testid=tab-me]')
   await page.fill('[data-testid=import-text]', 'day,thai,roman,zh,theme,exTh,exRoman,exZh\n3,ห้อง,hɔ̂ɔng,房间,居家,ห้องนี้ใหญ่,hɔ̂ɔng níi yài,这个房间很大。')
   await page.tap('[data-testid=import-parse]'); await page.waitForSelector('.pv')

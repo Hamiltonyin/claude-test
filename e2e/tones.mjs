@@ -12,7 +12,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const req = []; page.on('request', r => { if (/audio\//.test(r.url())) req.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=open-tones]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=open-tones]')
   await page.tap('[data-testid=open-tones]'); await page.waitForSelector('[data-testid=tone-set]')
   assert(await page.locator('[data-testid=tone-set]').count() === 5); ok('声调校对 5 组')
   assert(await page.locator('[data-testid=tone-set]').first().locator('[data-testid=tone-card]').count() === 5); ok('第一组 ปา：5 个声调卡片')

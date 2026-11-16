@@ -391,3 +391,8 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .versec .pich{margin-top:14px}.verbgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .verbcard{background:#fff;border-radius:14px;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:1px;box-shadow:0 1px 4px rgba(20,40,80,.08);border:0;min-height:112px;justify-content:center}.verbcard.on{background:#e6efff}
 .verbpic{font-size:34px;line-height:1.25}.verbcard b{font-size:17px;line-height:1.3}.verbcard .ptrom{font-size:11px;font-weight:600;line-height:1.2}.verbcard i{font-style:normal;font-size:11.5px;color:var(--sub)}.verbcard .qmark{color:#b7c2dc;font-size:22px}
+
+.searchhome{padding:22vh 6px 0;text-align:center}.searchhome h1{margin:0 0 18px;font-size:26px}.searchhome .sub{margin:12px 0 0;font-size:13px}
+.homesearch.big{display:flex;gap:8px}.homesearch.big input{flex:1;font-size:17px;padding:14px 16px;border-radius:16px}.homesearch.big button{padding:0 20px;font-size:16px;border-radius:16px}
+.learncta{margin:2px 0 6px;width:100%}
+.herocta.learncta{background:linear-gradient(135deg,#3b82ff,#6a5cff);color:#fff;box-shadow:0 6px 16px rgba(70,90,255,.3)}

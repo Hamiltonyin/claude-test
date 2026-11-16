@@ -79,7 +79,9 @@ function UnlockModal({ list, onClose }: { list: BadgeState[]; onClose: () => voi
   )
 }
 
-export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch, onDialogues, onVowels, onTones, onLyrics, onRoots, onPictures }: { onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void; onDialogues: () => void; onVowels: () => void; onTones: () => void; onLyrics: () => void; onRoots: () => void; onPictures: () => void }) {
+export type HomeView = 'full' | 'search' | 'learn' | 'progress'
+/** 首页拆成三块：search（只有搜索）、learn（学习入口：今日任务/升级通道/各个模块，放在「学习」页顶部）、progress（今日完成度/成就/学习记录，放在「统计」页顶部）；full 是旧的整页（仅用于自动化测试 ?home=full）。 */
+export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch, onDialogues, onVowels, onTones, onLyrics, onRoots, onPictures }: { view?: HomeView; onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void; onDialogues: () => void; onVowels: () => void; onTones: () => void; onLyrics: () => void; onRoots: () => void; onPictures: () => void }) {
   const [hq, setHq] = useState('')
   const { progress, words, settings, sessions, lessons, logs, session, flips, plays, exPlays, daily, parkedSet } = useApp()
   const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
@@ -133,8 +135,19 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
   const wall = [...ach.earned, ...ach.next]
   const wallShown = showAll ? wall : wall.slice(0, 8)
 
+  const full = view === 'full', isSearch = view === 'search', isLearn = view === 'learn', isProg = view === 'progress'
   return (
     <>
+      {isSearch ? (
+        <div className="searchhome">
+          <h1>泰语每日30词</h1>
+          <form className="homesearch big" onSubmit={e => { e.preventDefault(); if (hq.trim()) onSearch(hq.trim()) }}>
+            <input value={hq} onChange={e => setHq(e.target.value)} placeholder="🔍 想到哪个词，就查哪个" data-testid="home-search" enterKeyHint="search" autoFocus={false} />
+            <button type="submit" data-testid="home-search-go">查</button>
+          </form>
+          <p className="sub">中文或泰文都能查，例如：请、帮忙、怎么、ขอบคุณ</p>
+        </div>
+      ) : (isLearn || isProg) ? null : (<>
       <div className="hhead">
         <div><h1>泰语每日30词</h1><span className="daypill">第 {h.dayNo} 天</span></div>
         <div className="flame" data-testid="streak">🔥 <b>{h.streak}</b> 天</div>
@@ -144,6 +157,9 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         <button type="submit" data-testid="home-search-go">查</button>
       </form>
 
+</>)}
+
+      {(full || isProg) && (<>
       <section className="hero">
         <div className="herotop">
           <Ring pct={pct} done={doneN} total={target} />
@@ -161,6 +177,9 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         <p className="todayline" data-testid="today-line">今天：评级 {doneN} 词 · 翻卡 {c?.flips ?? 0} 次 · 听单词 {c?.plays ?? 0} 次 · 听例句 {c?.ex ?? 0} 次</p>
       </section>
 
+      </>)}
+      {isLearn && <button className="herocta learncta" onClick={() => onStudy(cta.m)} data-testid="learn-cta">{cta.t}</button>}
+      {(full || isLearn) && (<>
       <div className="sech"><h2>今日任务</h2></div>
       <div className="tasks">
         <button className="task" onClick={() => onStudy('today')} data-testid="start-today">
@@ -191,6 +210,8 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         </button>
       </div>
 
+      </>)}
+      {(full || isProg) && (<>
       <div className="sech"><h2>我的成就</h2><span>已解锁 {ach.earned.length}/{ach.all.length}</span></div>
       <section className="panel ach" data-testid="achievements">
         <div className="mastery">
@@ -211,6 +232,8 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         {wall.length > 8 && <button className="more" onClick={() => setShowAll(v => !v)}>{showAll ? '收起' : `展开全部 ${wall.length} 个`}</button>}
       </section>
 
+      </>)}
+      {(full || isLearn) && (<>
       <div className="sech"><h2>更多学习方式</h2></div>
       <div className="minis">
         <button className="mini" onClick={() => onStudy('weak')} data-testid="start-weak"><i style={{ background: 'var(--orange)' }}>🎧</i><b>重点复习</b><span>陌生 {counts[1]} · 不熟悉 {counts[2]}</span></button>
@@ -228,12 +251,17 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
         )}
       </div>
 
+      </>)}
+      {(full || isProg) && (<>
       <div className="sech"><h2>学习记录</h2><button className="sub" style={{ fontSize: 13, color: 'var(--blue)' }} onClick={onMoreRecords}>全部 ›</button></div>
       <Records limit={7} compact onCatchup={onCatchup} />
+      </>)}
+      {(full || isLearn) && (<>
       <div className="sech"><h2>按主题学习</h2></div>
       <div className="chips">
         {THEMES.map(t => <button key={t} className="chip" disabled={!themeCount.get(t)} style={!themeCount.get(t) ? { opacity: .45 } : undefined} onClick={() => onTheme(t)}>{t}<small>{themeCount.get(t) ?? 0}</small></button>)}
       </div>
+      </>)}
       {unlock.length > 0 && <UnlockModal list={unlock} onClose={() => setUnlock([])} />}
       <Burst k={doneBurst} big />
     </>

@@ -15,7 +15,7 @@ const search = async (q) => {
   return page.locator('[data-testid=word-row]').allTextContents()
 }
 try {
-  await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=home-search]')
+  await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=home-search]')
   let r = await search('帮忙'); assert(r[0].includes('ช่วย'), r[0]); ok('首页搜「帮忙」→ 第一条是 ช่วย')
   r = await search('如果'); assert(r[0].includes('ถ้า'), r[0]); ok('搜「如果」→ ถ้า')
   r = await search('怎么'); assert(r.slice(0, 3).some(x => x.includes('ยังไง')) && r.slice(0, 3).some(x => x.includes('อย่างไร')), r.slice(0, 3).join('|')); ok('搜「怎么」→ ยังไง / อย่างไร 排在前面')
