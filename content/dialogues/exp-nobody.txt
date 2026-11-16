@@ -1,0 +1,13 @@
+# exp-nobody|没接到电话：没人收件|快递|📵
+== 快递员打了好几次
+快递员|ผมโทรหาหลายครั้งแล้ว ไม่มีคนรับสายครับ|phǒm thoo-hǎa lǎai-khráng lɛ́ɛo, mâi mii khon ráp-sǎai khráp|我打了好几次，没人接。
+我|ขอโทษครับ ผมอยู่ในที่ประชุม|khɔ̌ɔ-thôot khráp, phǒm yùu nai thîi-prà-chum khráp|对不起，我在开会。
+快递员|ตอนนี้ผมอยู่หน้าห้องคุณครับ ไม่มีใครอยู่|tɔɔn-níi phǒm yùu nâa hɔ̂ɔng khun khráp, mâi mii khrai yùu|我现在在您门口，没有人在。
+我|ฝากไว้กับเพื่อนบ้านได้ไหมครับ|fàak wái kàp phɯ̂an-bâan dâi mǎi khráp|能放在邻居那里吗？
+快递员|ไม่ได้ครับ ต้องให้เจ้าของพัสดุรับเองครับ|mâi dâi khráp, tɔ̂ng hâi jâo-khɔ̌ɔng phát-sà-dù ráp eeng khráp|不行，必须收件人本人收。
+== 重新约时间
+我|งั้นพรุ่งนี้ส่งใหม่ได้ไหมครับ|ngán phrûng-níi sòng mài dâi mǎi khráp|那明天重新送可以吗？
+快递员|ได้ครับ ผมจะลองส่งอีกครั้งตอนบ่ายครับ|dâi khráp, phǒm jà lɔɔng sòng ìik-khráng tɔɔn bàai khráp|可以，我下午再试送一次。
+我|ตอนบ่ายผมอยู่ครับ|tɔɔn bàai phǒm yùu khráp|下午我在。
+快递员|ถ้าไม่มีคนรับอีก พัสดุจะถูกส่งกลับครับ|thâa mâi mii khon ráp ìik, phát-sà-dù jà thùuk sòng-klàp khráp|如果还没人收，包裹会被退回。
+我|เข้าใจแล้วครับ ขอบคุณครับ|khâo-jai lɛ́ɛo khráp, khɔ̀ɔp-khun khráp|明白了，谢谢。

@@ -1,0 +1,18 @@
+# exp-track|查询包裹：什么时候到|快递|🔎
+== 打电话问包裹
+我|สวัสดีครับ ผมอยากถามเรื่องพัสดุครับ|sà-wàt-dii khráp, phǒm yàak thǎam rɯ̂ang phát-sà-dù khráp|你好，我想问包裹的事。
+客服|ได้ครับ ขอเลขพัสดุหน่อยครับ|dâi khráp, khɔ̌ɔ lêek-phát-sà-dù nɔ̀i khráp|好的，请给我单号。
+我|เลขพัสดุคือ หนึ่ง สอง สาม สี่ ห้า หก ครับ|lêek-phát-sà-dù khɯɯ nɯ̀ng sɔ̌ɔng sǎam sìi hâa hòk khráp|单号是 1 2 3 4 5 6。
+客服|สถานะคือ กำลังนำส่งครับ|sà-thǎa-ná khɯɯ kam-lang nam-sòng khráp|状态是配送中。
+我|วันนี้จะถึงกี่โมงครับ|wan-níi jà thɯ̌ng kìi-moong khráp|今天几点能到？
+客服|ประมาณบ่ายสามโมงครับ|prà-maan bàai sǎam moong khráp|大约下午三点。
+我|ทำไมยังไม่ถึงครับ|tham-mai yang mâi thɯ̌ng khráp|为什么还没到？
+客服|ขอโทษครับ วันนี้พัสดุเยอะครับ|khɔ̌ɔ-thôot khráp, wan-níi phát-sà-dù yə́ khráp|对不起，今天包裹多。
+我|ช่วยติดต่อคนส่งของให้ผมหน่อยได้ไหมครับ|chûai tìt-tɔ̀ɔ khon-sòng-khɔ̌ɔng hâi phǒm nɔ̀i dâi mǎi khráp|能帮我联系送货员吗？
+客服|ได้ครับ เดี๋ยวให้เขาโทรหาคุณนะครับ|dâi khráp, dǐao hâi khǎo thoo-hǎa khun ná khráp|可以，我让他打给您。
+== 改地址和时间
+我|ผมอยากเปลี่ยนที่อยู่จัดส่งได้ไหมครับ|phǒm yàak plìan thîi-yùu jàt-sòng dâi mǎi khráp|我想改送货地址，可以吗？
+客服|ได้ครับ ถ้ายังไม่ได้ออกไปส่งครับ|dâi khráp, thâa yang mâi dâi ɔ̀ɔk-pai sòng khráp|可以，如果还没出发送的话。
+我|พรุ่งนี้ส่งได้ไหมครับ|phrûng-níi sòng dâi mǎi khráp|明天送可以吗？
+客服|ได้ครับ จะส่งใหม่พรุ่งนี้ช่วงเช้าครับ|dâi khráp, jà sòng mài phrûng-níi chûang cháao khráp|可以，明天上午重新送。
+我|ขอบคุณครับ|khɔ̀ɔp-khun khráp|谢谢。

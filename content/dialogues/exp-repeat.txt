@@ -1,0 +1,15 @@
+# exp-repeat|听不清：请说慢一点|快递|🙉
+== 接到电话听不懂
+快递员|ฮัลโหล สวัสดีครับ ผมส่งของครับ|han-lǒo, sà-wàt-dii khráp, phǒm sòng-khɔ̌ɔng khráp|喂，你好，我是送货的。
+快递员|ตอนนี้ผมถึงแล้วครับ อยู่ที่ไหนครับ|tɔɔn-níi phǒm thɯ̌ng lɛ́ɛo khráp, yùu thîi-nǎi khráp|我现在到了，您在哪里？
+我|ขอโทษครับ ผมฟังไม่เข้าใจ|khɔ̌ɔ-thôot khráp, phǒm fang mâi khâo-jai|对不起，我听不懂。
+我|ช่วยพูดช้า ๆ หน่อยได้ไหมครับ|chûai phûut cháa-cháa nɔ̀i dâi mǎi khráp|能说慢一点吗？
+快递员|ได้ครับ ตอนนี้ ผม ถึง แล้ว ครับ|dâi khráp, tɔɔn-níi phǒm thɯ̌ng lɛ́ɛo khráp|可以。我——现在——到了。
+我|ช่วยพูดอีกครั้งได้ไหมครับ|chûai phûut ìik-khráng dâi mǎi khráp|能再说一遍吗？
+我|ผมพูดภาษาไทยได้นิดหน่อยครับ|phǒm phûut phaa-sǎa-thai dâi nít-nɔ̀i khráp|我只会说一点点泰语。
+我|ช่วยส่งข้อความไลน์ให้ผมได้ไหมครับ|chûai sòng khɔ̂ɔ-khwaam lai hâi phǒm dâi mǎi khráp|能给我发 LINE 消息吗？
+快递员|ได้ครับ เดี๋ยวผมพิมพ์ไปครับ|dâi khráp, dǐao phǒm phim pai khráp|可以，我马上打字发给您。
+我|ขอบคุณครับ ผมอ่านได้ดีกว่าฟังครับ|khɔ̀ɔp-khun khráp, phǒm àan dâi dii-kwàa fang khráp|谢谢，我看比听更明白。
+我|ช่วยพูดภาษาอังกฤษได้ไหมครับ|chûai phûut phaa-sǎa-ang-krìt dâi mǎi khráp|能说英语吗？
+快递员|ไม่ได้ครับ ผมพูดได้นิดหน่อย|mâi dâi khráp, phǒm phûut dâi nít-nɔ̀i|不行，我只会一点点。
+我|ไม่เป็นไรครับ ผมโทรกลับนะครับ|mâi-pen-rai khráp, phǒm thoo-klàp ná khráp|没关系，我回电话给您。

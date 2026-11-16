@@ -1,0 +1,18 @@
+# exp-arrive|快递员到楼下了|快递|📦
+== 快递员打来电话
+快递员|สวัสดีครับ ผมโทรมาจากบริษัทขนส่งครับ|sà-wàt-dii khráp, phǒm thoo maa jàak bɔɔ-rí-sàt khǒn-sòng khráp|你好，我是快递公司打来的。
+快递员|มีพัสดุของคุณครับ|mii phát-sà-dù khɔ̌ɔng khun khráp|有您的包裹。
+快递员|ตอนนี้ผมอยู่ข้างล่างครับ|tɔɔn-níi phǒm yùu khâang-lâang khráp|我现在在楼下。
+我|ครับ ได้ครับ|khráp, dâi khráp|好的，可以。
+我|รอสักครู่นะครับ ผมจะลงไปรับ|rɔɔ sàk-khrûu ná khráp, phǒm jà long-pai ráp|请稍等，我下去取。
+快递员|ได้ครับ ผมรออยู่หน้าตึกครับ|dâi khráp, phǒm rɔɔ yùu nâa tɯ̀k khráp|好的，我在楼前等。
+我|คุณอยู่ตรงไหนครับ|khun yùu trong-nǎi khráp|您在哪个位置？
+快递员|อยู่ตรงลิฟต์ชั้นล่างครับ|yùu trong líp chán-lâang khráp|在一楼电梯这边。
+我|โอเคครับ ผมลงไปเดี๋ยวนี้|oo-khee khráp, phǒm long-pai dǐao-níi|好的，我马上下去。
+快递员|ขอบคุณครับ|khɔ̀ɔp-khun khráp|谢谢。
+== 在楼下签收
+快递员|นี่ครับ พัสดุของคุณ|nîi khráp, phát-sà-dù khɔ̌ɔng khun|给，您的包裹。
+快递员|รบกวนเซ็นรับตรงนี้ด้วยครับ|róp-kuan sen ráp trong-níi dûai khráp|麻烦在这里签收。
+我|ตรงนี้ใช่ไหมครับ|trong-níi châi mǎi khráp|是这里吗？
+快递员|ใช่ครับ|châi khráp|对。
+我|ขอบคุณครับ|khɔ̀ɔp-khun khráp|谢谢。

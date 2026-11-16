@@ -1,0 +1,15 @@
+# exp-leave|我不在家：放在哪里|快递|🏠
+== 告诉快递员放哪里
+我|สวัสดีครับ ตอนนี้ผมไม่อยู่ห้องครับ|sà-wàt-dii khráp, tɔɔn-níi phǒm mâi yùu hɔ̂ɔng khráp|你好，我现在不在房间。
+我|ฝากไว้ที่ป้อมยามได้ไหมครับ|fàak wái thîi pɔ̂ɔm-yaam dâi mǎi khráp|能放在保安亭吗？
+快递员|ได้ครับ แต่ต้องมีคนเซ็นรับนะครับ|dâi khráp, tɛ̀ɛ tɔ̂ng mii khon sen ráp ná khráp|可以，但需要有人签收。
+我|ให้ยามเซ็นแทนได้ไหมครับ|hâi yaam sen thɛɛn dâi mǎi khráp|能让保安代签吗？
+快递员|ได้ครับ|dâi khráp|可以。
+我|ถ้าไม่มีคน ช่วยวางไว้หน้าประตูได้ไหมครับ|thâa mâi mii khon, chûai waang wái nâa prà-tuu dâi mǎi khráp|如果没人，能放在门口吗？
+快递员|ได้ครับ ผมจะถ่ายรูปให้ดูครับ|dâi khráp, phǒm jà thàai-rûup hâi duu khráp|可以，我拍照给您看。
+我|ขอบคุณมากครับ|khɔ̀ɔp-khun mâak khráp|非常感谢。
+== 放好之后
+快递员|วางไว้ที่ป้อมยามแล้วนะครับ|waang wái thîi pɔ̂ɔm-yaam lɛ́ɛo ná khráp|已经放在保安亭了。
+我|ครับ ผมจะลงไปรับตอนเย็นครับ|khráp, phǒm jà long-pai ráp tɔɔn yen khráp|好的，我傍晚下去取。
+快递员|ครับ มีปัญหาอะไรโทรหาผมได้ครับ|khráp, mii pan-hǎa à-rai thoo-hǎa phǒm dâi khráp|好的，有什么问题可以打给我。
+我|ได้ครับ ขอบคุณครับ|dâi khráp, khɔ̀ɔp-khun khráp|好的，谢谢。
