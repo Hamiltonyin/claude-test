@@ -163,6 +163,13 @@ if (existsSync('content/patterns.json')) {
   writeFileSync('public/content/patterns.json', JSON.stringify(pj))
   console.log(`句式：${pj.patterns.length} 个，例句 ${pj.patterns.reduce((a, x) => a + x.ex.length, 0)} 句`)
 }
+// 量词：content/classifiers.json（30 个常用量词，每个带例句；例句生成 cls-NN 音频）
+if (existsSync('content/classifiers.json')) {
+  const cj = JSON.parse(readFileSync('content/classifiers.json', 'utf8'))
+  for (const it of cj.items) { if (!words.some(w => w.thai === normThai(it.th))) { console.error(`✗ 量词「${it.th}」不在词库中`); bad++ } extraClips.push({ id: it.ex.clip, th: it.ex.th }) }
+  writeFileSync('public/content/classifiers.json', JSON.stringify(cj))
+  console.log(`量词：${cj.items.length} 个`)
+}
 // 歌词背诵：content/lyrics/*.txt。首行 `# id|标题|简介|emoji`；`== 小节名`；每行 `泰文|拼音（｜ 分词组）|中文`
 const lyrics = []
 const dirL = 'content/lyrics'

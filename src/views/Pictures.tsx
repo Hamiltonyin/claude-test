@@ -5,7 +5,7 @@ import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { wordIdFor } from '../lib/ids'
 import type { Word } from '../types'
 
-type Tab = 'body' | 'time' | 'week' | 'num' | 'verb'
+type Tab = 'body' | 'time' | 'week' | 'num' | 'verb' | 'cls'
 
 /** 图解记忆：一边看图、一边认词。图是自己画的示意图（人体、一天的太阳位置、星期对应的星球和颜色），点任何标签读音。 */
 export default function Pictures({ onClose }: { onClose: () => void }) {
@@ -32,13 +32,14 @@ export default function Pictures({ onClose }: { onClose: () => void }) {
     <div className="study picpage" role="dialog" aria-label="图解记忆">
       <div className="sthead"><button className="close" onClick={() => { stopAudio(); onClose() }}>‹ 返回</button><div className="prog"><b>🖼️ 图解记忆</b></div></div>
       <div className="pictabs">
-        {([['body', '🧍 人体'], ['time', '🌅 一天'], ['week', '📅 星期'], ['num', '🔢 数字'], ['verb', '🏃 动词']] as const).map(([k, n]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)} data-testid={'pictab-' + k}>{n}</button>)}
+        {([['body', '🧍 人体'], ['time', '🌅 一天'], ['week', '📅 星期'], ['num', '🔢 数字'], ['verb', '🏃 动词'], ['cls', '🧮 量词']] as const).map(([k, n]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)} data-testid={'pictab-' + k}>{n}</button>)}
         <label className="pichide"><input type="checkbox" checked={hideZh} onChange={e => setHideZh(e.target.checked)} /> 遮住中文</label>
       </div>
       <div className="piclist">
         {tab === 'body' && <Body Tag={Tag} />}
         {tab === 'time' && <TimeOfDay Tag={Tag} />}
         {tab === 'week' && <Week Tag={Tag} />}
+        {tab === 'cls' && <ClassifierAtlas byThai={byThai} say={say} on={on} hideZh={hideZh} />}
         {tab === 'verb' && <VerbAtlas byThai={byThai} say={say} on={on} hideZh={hideZh} />}
         {tab === 'num' && <Numbers Tag={Tag} byThai={byThai} countPlay={countPlay} />}
         <p className="sub" style={{ margin: '14px 4px' }}>用法：看图想一想这个词，再点标签听读音；勾「遮住中文」可以自测。图是示意图，不是照片。</p>
@@ -387,5 +388,43 @@ function VerbAtlas({ byThai, say, on, hideZh }: { byThai: Map<string, Word>; say
           </div>
         </section>))}
       <p className="sub" style={{ margin: '10px 4px' }}>共 {secs?.length ?? 0} 组 {total} 个动词。图是 emoji，外观随手机系统不同；有的动词用一张图概括，意思以文字为准。</p>
+    </div>)
+}
+
+
+/* ───────────── 量词 ───────────── */
+interface Cls { n: number; th: string; roman: string; zh: string; pic: string; uses: string; ex: { th: string; roman: string; zh: string; clip: string } }
+let clsCache: Promise<Cls[]> | null = null
+const loadCls = () => (clsCache ??= fetch(`${import.meta.env.BASE_URL}content/classifiers.json`).then(r => r.ok ? r.json() : { items: [] }).then(j => j.items as Cls[]).catch(() => { clsCache = null; return [] }))
+
+/** 量词图集：泰语数东西要「名词 + 数字 + 量词」，不同的东西用不同的量词。每个量词配图、用法和一个例句。 */
+function ClassifierAtlas({ byThai, say, on, hideZh }: { byThai: Map<string, Word>; say: (th: string) => Promise<void>; on: string | null; hideZh: boolean }) {
+  const [items, setItems] = useState<Cls[] | null>(null)
+  const [exOn, setExOn] = useState<string | null>(null)
+  useEffect(() => { let ok = true; loadCls().then(d => ok && setItems(d)); return () => { ok = false } }, [])
+  const sayEx = async (c: Cls) => {
+    setExOn(c.ex.clip); stopAudio()
+    try { await playFile(c.ex.clip, false) } catch { try { await playSystem(c.ex.th, false) } catch { /* 没有语音 */ } }
+    setExOn(o => (o === c.ex.clip ? null : o))
+  }
+  return (
+    <div data-testid="cls-atlas">
+      <div className="vowintro"><b>泰语怎么数东西</b><p>顺序是 <b className="th" lang="th">名词 + 数字 + 量词</b>，和中文相反：ปากกา（笔）สอง（二）ด้าม（支）＝两支笔。问数量：มี + 名词 + กี่ + 量词。不同的东西用不同的量词，下面 30 个最常用。点图片卡听量词，点例句听整句。</p></div>
+      <div className="clsgrid">
+        {items?.map(c => {
+          const w = byThai.get(c.th)
+          return (
+            <div key={c.n} className="clscard" data-testid="cls-card">
+              <button className={'clshead' + (on === c.th ? ' on' : '')} onClick={() => void say(c.th)}>
+                <span className="verbpic">{c.pic}</span>
+                <span className="clsw"><b className="th" lang="th">{c.th}</b><ColorRoman roman={w?.roman ?? c.roman} className="ptrom" />{!hideZh && <i>{c.zh}</i>}</span>
+              </button>
+              {!hideZh && <p className="clsuse">用来数：{c.uses}</p>}
+              <button className={'clsex' + (exOn === c.ex.clip ? ' on' : '')} onClick={() => void sayEx(c)} data-testid="cls-ex">
+                <span className="th" lang="th">{c.ex.th}</span><ColorRoman roman={c.ex.roman} className="ptrom" />{!hideZh && <i>{c.ex.zh}</i>}
+              </button>
+            </div>)
+        })}
+      </div>
     </div>)
 }

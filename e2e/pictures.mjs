@@ -41,6 +41,10 @@ try {
   assert(await page.locator('.verbcard .qmark').count() === nv); ok('遮住泰文：只剩图和「？」')
   req.length = 0; await page.locator('[data-testid=verb-card]').first().tap(); await page.waitForTimeout(500)
   assert(await page.locator('.verbcard .qmark').count() === nv - 1 && req.length >= 1); ok('点一张：翻开泰文并读音')
+  await page.tap('[data-testid=pictab-cls]'); await page.waitForSelector('[data-testid=cls-card]')
+  assert(await page.locator('[data-testid=cls-card]').count() === 30); ok('量词图集：30 个量词，每个有图、用法、例句')
+  assert((await page.locator('[data-testid=cls-card]').first().textContent()).includes('อัน')); 
+  req.length = 0; await page.locator('[data-testid=cls-ex]').first().tap(); await page.waitForTimeout(500); assert(req.some(u => /cls-01\.mp3/.test(u))); ok('点例句：cls-01.mp3')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/pic-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
