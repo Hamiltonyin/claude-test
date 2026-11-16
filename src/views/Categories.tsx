@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES } from '../types'
-import { Sheet } from '../ui'
+import { ColorRoman, Sheet, Speaker } from '../ui'
+import { playFile, playSystem } from '../lib/audio'
 import type { StudyMode } from './Study'
 
 interface Cat { id: string; name: string; emoji: string; words: string[] }
@@ -12,7 +13,13 @@ const load = () => (cache ??= fetch(`${import.meta.env.BASE_URL}content/categori
 
 /** 按主题浏览：不受「第几天」课程限制，任何分类随时可以学；评级照常计入复习。 */
 export default function Categories({ onStudy }: { onStudy: (title: string, ids: string[], mode: StudyMode) => void }) {
-  const { words, progress } = useApp()
+  const { words, progress, countPlay } = useApp()
+  const [playingId, setPlayingId] = useState<string | null>(null)
+  const sayWord = async (w: { id: string; thai: string }) => {
+    countPlay(w.id); setPlayingId(w.id)
+    try { await playFile(w.id, false) } catch { try { await playSystem(w.thai, false) } catch { /* 没有语音 */ } }
+    setPlayingId(p => (p === w.id ? null : p))
+  }
   const [groups, setGroups] = useState<Group[] | null>(null)
   const [open, setOpen] = useState<Cat | null>(null)
   useEffect(() => { let on = true; load().then(g => on && setGroups(g)); return () => { on = false } }, [])
@@ -55,8 +62,11 @@ export default function Categories({ onStudy }: { onStudy: (title: string, ids: 
           <button className="btn sec block" disabled={cur.ids.length === cur.learned} onClick={() => { const t = open; setOpen(null); onStudy(t.name + ' · 新词', cur.ids.filter(i => lv(i) === 0), 'theme') }} data-testid="cat-fresh">只学还没学过的（{cur.ids.length - cur.learned}）</button>
           <div className="catlist">
             {cur.ids.map(id => { const w = words.find(x => x.id === id)!; const l = lv(id); return (
-              <div key={id} className="catrow"><span className="th" lang="th">{w.thai}</span><span className="sub">{w.zh.split(/[；;]/)[0]}</span>
-                {l > 0 && <span className="pill" style={{ background: LEVEL_COLORS[l] }}>{LEVEL_NAMES[l]}</span>}</div>) })}
+              <div key={id} className={'catrow tap' + (playingId === id ? ' on' : '')} role="button" tabIndex={0} onClick={() => void sayWord(w)} onKeyDown={e => { if (e.key === 'Enter') void sayWord(w) }} data-testid="cat-word">
+                <span className="th" lang="th">{w.thai}</span>
+                <span className="catmid"><ColorRoman roman={w.roman} className="relrom" /><span className="sub">{w.zh.split(/[；;]/)[0]}</span></span>
+                {l > 0 && <span className="pill" style={{ background: LEVEL_COLORS[l] }}>{LEVEL_NAMES[l]}</span>}
+                <span className="wspk" aria-hidden><Speaker /></span></div>) })}
           </div>
           <button className="btn sec block" onClick={() => setOpen(null)}>关闭</button>
         </Sheet>)}

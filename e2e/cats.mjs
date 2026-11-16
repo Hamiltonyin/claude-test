@@ -22,6 +22,9 @@ try {
   await page.tap('text=‹ 返回').catch(() => {})
   await page.tap('[data-testid=tab-cats]'); await page.waitForSelector('[data-testid=cat-v-core]')
   await page.tap('[data-testid=cat-v-buy]'); await page.waitForSelector('.catrow')
+  assert((await page.locator('.catrow .relrom').first().textContent()).length > 1); ok('分类里每个词带罗马拼音')
+  const rq = []; page.on('request', r => { if (/audio\//.test(r.url())) rq.push(r.url()) })
+  await page.locator('[data-testid=cat-word]').first().tap(); await page.waitForTimeout(500); assert(rq.length >= 1); ok('点一行：读音')
   const nrows = await page.locator('.catrow').count(); assert(nrows >= 1 && nrows <= 10, '动词分类词数 ' + nrows); ok(`动词分类「买卖付款」${nrows} 个词（每类不超过 10）`)
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/cats-fail.png' }) }
