@@ -245,7 +245,7 @@ export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCat
         <button className="mini" onClick={onLyrics} data-testid="open-lyrics"><i style={{ background: '#ff375f' }}>🎤</i><b>歌词背诵</b><span>用歌词记句子</span></button>
         <button className="mini" onClick={onRoots} data-testid="open-roots"><i style={{ background: '#d9730d' }}>🧩</i><b>构词规律</b><span>像偏旁：推理新词</span></button>
         <button className="mini" onClick={onPictures} data-testid="open-pictures"><i style={{ background: '#16a34a' }}>🖼️</i><b>图解记忆</b><span>人体 · 一天 · 星期</span></button>
-        <button className="mini" onClick={onPatterns} data-testid="open-patterns"><i style={{ background: '#0ea5a4' }}>🧱</i><b>常用句式</b><span>快递沟通 30 个句型</span></button>
+        <button className="mini" onClick={onPatterns} data-testid="open-patterns"><i style={{ background: '#0ea5a4' }}>🧱</i><b>常用句式</b><span>快递沟通常用句型</span></button>
         <button className="mini" onClick={onLibrary} data-testid="open-library"><i style={{ background: 'var(--green)' }}>🗂</i><b>全部词库</b><span>{words.length} 词 · 今日到期 {due}</span></button>
         {backlog.length > 0 && (
           <button className="mini alert" onClick={() => onCatchup('漏学补学', backlog.slice(0, 30))} data-testid="start-catchup"><i style={{ background: 'var(--red)' }}>⏰</i><b>漏学补学</b><span>{backlog.length} 个没学 · 漏学 {missed} 天</span></button>
