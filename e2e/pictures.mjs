@@ -26,6 +26,15 @@ try {
   await page.tap('[data-testid=pictab-week]'); await page.waitForSelector('[data-testid=day-card]')
   assert(await page.locator('[data-testid=day-card]').count() === 7); ok('星期：7 张卡（星球 + 颜色）')
   assert((await page.locator('[data-testid=day-card]').first().textContent()).includes('วันอาทิตย์')); ok('从星期日 วันอาทิตย์ 开始（泰国习惯）')
+  await page.tap('[data-testid=pictab-num]'); await page.waitForSelector('[data-testid=digit-card]')
+  assert(await page.locator('[data-testid=digit-card]').count() === 10 && await page.locator('[data-testid=place-card]').count() === 6); ok('数字：0–9 十张骰子点数卡 + 十/百/千/万/十万/百万 六张图')
+  assert((await page.textContent('[data-testid=num-th]')) === 'ยี่สิบเอ็ด'); ok('21 → ยี่สิบเอ็ด')
+  for (const [n, t] of [['11', 'สิบเอ็ด'], ['101', 'หนึ่งร้อยเอ็ด'], ['12345', 'หนึ่งหมื่นสองพันสามร้อยสี่สิบห้า'], ['1000000', 'หนึ่งล้าน'], ['1000001', 'หนึ่งล้านเอ็ด']]) {
+    await page.fill('[data-testid=num-input]', n); assert((await page.textContent('[data-testid=num-th]')) === t, n)
+  }
+  ok('读数规则：สิบเอ็ด / หนึ่งร้อยเอ็ด / หนึ่งหมื่น… / หนึ่งล้าน / หนึ่งล้านเอ็ด 都对')
+  await page.fill('[data-testid=num-input]', '21'); req.length = 0; await page.tap('[data-testid=num-play]'); await page.waitForTimeout(1500)
+  assert(req.length >= 1); await page.tap('[data-testid=num-play]').catch(() => {}); ok('「读出来」按顺序播放各个词')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/pic-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)

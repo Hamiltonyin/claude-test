@@ -2,9 +2,10 @@ import React, { useMemo, useState } from 'react'
 import { useApp } from '../store'
 import { ColorRoman } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
+import { wordIdFor } from '../lib/ids'
 import type { Word } from '../types'
 
-type Tab = 'body' | 'time' | 'week'
+type Tab = 'body' | 'time' | 'week' | 'num'
 
 /** 图解记忆：一边看图、一边认词。图是自己画的示意图（人体、一天的太阳位置、星期对应的星球和颜色），点任何标签读音。 */
 export default function Pictures({ onClose }: { onClose: () => void }) {
@@ -31,13 +32,14 @@ export default function Pictures({ onClose }: { onClose: () => void }) {
     <div className="study picpage" role="dialog" aria-label="图解记忆">
       <div className="sthead"><button className="close" onClick={() => { stopAudio(); onClose() }}>‹ 返回</button><div className="prog"><b>🖼️ 图解记忆</b></div></div>
       <div className="pictabs">
-        {([['body', '🧍 人体'], ['time', '🌅 一天'], ['week', '📅 星期']] as const).map(([k, n]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)} data-testid={'pictab-' + k}>{n}</button>)}
+        {([['body', '🧍 人体'], ['time', '🌅 一天'], ['week', '📅 星期'], ['num', '🔢 数字']] as const).map(([k, n]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)} data-testid={'pictab-' + k}>{n}</button>)}
         <label className="pichide"><input type="checkbox" checked={hideZh} onChange={e => setHideZh(e.target.checked)} /> 遮住中文</label>
       </div>
       <div className="piclist">
         {tab === 'body' && <Body Tag={Tag} />}
         {tab === 'time' && <TimeOfDay Tag={Tag} />}
         {tab === 'week' && <Week Tag={Tag} />}
+        {tab === 'num' && <Numbers Tag={Tag} byThai={byThai} countPlay={countPlay} />}
         <p className="sub" style={{ margin: '14px 4px' }}>用法：看图想一想这个词，再点标签听读音；勾「遮住中文」可以自测。图是示意图，不是照片。</p>
       </div>
     </div>)
@@ -237,5 +239,110 @@ function Week({ Tag }: { Tag: TagC }) {
       </div>
       <h3 className="pich">和星期有关</h3>
       <div className="ptrow"><Tag th="อาทิตย์" zh="星期；周" /><Tag th="สัปดาห์" zh="星期；周" /><Tag th="วัน" zh="天；日" /></div>
+    </div>)
+}
+
+
+/* ───────────── 数字 ───────────── */
+const TH_DIGIT = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙']
+const DIGIT_WORD = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า']
+const DOTS: number[][] = [[], [4], [0, 8], [0, 4, 8], [0, 2, 6, 8], [0, 2, 4, 6, 8], [0, 2, 3, 5, 6, 8], [0, 2, 3, 4, 5, 6, 8], [0, 1, 2, 3, 5, 6, 7, 8], [0, 1, 2, 3, 4, 5, 6, 7, 8]]
+function Dots({ n }: { n: number }) {
+  return (
+    <svg viewBox="0 0 60 60" className="dots" aria-hidden>
+      <rect x="2" y="2" width="56" height="56" rx="12" fill="#fff" stroke="#c9d3ea" strokeWidth="2" />
+      {n === 0 && <circle cx="30" cy="30" r="10" fill="none" stroke="#b7c2dc" strokeWidth="3" strokeDasharray="3 4" />}
+      {DOTS[n].map(i => <circle key={i} cx={14 + (i % 3) * 16} cy={14 + Math.floor(i / 3) * 16} r="5.5" fill="#3b82ff" />)}
+    </svg>)
+}
+const Bag = ({ x, y, s = 1 }: { x: number; y: number; s?: number }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}><path d="M6 6 Q12 0 18 6 L22 8 Q24 22 20 26 H4 Q0 22 2 8 Z" fill="#e2a93a" stroke="#b9801f" strokeWidth="1.2" /><path d="M7 6 H17" stroke="#b9801f" strokeWidth="2" /><text x="12" y="20" fontSize="8" textAnchor="middle" fill="#7a4c0c" fontWeight="700">万</text></g>)
+function PlacePic({ k }: { k: 'ten' | 'hun' | 'tho' | 'wan' | 'san' | 'lan' }) {
+  const cell = '#3b82ff'
+  if (k === 'ten') return <svg viewBox="0 0 120 60" className="pp" aria-hidden>{Array.from({ length: 10 }, (_, i) => <rect key={i} x={6 + i * 10.6} y="22" width="9" height="16" rx="2" fill={cell} />)}</svg>
+  if (k === 'hun') return <svg viewBox="0 0 120 60" className="pp" aria-hidden>{Array.from({ length: 100 }, (_, i) => <rect key={i} x={30 + (i % 10) * 6} y={2 + Math.floor(i / 10) * 5.6} width="5" height="4.6" rx="1" fill={cell} />)}</svg>
+  if (k === 'tho') return <svg viewBox="0 0 120 60" className="pp" aria-hidden>{Array.from({ length: 10 }, (_, i) => <g key={i} transform={`translate(${14 + i * 4} ${44 - i * 3.6})`}><rect width="50" height="14" rx="2" fill={i % 2 ? '#5b9cff' : '#3b82ff'} stroke="#fff" strokeWidth="1" /></g>)}</svg>
+  if (k === 'wan') return <svg viewBox="0 0 120 60" className="pp" aria-hidden><Bag x={46} y={14} s={1.5} /></svg>
+  if (k === 'san') return <svg viewBox="0 0 120 60" className="pp" aria-hidden>{Array.from({ length: 10 }, (_, i) => <Bag key={i} x={4 + (i % 5) * 22} y={4 + Math.floor(i / 5) * 28} s={0.85} />)}</svg>
+  return <svg viewBox="0 0 120 60" className="pp" aria-hidden>{Array.from({ length: 100 }, (_, i) => <Bag key={i} x={4 + (i % 10) * 11.4} y={2 + Math.floor(i / 10) * 5.7} s={0.36} />)}</svg>
+}
+const PLACES: { k: 'ten' | 'hun' | 'tho' | 'wan' | 'san' | 'lan'; th: string; zh: string; n: string; eq: string }[] = [
+  { k: 'ten', th: 'สิบ', zh: '十', n: '10', eq: '10 个 1（หนึ่ง）' },
+  { k: 'hun', th: 'ร้อย', zh: '百', n: '100', eq: '10 个 สิบ' },
+  { k: 'tho', th: 'พัน', zh: '千', n: '1,000', eq: '10 个 ร้อย（10 层 100 叠起来）' },
+  { k: 'wan', th: 'หมื่น', zh: '万', n: '10,000', eq: '10 个 พัน（一袋＝一万）' },
+  { k: 'san', th: 'แสน', zh: '十万', n: '100,000', eq: '10 个 หมื่น（10 袋）' },
+  { k: 'lan', th: 'ล้าน', zh: '百万', n: '1,000,000', eq: '10 个 แสน（100 袋）' },
+]
+// 把数字读成泰语：[词, 是不是「改读」]。规则：十位是 1 只读 สิบ；十位是 2 读 ยี่สิบ；个位 1 在别的数后面读 เอ็ด
+function readNum(n: number): { w: string; note?: string }[] {
+  if (n === 0) return [{ w: 'ศูนย์' }]
+  const out: { w: string; note?: string }[] = []
+  const grp = (m: number, tail: boolean) => {
+    const ps = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน']
+    for (let p = 5; p >= 0; p--) {
+      const d = Math.floor(m / 10 ** p) % 10; if (!d) continue
+      if (p === 0) { out.push(d === 1 && (m > 1 || tail) ? { w: 'เอ็ด', note: '个位的 1 接在别的数后面，读 เอ็ด 不读 หนึ่ง' } : { w: DIGIT_WORD[d] }); continue }
+      if (p === 1 && d === 1) { out.push({ w: 'สิบ' }); continue }
+      if (p === 1 && d === 2) { out.push({ w: 'ยี่', note: '二十的「二」读 ยี่，不读 สอง' }, { w: 'สิบ' }); continue }
+      out.push({ w: DIGIT_WORD[d] }, { w: ps[p] })
+    }
+  }
+  const rec = (m: number) => {
+    if (m >= 1e6) { rec(Math.floor(m / 1e6)); out.push({ w: 'ล้าน' }); if (m % 1e6) grp(m % 1e6, true) } else grp(m, false)
+  }
+  rec(n)
+  return out
+}
+function Numbers({ Tag, byThai, countPlay }: { Tag: TagC; byThai: Map<string, Word>; countPlay: (id: string) => void }) {
+  const [val, setVal] = useState('21')
+  const [busy, setBusy] = useState(false)
+  const extra: Record<string, { id: string; roman: string }> = { 'เอ็ด': { id: 'prt-' + wordIdFor('เอ็ด'), roman: 'èt' }, 'ยี่': { id: 'prt-' + wordIdFor('ยี่'), roman: 'yîi' } }
+  const n = Math.min(Math.max(parseInt(val.replace(/[^0-9]/g, '') || '0', 10), 0), 99999999)
+  const toks = readNum(n)
+  const romanOf = (w: string) => extra[w]?.roman ?? byThai.get(w)?.roman ?? ''
+  const play = async () => {
+    if (busy) { stopAudio(); setBusy(false); return }
+    setBusy(true)
+    try {
+      for (const t of toks) {
+        const e = extra[t.w], lw = byThai.get(t.w)
+        if (lw) countPlay(lw.id)
+        try { await playFile(e?.id ?? lw?.id ?? '', false) } catch { try { await playSystem(t.w, false) } catch { /* 没有语音 */ } }
+        await new Promise(r => setTimeout(r, 120))
+      }
+    } finally { setBusy(false) }
+  }
+  const notes = [...new Set(toks.map(t => t.note).filter(Boolean))]
+  return (
+    <div>
+      <h3 className="pich" style={{ marginTop: 4 }}>个位 0–9（骰子点数 + 泰国数字 ๐–๙）</h3>
+      <div className="digitgrid">
+        {DIGIT_WORD.map((w, i) => (
+          <div key={w} className="digitcard" data-testid="digit-card">
+            <div className="digitnum"><b>{i}</b><span className="thdig">{TH_DIGIT[i]}</span></div>
+            <Dots n={i} />
+            <Tag th={w} zh={String(i)} cls="small" />
+          </div>))}
+      </div>
+      <h3 className="pich">十 · 百 · 千 · 万（每一级是上一级的 10 倍）</h3>
+      <div className="placelist">
+        {PLACES.map(p => (
+          <div key={p.k} className="placecard" data-testid="place-card">
+            <PlacePic k={p.k} />
+            <div className="placetxt"><Tag th={p.th} zh={`${p.zh} ${p.n}`} /><span className="schint">{p.eq}</span></div>
+          </div>))}
+      </div>
+      <h3 className="pich">读一个数字试试</h3>
+      <div className="numbuild" data-testid="num-build">
+        <input inputMode="numeric" value={val} onChange={e => setVal(e.target.value.replace(/[^0-9]/g, '').slice(0, 8))} aria-label="输入数字" data-testid="num-input" />
+        <div className="numout">
+          <div className="th numth" lang="th" data-testid="num-th">{toks.map(t => t.w).join('')}</div>
+          <div className="numrom">{toks.map((t, i) => <span key={i}><ColorRoman roman={romanOf(t.w)} className="relrom" />{' '}</span>)}</div>
+          <button className="numplay" onClick={() => void play()} data-testid="num-play">{busy ? '⏹ 停止' : '🔊 读出来'}</button>
+        </div>
+        {notes.map(t => <p key={t} className="numnote" data-testid="num-note">💡 {t}</p>)}
+        <div className="ptrow" style={{ marginTop: 8 }}>{['11', '20', '21', '101', '1000', '12345'].map(x => <button key={x} className="numchip" onClick={() => setVal(x)}>{Number(x).toLocaleString('en-US')}</button>)}</div>
+      </div>
     </div>)
 }
