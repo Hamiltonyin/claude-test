@@ -93,6 +93,7 @@ if (existsSync('content/tones.json')) {
   console.log(`声调对比：${t.sets.length} 组`)
 }
 // 词语拆解：content/parts.txt。`词|部分1+部分2`（部分：泰文 | 泰文=释义 | 泰文/拼音=释义）；`词|整词|说明`
+const extraClips = []
 const partsOut = {}
 const partClips = new Map()
 if (existsSync('content/parts.txt')) {
@@ -155,6 +156,13 @@ if (existsSync('content/verbs.json')) {
   writeFileSync('public/content/mnemonics.json', JSON.stringify(mn))
   console.log(`记忆法：${Object.keys(mn).length} 个词`)
 }
+// 句式：content/patterns.json（30 个常用固定句式，每个带例句；例句生成 pat-NN-K 音频，男声）
+if (existsSync('content/patterns.json')) {
+  const pj = JSON.parse(readFileSync('content/patterns.json', 'utf8'))
+  for (const pt of pj.patterns) for (const e of pt.ex) { if (!e.th || !e.roman || !e.zh) { console.error(`✗ 句式 ${pt.n} 缺字段`); bad++ } else extraClips.push({ id: e.clip, th: e.th, voice: 'th-TH-NiwatNeural' }) }
+  writeFileSync('public/content/patterns.json', JSON.stringify(pj))
+  console.log(`句式：${pj.patterns.length} 个，例句 ${pj.patterns.reduce((a, x) => a + x.ex.length, 0)} 句`)
+}
 // 歌词背诵：content/lyrics/*.txt。首行 `# id|标题|简介|emoji`；`== 小节名`；每行 `泰文|拼音（｜ 分词组）|中文`
 const lyrics = []
 const dirL = 'content/lyrics'
@@ -188,6 +196,7 @@ if (existsSync(dirD)) for (const f of readdirSync(dirD).filter(f => f.endsWith('
 if (bad) { console.error(`${bad} 行对话校验失败，已中止`); process.exit(1) }
 writeFileSync('public/content/dialogues.json', JSON.stringify(dialogues))
 for (const [id, th] of partClips) clips.push({ id, th })
+for (const c of extraClips) clips.push(c)
 writeFileSync('public/content/lyrics.json', JSON.stringify(lyrics))
 for (const d of lyrics) for (const it of d.items) if (it.clip) clips.push({ id: it.clip, th: it.th })
 for (const d of dialogues) for (const it of d.items) if (it.clip) clips.push({ id: it.clip, th: it.th, ...(it.me || it.who === '快递员' ? { voice: 'th-TH-NiwatNeural' } : {}) })

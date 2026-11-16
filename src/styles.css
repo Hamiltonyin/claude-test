@@ -396,3 +396,10 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .homesearch.big{display:flex;gap:8px}.homesearch.big input{flex:1;font-size:17px;padding:14px 16px;border-radius:16px}.homesearch.big button{padding:0 20px;font-size:16px;border-radius:16px}
 .learncta{margin:2px 0 6px;width:100%}
 .herocta.learncta{background:linear-gradient(135deg,#3b82ff,#6a5cff);color:#fff;box-shadow:0 6px 16px rgba(70,90,255,.3)}
+
+.patpage{background:#f4f6fb}.patlist{padding:8px 14px 30px;overflow-y:auto;flex:1}
+.patcard{background:#fff;border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(20,40,80,.05)}
+.pathead{display:flex;gap:8px;align-items:center;margin-bottom:6px}.patn{flex:none;width:24px;height:24px;border-radius:12px;background:#0ea5a4;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}.patzh{font-size:14px;font-weight:700}
+.pattpl{font-size:21px;line-height:1.5;color:#0b6b6a}.patrom{font-size:13px;font-weight:600}.pattip{margin:6px 0 8px;font-size:12.5px;line-height:1.55;color:#6b4a10;background:#fff8ec;border-radius:10px;padding:5px 9px}
+.patex{width:100%;display:grid;grid-template-columns:1fr auto;column-gap:8px;align-items:center;text-align:left;background:#f4f7fb;border-radius:12px;padding:7px 10px;margin-top:6px;border:0}.patex.on{background:#e6efff}.patex .th{grid-column:1;font-size:18px;line-height:1.4}.patex .ptrom{grid-column:1;font-size:12.5px;font-weight:600}.patex i{grid-column:1;font-style:normal;font-size:12.5px;color:var(--sub)}.patex .wspk{grid-column:2;grid-row:1/4;align-self:center}
+.ptrow .pt{max-width:100%}.ptrow .pt i{white-space:normal;line-height:1.35;max-width:260px}
