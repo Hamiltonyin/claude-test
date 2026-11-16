@@ -16,6 +16,7 @@ ap.add_argument('--lang', default='th', help='gTTS 备用引擎的语言代码�
 ap.add_argument('--text-key', default='thai', help='词条里用来朗读的字段（泰语 thai；日语 speak）')
 ap.add_argument('--suffix', default='', help="输出文件名后缀（中文意思用 _zh → <词ID>_zh.mp3）")
 ap.add_argument('--clean-zh', action='store_true', help='朗读前清理中文释义：取第一个意思、去掉括号注释（与前端 zhSpeakText 一致）')
+ap.add_argument('--overrides', default='content/tts-overrides.txt', help='朗读用的「改写」：每行 词|朗读文字，用来纠正机器读错的词（只对泰语单词那一轮生效）')
 ap.add_argument('--force', action='store_true')
 ap.add_argument('--allow-fail', action='store_true')
 a = ap.parse_args()
@@ -38,12 +39,26 @@ def clean_zh(z):
     t = t.replace('……', '某某').replace('…', '某某').strip()
     return t or re.sub(r'[（）()]', '', z).strip()
 
+# 个别词机器会读错：content/tts-overrides.txt 里写「词|改写后的朗读文字」，改写后会自动重做这个词的音频（只重做一次，记录在 _tts_fixed.json）
+overrides = {}
+if a.text_key == 'thai' and not a.suffix and os.path.exists(a.overrides):
+    for ln in open(a.overrides, encoding='utf-8'):
+        ln = ln.strip()
+        if ln and not ln.startswith('#') and '|' in ln:
+            k, v = ln.split('|', 1); overrides[k.strip()] = v.strip()
+fixed_path = f"{a.out}/_tts_fixed.json"
+fixed = json.load(open(fixed_path, encoding='utf-8')) if os.path.exists(fixed_path) else {}
+
 def text_of(w):
+    if overrides and w.get('thai') in overrides: return overrides[w['thai']]
     return clean_zh(w[a.text_key]) if a.clean_zh else w[a.text_key]
+
+def needs_fix(w):
+    return bool(overrides) and w.get('thai') in overrides and fixed.get(w['id']) != overrides[w['thai']]
 
 words = json.load(open(a.library, encoding='utf-8'))['words']
 os.makedirs(a.out, exist_ok=True)
-todo = [w for w in words if a.force or not os.path.exists(f"{a.out}/{w['id']}{a.suffix}.mp3")]
+todo = [w for w in words if a.force or needs_fix(w) or not os.path.exists(f"{a.out}/{w['id']}{a.suffix}.mp3")]
 print(f"共 {len(words)} 词，需生成 {len(todo)} 个")
 failed = []
 
@@ -72,6 +87,7 @@ async def one(w, sem):
             try:
                 eng = await synth(w, path + '.tmp')
                 os.replace(path + '.tmp', path)
+                if overrides and w.get('thai') in overrides: fixed[w['id']] = overrides[w['thai']]
                 print('✓', w['id'], text_of(w), eng, flush=True); return
             except Exception as e:
                 if os.path.exists(path + '.tmp'): os.remove(path + '.tmp')
@@ -84,6 +100,8 @@ async def main():
     await asyncio.gather(*(one(w, sem) for w in todo))
 
 asyncio.run(main())
+if overrides:
+    json.dump(fixed, open(fixed_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 if failed:
     print(f"失败 {len(failed)} 个：", ' '.join(text_of(w) for w in failed))
     sys.exit(0 if a.allow_fail else 1)
