@@ -15,7 +15,7 @@ try {
   await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=tab-cats]')
   await page.tap('[data-testid=tab-cats]'); await page.waitForSelector('[data-testid=open-patterns]')
   await page.tap('[data-testid=open-patterns]'); await page.waitForSelector('[data-testid=pattern]')
-  assert(await page.locator('[data-testid=pattern]').count() === 36); ok('36 个句式（30 个快递句式 + 数量 2 个 + ว่า 引出内容 4 个）')
+  assert(await page.locator('[data-testid=pattern]').count() === 37); ok('37 个句式（含「中文怎么说」对照句式）')
   assert(await page.locator('[data-testid=pat-ex]').count() >= 60); ok('每个句式 2–3 个例句')
   assert((await page.locator('[data-testid=polite] button').count()) >= 10); ok('客气小词 10 个')
   req.length = 0; await page.locator('[data-testid=pat-ex]').first().tap(); await page.waitForTimeout(500)
