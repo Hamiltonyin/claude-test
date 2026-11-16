@@ -27,7 +27,7 @@ try {
   await page.locator('[data-testid=dlg-zh]').uncheck(); await page.waitForTimeout(100)
   assert((await page.locator('.dz').count()) === 0); ok('关掉中文后气泡只剩泰文和拼音')
   req.length = 0
-  await page.tap('[data-testid=dlg-playall]'); await page.waitForTimeout(2200)
+  await page.tap('[data-testid=dlg-playall]'); for (let i = 0; i < 40 && new Set(req.map(u => u.match(/dlg-[\w-]+\.mp3/)?.[0])).size < 2; i++) await page.waitForTimeout(300)
   assert(new Set(req.map(u => u.match(/dlg-[\w-]+\.mp3/)?.[0])).size >= 2); ok('「连续播放整段对话」：依次请求多句音频')
   await page.tap('[data-testid=dlg-playall]'); ok('可再点一下停止')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')

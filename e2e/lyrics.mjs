@@ -24,7 +24,7 @@ try {
   assert(await page.locator('.th.masked').count() === 18); ok('点一句看泰文')
   await page.locator('[data-testid=lyr-hide]').uncheck()
   await page.selectOption('[data-testid=lyr-rep]', '2'); req.length = 0
-  await page.tap('[data-testid=lyr-playall]'); await page.waitForTimeout(2500)
+  await page.tap('[data-testid=lyr-playall]'); for (let i = 0; i < 40 && req.length < 1; i++) await page.waitForTimeout(300)
   assert(req.length >= 1); await page.tap('[data-testid=lyr-playall]'); ok('整首播放（每句 2 遍）可开始/停止')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/lyr-fail.png' }) }
