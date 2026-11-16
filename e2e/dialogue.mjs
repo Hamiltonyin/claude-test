@@ -14,7 +14,7 @@ try {
   await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=open-dialogues]')
   await page.tap('[data-testid=open-dialogues]'); await page.waitForSelector('[data-testid=dlg-rent-h2]')
   assert((await page.textContent('[data-testid=dlg-rent-h2]')).includes('租房')); ok('首页「情景对话」→ 对话列表（租房：物业与房东）')
-  assert(await page.locator('[data-testid^=dlg-exp-]').count() === 10); ok('快递对话 10 段：到楼下、听不清、不在家、找不到地址、货到付款、查询、没人收、破损退货、寄件、常用短句')
+  assert(await page.locator('[data-testid^=dlg-exp-]').count() === 11); ok('快递对话 11 段：到楼下、听不清、不在家、找不到地址、货到付款、查询、没人收、破损退货、寄件、常用短句')
   await page.tap('[data-testid=dlg-rent-h2]'); await page.waitForSelector('[data-testid=bubble]')
   const n = await page.locator('[data-testid=bubble]').count(); assert(n >= 30); ok(`聊天气泡 ${n} 句，我在右边、对方在左边`)
   assert(await page.locator('.bub.me').count() > 5 && await page.locator('.bub.other').count() > 5); ok('说话人左右分开')
