@@ -133,6 +133,13 @@ if (existsSync('content/parts.txt')) {
   writeFileSync('public/content/roots.json', JSON.stringify(roots))
   console.log(`构词规律：${roots.length} 个部件`)
 }
+// 动词图集：content/verbs.json（每个动词必须在词库里）
+if (existsSync('content/verbs.json')) {
+  const v = JSON.parse(readFileSync('content/verbs.json', 'utf8'))
+  for (const sec of v.sections) for (const it of sec.items) if (!words.some(w => w.thai === normThai(it.th))) { console.error(`✗ 动词图集 ${sec.id} 的「${it.th}」不在词库中`); bad++ }
+  writeFileSync('public/content/verbs.json', JSON.stringify(v))
+  console.log(`动词图集：${v.sections.length} 组，${v.sections.reduce((a, x) => a + x.items.length, 0)} 张图`)
+}
 // 记忆法：content/mnemonics.txt，`词|类型|一句话`，同一个词可多行
 {
   const mn = {}

@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { ColorRoman } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { wordIdFor } from '../lib/ids'
 import type { Word } from '../types'
 
-type Tab = 'body' | 'time' | 'week' | 'num'
+type Tab = 'body' | 'time' | 'week' | 'num' | 'verb'
 
 /** 图解记忆：一边看图、一边认词。图是自己画的示意图（人体、一天的太阳位置、星期对应的星球和颜色），点任何标签读音。 */
 export default function Pictures({ onClose }: { onClose: () => void }) {
@@ -32,13 +32,14 @@ export default function Pictures({ onClose }: { onClose: () => void }) {
     <div className="study picpage" role="dialog" aria-label="图解记忆">
       <div className="sthead"><button className="close" onClick={() => { stopAudio(); onClose() }}>‹ 返回</button><div className="prog"><b>🖼️ 图解记忆</b></div></div>
       <div className="pictabs">
-        {([['body', '🧍 人体'], ['time', '🌅 一天'], ['week', '📅 星期'], ['num', '🔢 数字']] as const).map(([k, n]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)} data-testid={'pictab-' + k}>{n}</button>)}
+        {([['body', '🧍 人体'], ['time', '🌅 一天'], ['week', '📅 星期'], ['num', '🔢 数字'], ['verb', '🏃 动词']] as const).map(([k, n]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)} data-testid={'pictab-' + k}>{n}</button>)}
         <label className="pichide"><input type="checkbox" checked={hideZh} onChange={e => setHideZh(e.target.checked)} /> 遮住中文</label>
       </div>
       <div className="piclist">
         {tab === 'body' && <Body Tag={Tag} />}
         {tab === 'time' && <TimeOfDay Tag={Tag} />}
         {tab === 'week' && <Week Tag={Tag} />}
+        {tab === 'verb' && <VerbAtlas byThai={byThai} say={say} on={on} hideZh={hideZh} />}
         {tab === 'num' && <Numbers Tag={Tag} byThai={byThai} countPlay={countPlay} />}
         <p className="sub" style={{ margin: '14px 4px' }}>用法：看图想一想这个词，再点标签听读音；勾「遮住中文」可以自测。图是示意图，不是照片。</p>
       </div>
@@ -344,5 +345,47 @@ function Numbers({ Tag, byThai, countPlay }: { Tag: TagC; byThai: Map<string, Wo
         {notes.map(t => <p key={t} className="numnote" data-testid="num-note">💡 {t}</p>)}
         <div className="ptrow" style={{ marginTop: 8 }}>{['11', '20', '21', '101', '1000', '12345'].map(x => <button key={x} className="numchip" onClick={() => setVal(x)}>{Number(x).toLocaleString('en-US')}</button>)}</div>
       </div>
+    </div>)
+}
+
+
+/* ───────────── 动词图集 ───────────── */
+interface VSec { id: string; name: string; emoji: string; items: { th: string; pic: string }[] }
+let verbCache: Promise<VSec[]> | null = null
+const loadVerbs = () => (verbCache ??= fetch(`${import.meta.env.BASE_URL}content/verbs.json`).then(r => r.ok ? r.json() : { sections: [] }).then(j => j.sections as VSec[]).catch(() => { verbCache = null; return [] }))
+
+/** 动词图集：每个动词一张图（emoji），按场景分 21 组。可以「遮住泰文」看图想词，点一下翻开并读音。 */
+function VerbAtlas({ byThai, say, on, hideZh }: { byThai: Map<string, Word>; say: (th: string) => Promise<void>; on: string | null; hideZh: boolean }) {
+  const [secs, setSecs] = useState<VSec[] | null>(null)
+  const [hideTh, setHideTh] = useState(false)
+  const [open, setOpen] = useState<Set<string>>(new Set())
+  const refs = useRef(new Map<string, HTMLElement>())
+  useEffect(() => { let ok = true; loadVerbs().then(d => ok && setSecs(d)); return () => { ok = false } }, [])
+  const total = secs?.reduce((a, x) => a + x.items.length, 0) ?? 0
+  return (
+    <div data-testid="verb-atlas">
+      <label className="verbhide"><input type="checkbox" checked={hideTh} onChange={e => { setHideTh(e.target.checked); setOpen(new Set()) }} data-testid="verb-hideth" /> 遮住泰文（看图想词，点一下翻开并读音）</label>
+      <div className="verbtoc">
+        {secs?.map(x => <button key={x.id} onClick={() => refs.current.get(x.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>{x.emoji} {x.name}</button>)}
+      </div>
+      {secs?.map(sec => (
+        <section key={sec.id} ref={el => { if (el) refs.current.set(sec.id, el) }} className="versec" data-testid="verb-sec">
+          <h3 className="pich">{sec.emoji} {sec.name}</h3>
+          <div className="verbgrid">
+            {sec.items.map(it => {
+              const w = byThai.get(it.th); const hidden = hideTh && !open.has(sec.id + it.th)
+              return (
+                <button key={it.th} className={'verbcard' + (on === it.th ? ' on' : '')} onClick={() => { if (hidden) setOpen(new Set(open).add(sec.id + it.th)); void say(it.th) }} data-testid="verb-card">
+                  <span className="verbpic">{it.pic}</span>
+                  {hidden ? <b className="th qmark">？</b> : <>
+                    <b className="th" lang="th">{it.th}</b>
+                    {w && <ColorRoman roman={w.roman} className="ptrom" />}
+                    {!hideZh && w && <i>{w.zh.split(/[；;（(]/)[0]}</i>}
+                  </>}
+                </button>)
+            })}
+          </div>
+        </section>))}
+      <p className="sub" style={{ margin: '10px 4px' }}>共 {secs?.length ?? 0} 组 {total} 个动词。图是 emoji，外观随手机系统不同；有的动词用一张图概括，意思以文字为准。</p>
     </div>)
 }

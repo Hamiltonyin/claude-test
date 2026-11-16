@@ -35,6 +35,12 @@ try {
   ok('读数规则：สิบเอ็ด / หนึ่งร้อยเอ็ด / หนึ่งหมื่น… / หนึ่งล้าน / หนึ่งล้านเอ็ด 都对')
   await page.fill('[data-testid=num-input]', '21'); req.length = 0; await page.tap('[data-testid=num-play]'); await page.waitForTimeout(1500)
   assert(req.length >= 1); await page.tap('[data-testid=num-play]').catch(() => {}); ok('「读出来」按顺序播放各个词')
+  await page.tap('[data-testid=pictab-verb]'); await page.waitForSelector('[data-testid=verb-card]')
+  const nv = await page.locator('[data-testid=verb-card]').count(); assert(nv >= 180 && await page.locator('[data-testid=verb-sec]').count() === 21); ok(`动词图集：21 组 ${nv} 张图`)
+  await page.check('[data-testid=verb-hideth]'); await page.waitForTimeout(150)
+  assert(await page.locator('.verbcard .qmark').count() === nv); ok('遮住泰文：只剩图和「？」')
+  req.length = 0; await page.locator('[data-testid=verb-card]').first().tap(); await page.waitForTimeout(500)
+  assert(await page.locator('.verbcard .qmark').count() === nv - 1 && req.length >= 1); ok('点一张：翻开泰文并读音')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/pic-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
