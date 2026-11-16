@@ -48,3 +48,4 @@ export async function clearStores(names: string[]) {
 export const saveSettings = (s: Settings) => put('meta', s, 'settings')
 export async function get<T = unknown>(store: string, key: IDBValidKey) { const d = await db(); return (await d.get(store, key)) as T | undefined }
 export async function del(store: string, key: IDBValidKey) { const d = await db(); await d.delete(store, key) }
+export async function listKeys(store: string) { const d = await db(); return (await d.getAllKeys(store)) as IDBValidKey[] }

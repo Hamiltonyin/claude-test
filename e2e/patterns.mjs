@@ -1,8 +1,9 @@
 // 常用句式：学习页入口 → 30 个句式 → 例句读音 → 遮住中文
 import { chromium, devices } from 'playwright'
-import { spawn } from 'child_process'
+import { spawn, execSync } from 'child_process'
 import assert from 'assert'
 const port = 7200 + Math.floor(Math.random() * 90)
+execSync('ffmpeg -v error -y -f lavfi -i testsrc=size=160x120:rate=10 -f lavfi -i sine=frequency=440 -t 6 -pix_fmt yuv420p -c:v libx264 -c:a aac /tmp/pat-rec.mp4')
 const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
@@ -22,6 +23,16 @@ try {
   const t0 = await page.locator('[data-testid=pattern]').first().textContent(); assert(t0.includes('能请你')); 
   await page.check('[data-testid=pat-hidezh]'); await page.waitForTimeout(150)
   assert(!(await page.locator('[data-testid=pattern]').first().locator('.patex i').first().isVisible().catch(() => false))); ok('遮住中文：例句译文隐藏')
+  assert(await page.locator('[data-testid=rec-has]').count() === 0); ok('默认没有真人读音，每句下面有「📎 上传真人读音」')
+  await page.locator('[data-testid=rec-file]').first().setInputFiles('/tmp/pat-rec.mp4'); await page.waitForSelector('[data-testid=rec-has]')
+  ok('上传一段视频后：这句显示「✓ 已有真人读音」')
+  req.length = 0; await page.locator('[data-testid=pat-ex]').first().tap(); await page.waitForTimeout(900)
+  const st = await page.evaluate(() => { const v = document.querySelector('[data-testid=rec-video]'); return { paused: v.paused, t: v.currentTime, shown: getComputedStyle(document.querySelector('[data-testid=rec-player]')).display } })
+  assert(st.shown === 'block' && !st.paused && st.t > 0.2, JSON.stringify(st)); assert(req.length === 0); ok('点这句：播放真人视频（不再请求机器音频），currentTime=' + st.t.toFixed(1))
+  await page.reload(); await page.waitForSelector('[data-testid=tab-cats]'); await page.tap('[data-testid=tab-cats]'); await page.tap('[data-testid=open-patterns]'); await page.waitForSelector('[data-testid=rec-has]')
+  ok('刷新后真人读音还在（存在本机）')
+  await page.locator('[data-testid=rec-has]').first().locator('xpath=..').getByText('删除').tap(); await page.waitForTimeout(300)
+  assert(await page.locator('[data-testid=rec-has]').count() === 0); ok('删除后恢复为机器读音')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/pat-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
