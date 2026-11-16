@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ColorRoman, Speaker } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
+import { get, put, del } from '../lib/db'
 
 interface Line { n: number; who: string; me: boolean; th: string; roman: string; zh: string; clip: string }
 type Item = Line | { sec: string }
@@ -28,6 +29,41 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   useEffect(() => { let on = true; load().then(d => on && setList(d)); return () => { on = false } }, [])
   useEffect(() => () => { tok.current++; stopAudio() }, [])
   useEffect(() => { savePref('roman', showRoman); savePref('zh', showZh); savePref('hideTh', hideTh) }, [showRoman, showZh, hideTh])
+
+  // —— 真人视频：每段对话可以导入一个自己的视频（只存本机），再给每一句设起止秒数，点 🎬 就播放那一段 ——
+  const [vurl, setVurl] = useState<string | null>(null)
+  const [vclips, setVclips] = useState<Record<string, [number, number]>>({})
+  const [calOpen, setCalOpen] = useState<number | null>(null)
+  const [vmsg, setVmsg] = useState('')
+  const vid = useRef<HTMLVideoElement>(null)
+  const stopAt = useRef<number | null>(null)
+  const curId = cur?.id
+  useEffect(() => {
+    if (!curId) return
+    let u: string | null = null, ok = true
+    setVurl(null); setVclips({}); setCalOpen(null); setVmsg('')
+    get('meta', 'dlgvideo:' + curId).then((b: unknown) => { if (ok && b instanceof Blob) { u = URL.createObjectURL(b); setVurl(u) } }).catch(() => {})
+    get<Record<string, [number, number]>>('meta', 'dlgclips:' + curId).then(o => { if (ok && o) setVclips(o) }).catch(() => {})
+    return () => { ok = false; if (u) URL.revokeObjectURL(u) }
+  }, [curId])
+  const importVideo = async (f: File | undefined) => {
+    if (!f || !curId) return
+    try { await put('meta', f, 'dlgvideo:' + curId) } catch { /* 存不下也先能播这一次 */ }
+    if (vurl) URL.revokeObjectURL(vurl); setVurl(URL.createObjectURL(f))
+  }
+  const removeVideo = async () => { if (!curId) return; await del('meta', 'dlgvideo:' + curId).catch(() => {}); if (vurl) URL.revokeObjectURL(vurl); setVurl(null) }
+  const saveClip = (n: number, c: [number, number] | null) => {
+    if (!curId) return
+    const m = { ...vclips }; if (c) m[n] = [Math.max(0, +c[0].toFixed(2)), Math.max(0, +c[1].toFixed(2))]; else delete m[n]
+    setVclips(m); void put('meta', m, 'dlgclips:' + curId)
+  }
+  const playClip = (l: Line) => {
+    const el = vid.current, c = vclips[l.n]; if (!el || !c) return
+    tok.current++; setAll(false); stopAudio(); setPlaying(l.n)
+    stopAt.current = c[1]; el.currentTime = c[0]; void el.play().catch(() => setPlaying(null))
+  }
+  const onTime = () => { const el = vid.current; if (el && stopAt.current != null && el.currentTime >= stopAt.current) { el.pause(); stopAt.current = null; setPlaying(null) } }
+  const exportClips = async () => { const t = JSON.stringify({ [curId ?? '']: vclips }); try { await navigator.clipboard.writeText(t); setVmsg('已复制这段对话的全部时间轴，发给我就能固化进网站') } catch { setVmsg(t) } }
 
   const say = async (l: Line, slow = false) => {
     setPlaying(l.n)
@@ -67,7 +103,13 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   return (
     <div className="study dlgpage" role="dialog" aria-label={cur.title}>
       <div className="sthead"><button className="close" onClick={() => { tok.current++; stopAudio(); setAll(false); setPlaying(null); setCur(null) }}>‹ 对话</button><div className="prog"><b>{cur.emoji} {cur.title}</b></div><div className="cnt">{lines.length} 句</div></div>
+      {vurl && <div className="vowvid">
+        <video ref={vid} src={vurl} controls playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => setPlaying(null)} data-testid="dlg-video" />
+        <button className="link" onClick={() => void removeVideo()}>移除视频</button> <button className="link" onClick={() => void exportClips()}>复制全部时间轴</button>
+        {vmsg && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{vmsg}</p>}
+      </div>}
       <div className="dlgtools">
+        {!vurl && <label className="dlgvidimport">📥 导入真人视频（可选，只存在这台手机）<input type="file" accept="video/*,audio/*" onChange={e => void importVideo(e.target.files?.[0])} data-testid="dlg-vfile" /></label>}
         <label><input type="checkbox" checked={showRoman} onChange={e => setShowRoman(e.target.checked)} data-testid="dlg-roman" /> 拼音</label>
         <label><input type="checkbox" checked={showZh} onChange={e => setShowZh(e.target.checked)} data-testid="dlg-zh" /> 中文</label>
         <label><input type="checkbox" checked={hideTh} onChange={e => { setHideTh(e.target.checked); setPeek(new Set()) }} data-testid="dlg-hide" /> 遮住泰文（自测）</label>
@@ -87,6 +129,17 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
                 <button onClick={() => playOne(it)} aria-label="播放这一句" data-testid="bplay"><Speaker /></button>
                 <button className="slow" onClick={() => playOne(it, true)} aria-label="慢速播放">🐢</button>
               </div>
+              {vurl && (<div className="dlgvbar">
+                <button className={vclips[it.n] ? 'has' : ''} disabled={!vclips[it.n]} onClick={() => playClip(it)} data-testid="dlg-vclip">🎬 {vclips[it.n] ? `视频 ${vclips[it.n][0].toFixed(1)}–${vclips[it.n][1].toFixed(1)}s` : '未设置时间'}</button>
+                <button onClick={() => setCalOpen(calOpen === it.n ? null : it.n)} data-testid="dlg-calbtn">⚙ 校准</button>
+              </div>)}
+              {vurl && calOpen === it.n && (() => { const c = vclips[it.n]; const cur0 = () => vid.current?.currentTime ?? 0; const [a, b] = c ?? [0, 0]; return (
+                <div className="vowcal" data-testid="dlg-cal">
+                  <div className="vowcalh">时间轴 <b data-testid="dlg-range">{c ? `${a.toFixed(2)}s – ${b.toFixed(2)}s` : '未设置'}</b>{c && <button className="link" onClick={() => saveClip(it.n, null)}>清除</button>}</div>
+                  <div className="vowcalr"><span>起点</span><button onClick={() => saveClip(it.n, [a - 0.1, b])}>-0.1</button><button onClick={() => saveClip(it.n, [a + 0.1, b])}>+0.1</button><button className="set" onClick={() => saveClip(it.n, [cur0(), c ? Math.max(b, cur0() + 0.8) : cur0() + 1.5])} data-testid="dlg-setstart">设为视频当前位置</button></div>
+                  <div className="vowcalr"><span>终点</span><button onClick={() => saveClip(it.n, [a, b - 0.1])}>-0.1</button><button onClick={() => saveClip(it.n, [a, b + 0.1])}>+0.1</button><button className="set" onClick={() => saveClip(it.n, [a, cur0()])} data-testid="dlg-setend">设为视频当前位置</button></div>
+                  <p className="sub" style={{ fontSize: 11.5, margin: '4px 0 0' }}>拖上面的视频到这句刚开始说的位置 →「起点」设为当前位置；说完的位置 →「终点」。设好后点「🎬 视频」试听。</p>
+                </div>) })()}
             </div>)
         })() : <div key={i} className="dsec"><span>{it.sec}</span></div>)}
       </div>
