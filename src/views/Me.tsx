@@ -1,3 +1,4 @@
+import { collectClips, countClips, restoreClips, shareFile } from '../lib/clipsBackup'
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { CSV_HEADER, toCSV } from '../lib/csv'
@@ -141,6 +142,7 @@ export default function Me() {
         {confirm && <div className="note">选择恢复方式：<br />「合并」保留现有数据，进度取较新者（推荐）；「覆盖」用备份替换全部数据。
           <div className="toast acts" style={{ position: 'static', display: 'flex', gap: 8, marginTop: 8 }}><button className="btn" onClick={() => doRestore('merge')}>合并</button><button className="btn danger" onClick={() => doRestore('replace')}>覆盖</button><button className="btn sec" onClick={() => setConfirm(false)}>取消</button></div></div>}
       </div>
+      <ClipsPanel />
       <ImportPanel />
       <div className="panel"><h3>导出词库</h3>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
@@ -171,4 +173,36 @@ export default function Me() {
       <div className="panel"><h3>未接入</h3><p className="sub">账号登录与跨设备云同步尚未实现；请使用 JSON 备份在设备间迁移。</p></div>
     </>
   )
+}
+
+
+/** 视频时间轴备份：导出（分享到云盘/文件/复制）和导入。视频本身不在里面。 */
+function ClipsPanel() {
+  const [msg, setMsg] = useState<{ t: 'ok' | 'err'; s: string } | null>(null)
+  const [n, setN] = useState<number | null>(null)
+  useEffect(() => { collectClips().then(b => setN(countClips(b))).catch(() => setN(0)) }, [msg])
+  const exportShare = async () => {
+    try {
+      const b = await collectClips(); const c = countClips(b)
+      if (!c) { setMsg({ t: 'err', s: '还没有校准过的时间轴。先在元音页、声调页或情景对话里给视频设好起止秒数。' }); return }
+      const how = await shareFile(`thai30-clips-${today()}.json`, JSON.stringify(b, null, 1))
+      setMsg({ t: 'ok', s: how === 'shared' ? `已打开分享面板（${c} 条时间轴）。选「云端硬盘」或「存储到文件」就能备份到 Google Drive / iCloud。` : `已下载文件（${c} 条时间轴），请到「文件」里找到它，再上传到云盘。` })
+    } catch (e: any) { setMsg({ t: 'err', s: '导出失败：' + (e?.message || e) }) }
+  }
+  const copy = async () => {
+    const b = await collectClips(); const t = JSON.stringify(b)
+    try { await navigator.clipboard.writeText(t); setMsg({ t: 'ok', s: `已复制（${countClips(b)} 条时间轴），直接粘贴发给我就行。` }) } catch { setMsg({ t: 'err', s: '复制失败，请用上面的「导出文件」。' }) }
+  }
+  const onFile = async (f: File) => {
+    try { const k = await restoreClips(JSON.parse(await readFile(f))); setMsg({ t: 'ok', s: `已恢复 ${k} 条时间轴（和现有的合并，同一句以备份为准）。` }) }
+    catch (e: any) { setMsg({ t: 'err', s: '恢复失败：' + (e?.message || e) }) }
+  }
+  return (
+    <div className="panel"><h3>视频时间轴备份</h3>
+      <p className="sub">你在元音页、声调页、情景对话里给视频设的「起止秒数」，一共 {n ?? '…'} 条。视频本身太大，不在备份里，只备份时间轴。</p>
+      <button className="btn block" onClick={() => void exportShare()} data-testid="clips-export">导出时间轴文件（可存到 Google 云盘）</button>
+      <button className="btn sec block" onClick={() => void copy()} data-testid="clips-copy">复制全部时间轴（粘贴发给我）</button>
+      <label className="btn sec block" style={{ textAlign: 'center' }}>从时间轴文件恢复<input type="file" accept=".json,application/json" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void onFile(f); e.target.value = '' }} data-testid="clips-import" /></label>
+      {msg && <div className={'note ' + (msg.t === 'err' ? 'err' : '')} style={{ marginTop: 8 }} data-testid="clips-msg">{msg.s}</div>}
+    </div>)
 }
