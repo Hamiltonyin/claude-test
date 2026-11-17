@@ -415,3 +415,5 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .dlgvidimport{background:#fff1e0;color:#d9730d;font-weight:600;border-radius:12px;padding:5px 10px;cursor:pointer}.dlgvidimport input{position:absolute;opacity:0;width:1px;height:1px}
 .dlgvbar{display:flex;gap:6px;padding:4px 6px 0}.dlgvbar button{font-size:11.5px;background:#eef1f6;color:#4a5570;border-radius:9px;padding:3px 9px;border:0}.dlgvbar button.has{background:#fff1e0;color:#d9730d;font-weight:600}.dlgvbar button:disabled{opacity:.6}
 .bub .vowcal{margin:4px 6px 6px}
+
+.sentzh{font-size:28px;font-weight:700;line-height:1.5;text-align:center;padding:0 10px;color:var(--ink,#111)}.sentrom{font-size:17px;font-weight:600;text-align:center;line-height:1.5}

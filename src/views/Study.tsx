@@ -55,6 +55,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   const uniqueTotal = useMemo(() => new Set(queue).size, [queue])
   const uniquePos = useMemo(() => new Set(queue.slice(0, idx + 1)).size, [queue, idx])
   const word = id ? wordMap.get(id) : undefined
+  const isSent = word?.theme === '句式'                     // 句式卡片：正面是中文，翻面才看到泰语（先自己想一遍怎么说）
   const level = (id && progress.get(id)?.level) || 0
 
   const stopAuto = () => { autoTok.current++; stopAudio(); setAuto(null) }
@@ -90,9 +91,9 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
               if (autoTok.current !== tok) return
             }
           }
-          if (settings.readEx === false) setExShown(true)
+          if (settings.readEx === false || w.theme === '句式') setExShown(true)
           // 三遍读完，接着把例句也读出来（泰语 → 中文 → 泰语 → 泰语 → 例句）
-          if (settings.readEx !== false) {
+          if (settings.readEx !== false && w.theme !== '句式') {
             if (autoTok.current !== tok) return
             setAuto({ rep: AUTO_REPEATS, ex: true }); setExShown(true); setExSig(x => x + 1); countExPlay(w.id)
             await playExample(w)
@@ -138,7 +139,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
   /** 切到另一个词时直接把它读一次（在点击/滑动回调里同步触发，iPhone 才允许）；可在「我的」里关闭 */
   const readNew = (wid?: string) => {
     if (settings.nextRead === false || !wid) return
-    const w = wordMap.get(wid); if (w) void sp.play(w, false)
+    const w = wordMap.get(wid); if (w && w.theme !== '句式') void sp.play(w, false)   // 句式卡片正面是中文，不提前读泰语
   }
   const go = (to: number) => {
     const len = to > idx ? commitCurrent() : queue.length
@@ -242,23 +243,28 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
           <div className="face front">
             {manual && level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
             {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
+            {isSent ? (<>
+              <div className="sentzh" data-testid="sent-zh">{word.zh}</div>
+              <div className="hint">先想想泰语怎么说 · 点卡片看答案 · 左右滑动切换</div>
+            </>) : (<>
             <SpeakButtons word={word} sp={sp} />
             <div className="bigth th" lang="th" data-testid="thai">{word.thai}</div>
             {settings.frontRoman !== false && <ColorRoman roman={word.roman} className="frontrom" />}
             <div className="hint">{manual ? '点击卡片翻面 · 左右滑动切换' : '认识就直接下一个 · 点卡片看答案 · 上滑忽略'}</div>
+            </>)}
           </div>
           <div className="face back">
             {manual && level > 0 && <span className="lvbadge" style={{ background: LEVEL_COLORS[level] }}>{LEVEL_NAMES[level]}</span>}
             {isRepeat && <span className="rptbadge" data-testid="repeat-badge">↻ 陌生词 · 再看一遍</span>}
             <SpeakButtons word={word} sp={sp} />
-            <div className="th" lang="th" style={{ fontSize: 34 }}>{word.thai}</div>
+            <div className="th" lang="th" style={{ fontSize: isSent ? 26 : 34, lineHeight: 1.5 }} data-testid="back-thai">{word.thai}</div>
             <div className="zh">{word.zh}</div>
-            <div className="rom" style={{ fontSize: 22, color: 'var(--blue)', fontWeight: 600 }} data-testid="roman">{word.roman}</div>
-            <ToneChips roman={word.roman} />
-            <WordParts word={word} />
-            <Mnemonics word={word} />
+            {isSent ? <ColorRoman roman={word.roman} className="sentrom" /> : <div className="rom" style={{ fontSize: 22, color: 'var(--blue)', fontWeight: 600 }} data-testid="roman">{word.roman}</div>}
+            {!isSent && <ToneChips roman={word.roman} />}
+            {!isSent && <WordParts word={word} />}
+            {!isSent && <Mnemonics word={word} />}
             <ExampleBlock word={word} signal={exSig} show={exShown} />
-            <RelatedWords word={word} />
+            {!isSent && <RelatedWords word={word} />}
             <div className="hint">{word.theme}{p ? ` · 已复习 ${p.reps} 次` : ' · 新词'}</div>
           </div>
         </div>

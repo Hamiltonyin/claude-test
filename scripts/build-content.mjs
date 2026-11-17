@@ -19,7 +19,7 @@ if (existsSync('content')) for (const f of readdirSync('content').filter(f => /\
   const dayFromName = Number((f.match(/(\d+)/) || [])[1]) || undefined
   for (const r of body) {
     const o = Object.fromEntries(cols.map((c, i) => [c, (r[i] ?? '').trim()]))
-    const thai = normThai(o.thai); const day = Number(o.day) || dayFromName
+    const thai = o.theme === '句式' ? o.thai.trim().normalize('NFC').replace(/\s+/g, ' ') : normThai(o.thai); const day = Number(o.day) || dayFromName   // 句式卡片的泰文保留词间空格，方便阅读
     const errs = validateWord({ thai, roman: o.roman.normalize('NFC'), zh: o.zh, exTh: o.exTh })
     if (!byThai.has(thai) && errs.length) { console.error(`✗ ${f} ${thai}: ${errs.join('；')}`); bad++; continue }
     if (!byThai.has(thai)) {
@@ -63,7 +63,7 @@ if (existsSync('content/categories.json')) {
   const src = JSON.parse(readFileSync('content/categories.json', 'utf8'))
   let miss = 0
   const groups = src.groups.map(g => ({ name: g.name, icon: g.icon, own: !!g.own, cluster: !!g.cluster, cats: g.cats.map(c => {
-    const list = [...new Set(c.words.split(/\s+/).filter(Boolean).map(normThai))]
+    const list = Array.isArray(c.words) ? [...new Set(c.words.map(t => t.trim().normalize('NFC').replace(/\s+/g, ' ')))] : [...new Set(c.words.split(/\s+/).filter(Boolean).map(normThai))]   // 数组写法：整句卡片，保留空格
     for (const t of list) if (!byThai.has(t)) { console.error(`✗ 分类「${c.name}」里的「${t}」不在词库中`); miss++ }
     return { id: c.id, name: c.name, emoji: c.emoji, words: list.filter(t => byThai.has(t)) }
   }) }))

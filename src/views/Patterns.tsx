@@ -81,7 +81,7 @@ export default function Patterns({ onClose }: { onClose: () => void }) {
       <div className="patlist">
         <div className="vowintro">
           <b>怎么用</b>
-          <p>泰国人句子里有很多客气小词（ครับ、นะ、หน่อย、ด้วย…），<b>意思上基本可以不管</b>，抓住骨架就懂。但它们几乎每句都出现，要会听、会用，不然说出来很生硬。每个句式后面有 2 个例句，点一下读音。</p>
+          <p>泰国人句子里有很多客气小词（ครับ、นะ、หน่อย、ด้วย…），<b>意思上基本可以不管</b>，抓住骨架就懂。但它们几乎每句都出现，要会听、会用，不然说出来很生硬。每个句式后面有 2 个例句，点一下读音。<b>想像背单词一样翻卡学习：</b>到「学习」页 → 往下找「句式卡片」，每张卡<b>正面是中文，翻过来才是泰语</b>，会自动记录熟悉程度、安排复习。</p>
           <label className="verbhide"><input type="checkbox" checked={hideZh} onChange={e => setHideZh(e.target.checked)} data-testid="pat-hidezh" /> 遮住中文（自测）</label>
         </div>
         <h3 className="pich">先认识这些客气小词</h3>
