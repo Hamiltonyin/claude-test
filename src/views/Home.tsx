@@ -19,7 +19,8 @@ export function streakOf(logs: { date: string }[]): number {
 }
 
 export function useHeaderStats() {
-  const { logs, words, session } = useApp()
+  const { logs: allLogs, words, session, sentenceIds } = useApp()
+  const logs = useMemo(() => allLogs.filter(l => !sentenceIds.has(l.wordId)), [allLogs, sentenceIds])
   const date = today()
   const ratedToday = new Set(logs.filter(l => l.date === date).map(l => l.wordId))
   const newIds = session?.newIds ?? []
@@ -79,13 +80,53 @@ function UnlockModal({ list, onClose }: { list: BadgeState[]; onClose: () => voi
   )
 }
 
+
+/** 句子统计：和单词分开算（句式卡片 + 词库里原来就是整句的条目） */
+export function SentencePanel({ onStudyIds }: { onStudyIds?: (title: string, ids: string[]) => void }) {
+  const { sentences, sentenceIds, progress, logs } = useApp()
+  const date = today()
+  const st = useMemo(() => {
+    const c = [0, 0, 0, 0, 0]; const due: string[] = [], fresh: string[] = []
+    for (const w of sentences) {
+      const p = progress.get(w.id), l = p?.level ?? 0
+      c[l]++
+      if (l === 0) fresh.push(w.id); else if ((p?.due ?? '') <= date) due.push(w.id)
+    }
+    const ls = logs.filter(l => sentenceIds.has(l.wordId))
+    const todayRated = new Set(ls.filter(l => l.date === date).map(l => l.wordId)).size
+    const masteredToday = new Set(ls.filter(l => l.date === date && l.level >= 3 && l.prev < 3).map(l => l.wordId)).size
+    return { c, due, fresh, todayRated, masteredToday, reviews: ls.length }
+  }, [sentences, sentenceIds, progress, logs, date])
+  const n = sentences.length
+  if (!n) return null
+  const learned = st.c[1] + st.c[2] + st.c[3] + st.c[4]
+  return (
+    <div className="panel" data-testid="sent-panel"><h3>💬 句子统计（和单词分开算）</h3>
+      <div className="dgrid today">
+        <div><b data-testid="sent-total">{n}</b><span>句子总数</span></div>
+        <div><b data-testid="sent-learned">{learned}</b><span>已学过</span></div>
+        <div><b>{st.c[3] + st.c[4]}</b><span>熟悉+</span></div>
+        <div><b data-testid="sent-today">{st.todayRated}</b><span>今日评级</span></div>
+        <div><b>{st.masteredToday}</b><span>今日掌握</span></div>
+      </div>
+      <div className="bar" style={{ marginTop: 8 }}>{[4, 3, 2, 1, 0].map(k => <i key={k} style={{ width: `${(st.c[k] / n) * 100}%`, background: LEVEL_COLORS[k] }} />)}</div>
+      <p className="sub">精通 {st.c[4]} · 熟悉 {st.c[3]} · 不熟悉 {st.c[2]} · 陌生 {st.c[1]} · 未学 {st.c[0]} · 累计评级 {st.reviews} 次</p>
+      {onStudyIds && <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+        <button className="btn" style={{ flex: 1 }} disabled={!st.due.length} onClick={() => onStudyIds('句子复习', st.due)} data-testid="sent-review">复习到期 {st.due.length}</button>
+        <button className="btn" style={{ flex: 1 }} disabled={!st.fresh.length} onClick={() => onStudyIds('新句子', st.fresh.slice(0, 20))} data-testid="sent-new">学新句子 {Math.min(20, st.fresh.length)}</button>
+      </div>}
+    </div>
+  )
+}
+
 export type HomeView = 'full' | 'search' | 'learn' | 'progress'
 /** 首页拆成三块：search（只有搜索）、learn（学习入口：今日任务/升级通道/各个模块，放在「学习」页顶部）、progress（今日完成度/成就/学习记录，放在「统计」页顶部）；full 是旧的整页（仅用于自动化测试 ?home=full）。 */
-export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch, onDialogues, onVowels, onTones, onLyrics, onRoots, onPictures, onPatterns }: { view?: HomeView; onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void; onDialogues: () => void; onVowels: () => void; onTones: () => void; onLyrics: () => void; onRoots: () => void; onPictures: () => void; onPatterns: () => void }) {
+export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCatchup, onMoreRecords, onPickDay, onMine, onPractice, onSearch, onDialogues, onVowels, onTones, onLyrics, onRoots, onPictures, onPatterns, onStudyIds }: { onStudyIds?: (title: string, ids: string[]) => void;  view?: HomeView; onStudy: (m: 'today' | 'review' | 'weak') => void; onLibrary: () => void; onTheme: (t: string) => void; onCatchup: (title: string, ids: string[]) => void; onMoreRecords: () => void; onPickDay: () => void; onMine: () => void; onPractice: (k: 'verify' | 'master') => void; onSearch: (q: string) => void; onDialogues: () => void; onVowels: () => void; onTones: () => void; onLyrics: () => void; onRoots: () => void; onPictures: () => void; onPatterns: () => void }) {
   const [hq, setHq] = useState('')
-  const { progress, words, settings, sessions, lessons, logs, session, flips, plays, exPlays, daily, parkedSet } = useApp()
+  const { progress, words, settings, sessions, lessons, logs: allLogs, session, flips, plays, exPlays, daily, parkedSet, skipSet, sentenceIds } = useApp()
+  const logs = useMemo(() => allLogs.filter(l => !sentenceIds.has(l.wordId)), [allLogs, sentenceIds])
   const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
-  const due = dueWords(progress, undefined, 4, parkedSet).length
+  const due = dueWords(progress, undefined, 4, skipSet).length
   const counts = useMemo(() => {
     const c = [0, 0, 0, 0, 0]
     for (const w of words) c[progress.get(w.id)?.level ?? 0]++
@@ -257,6 +298,7 @@ export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCat
       <div className="sech"><h2>学习记录</h2><button className="sub" style={{ fontSize: 13, color: 'var(--blue)' }} onClick={onMoreRecords}>全部 ›</button></div>
       <Records limit={7} compact onCatchup={onCatchup} />
       </>)}
+      {(full || isLearn) && <SentencePanel onStudyIds={onStudyIds} />}
       {(full || isLearn) && (<>
       <div className="sech"><h2>按主题学习</h2></div>
       <div className="chips">

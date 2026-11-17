@@ -13,7 +13,7 @@ const load = () => (cache ??= fetch(`${import.meta.env.BASE_URL}content/categori
 
 /** 按主题浏览：不受「第几天」课程限制，任何分类随时可以学；评级照常计入复习。 */
 export default function Categories({ onStudy }: { onStudy: (title: string, ids: string[], mode: StudyMode) => void }) {
-  const { words, progress, countPlay } = useApp()
+  const { allWords: words, wordMap, progress, countPlay } = useApp()
   const [playingId, setPlayingId] = useState<string | null>(null)
   const sayWord = async (w: { id: string; thai: string }) => {
     countPlay(w.id); setPlayingId(w.id)
@@ -61,7 +61,7 @@ export default function Categories({ onStudy }: { onStudy: (title: string, ids: 
           <button className="btn block" onClick={() => { const t = open; setOpen(null); onStudy(t.name, [...cur.ids].sort((a, b) => (lv(a) || 0.5) - (lv(b) || 0.5)), 'theme') }} data-testid="cat-all">学习全部 {cur.ids.length} 个词</button>
           <button className="btn sec block" disabled={cur.ids.length === cur.learned} onClick={() => { const t = open; setOpen(null); onStudy(t.name + ' · 新词', cur.ids.filter(i => lv(i) === 0), 'theme') }} data-testid="cat-fresh">只学还没学过的（{cur.ids.length - cur.learned}）</button>
           <div className="catlist">
-            {cur.ids.map(id => { const w = words.find(x => x.id === id)!; const l = lv(id); return (
+            {cur.ids.map(id => { const w = wordMap.get(id)!; const l = lv(id); return (
               <div key={id} className={'catrow tap' + (playingId === id ? ' on' : '')} role="button" tabIndex={0} onClick={() => void sayWord(w)} onKeyDown={e => { if (e.key === 'Enter') void sayWord(w) }} data-testid="cat-word">
                 <span className="th" lang="th">{w.thai}</span>
                 <span className="catmid"><ColorRoman roman={w.roman} className="relrom" /><span className="sub">{w.zh.split(/[；;]/)[0]}</span></span>

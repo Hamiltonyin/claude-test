@@ -2,13 +2,14 @@ import { useMemo } from 'react'
 import { useApp } from '../store'
 import { LEVEL_COLORS, LEVEL_NAMES } from '../types'
 import { addDays, today } from '../lib/dates'
-import { StatsHeader, streakOf } from './Home'
+import { StatsHeader, streakOf, SentencePanel } from './Home'
 import Records from './Records'
 import { summarize } from '../lib/habits'
 import { analyzeMemory } from '../lib/memory'
 
 export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: string[]) => void }) {
-  const { logs, words, progress, settings, daily, flips, plays, parkedSet, wordDaily } = useApp()
+  const { logs: allLogs, words, progress, settings, daily, flips, plays, parkedSet, wordDaily, sentenceIds } = useApp()
+  const logs = useMemo(() => allLogs.filter(l => !sentenceIds.has(l.wordId)), [allLogs, sentenceIds])
   const days = useMemo(() => {
     const t = today(); const out: { d: string; n: number }[] = []
     for (let i = 13; i >= 0; i--) {
@@ -38,6 +39,7 @@ export default function Stats({ onCatchup }: { onCatchup: (title: string, ids: s
     <>
       <h1>学习统计</h1>
       <StatsHeader />
+      <SentencePanel />
       <div className="panel"><h3>今日完成率</h3>
         <div style={{ fontSize: 34, fontWeight: 700, margin: '6px 0' }}>{Math.round(Math.min(1, todayN / settings.dailyGoal) * 100)}%</div>
         <div className="bar"><i style={{ width: `${Math.min(100, (todayN / settings.dailyGoal) * 100)}%`, background: 'var(--blue)' }} /></div>

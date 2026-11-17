@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Backup, DailyCount, WordDaily, WordDay, Level, Lesson, Progress, ReviewLog, Session, Settings, Word } from './types'
 import { clearStores, db, loadAll, put, putMany, saveSettings } from './lib/db'
 import { SEED_LESSONS, SEED_LEVELS, SEED_VERSION, SEED_WORDS } from './data/seed'
+import { isSentence } from './lib/sentences'
 import { applyRating, buildSession, topUpSession, calendarDay, dueWords, SESSION_VER } from './lib/srs'
 import { addDays, today } from './lib/dates'
 import { toneSummary } from './lib/tone'
@@ -9,7 +10,7 @@ import { wordIdFor } from './lib/ids'
 
 interface Ctx {
   ready: boolean; error: string | null
-  words: Word[]; wordMap: Map<string, Word>; lessons: Lesson[]; progress: Map<string, Progress>
+  words: Word[]; allWords: Word[]; sentences: Word[]; sentenceIds: Set<string>; skipSet: Set<string>; wordMap: Map<string, Word>; lessons: Lesson[]; progress: Map<string, Progress>
   logs: ReviewLog[]; sessions: Session[]; settings: Settings; session: Session | null
   flips: Record<string, number>; countFlip(wordId: string): void
   plays: Record<string, number>; countPlay(wordId: string): void
@@ -64,8 +65,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [parked, setParked] = useState<Record<string, string>>({})
   const parkedRef = useRef(parked); parkedRef.current = parked
   // 「近期用不上」的词：到期日之前不进新词、不进复习
-  const skipNow = () => new Set(Object.entries(parkedRef.current).filter(([, u]) => u > today()).map(([id]) => id))
+  const skipNow = () => { const sk = new Set(Object.entries(parkedRef.current).filter(([, u]) => u > today()).map(([id]) => id)); for (const w of ref.current.words) if (isSentence(w)) sk.add(w.id); return sk }   // 句子不进每日新词/复习，单独学习
   const parkedSet = useMemo(() => new Set(Object.entries(parked).filter(([, u]) => u > today()).map(([id]) => id)), [parked, todayStr])
+  const wordsOnly = useMemo(() => words.filter(w => !isSentence(w)), [words])     // 单词（不含句子）
+  const sentences = useMemo(() => words.filter(isSentence), [words])             // 句子（和单词分开统计）
+  const sentenceIds = useMemo(() => new Set(sentences.map(w => w.id)), [sentences])
+  const skipSet = useMemo(() => new Set([...parkedSet, ...sentenceIds]), [parkedSet, sentenceIds])   // 每日新词/复习/弱项要跳过的：搁置的词 + 全部句子
   const [daily, setDaily] = useState<Record<string, DailyCount>>({})
   const dailyRef = useRef(daily); dailyRef.current = daily
   const bumpDaily = useCallback((field: keyof DailyCount) => {
@@ -154,9 +159,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return
     const cur = sessions.find(x => x.date === todayStr); if (!cur) return
-    const up = topUpSession(cur, { words, lessons, progress, settings, skip: parkedSet })
+    const up = topUpSession(cur, { words, lessons, progress, settings, skip: skipSet })
     if (up !== cur) { setSessions(ss => ss.map(x => x.date === up.date ? up : x)); put('sessions', up) }
-  }, [ready, todayStr, words, lessons, progress, sessions, settings, parkedSet])
+  }, [ready, todayStr, words, lessons, progress, sessions, settings, skipSet])
 
   // 跨天：回到应用/应用保持打开过了零点 → 更新日期，并自动生成新一天的课程（漏掉的日子在「学习记录」里可见）
   useEffect(() => {
@@ -319,7 +324,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const wordMap = useMemo(() => new Map(words.map(w => [w.id, w])), [words])
   const session = sessions.find(s => s.date === todayStr) ?? null
-  const value: Ctx = { ready, error, words, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, plays, countPlay, exPlays, countExPlay, daily, wordDaily, parked, parkedSet, parkWord, unparkWord, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
+  const value: Ctx = { ready, error, words: wordsOnly, allWords: words, sentences, sentenceIds, skipSet, wordMap, lessons, progress, logs, sessions, settings, session, flips, countFlip, plays, countPlay, exPlays, countExPlay, daily, wordDaily, parked, parkedSet, parkWord, unparkWord, rate, updateSettings, addWords, updateWord, exportBackup, restoreBackup, mergeLibrary, rebuildSession, growReviews }
   return <C.Provider value={value}>{children}</C.Provider>
 }
 export { wordIdFor }

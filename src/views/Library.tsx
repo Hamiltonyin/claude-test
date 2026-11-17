@@ -46,13 +46,15 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
 }
 
 export default function Library({ onStudy, startMine, onMineShown, initialQuery, onQueryUsed }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free', startIdx?: number) => void; startMine?: boolean; onMineShown?: () => void; initialQuery?: string; onQueryUsed?: () => void }) {
-  const { words, progress, lessons, wordMap, parkedSet } = useApp()
+  const { words, allWords, sentences, progress, lessons, wordMap, parkedSet } = useApp()
+  const [sentMode, setSentMode] = useState(false)
   const [parkedOnly, setParkedOnly] = useState(false)
   const [byCluster, setByCluster] = useState(false)
   const [clOrder, setClOrder] = useState<Map<string, number>>(new Map())
   useEffect(() => { let on = true; loadClusters().then(cs => { if (!on) return; const m = new Map<string, number>(); let i = 0; for (const c of cs) for (const t of c.words) if (!m.has(t)) m.set(t, i++); setClOrder(m) }); return () => { on = false } }, [])
   const [tab, setTab] = useState<'words' | 'days'>('words')
   const [q, setQ] = useState(initialQuery ?? '')
+  const pool = useMemo(() => sentMode ? sentences : (q.trim() ? allWords : words), [sentMode, sentences, q, allWords, words])
   useEffect(() => { if (initialQuery) onQueryUsed?.() }, [])
   const [extra, setExtra] = useState<Map<string, { ex: string; ph: string[] }>>(new Map())
   useEffect(() => { let on = true; loadPhrases().then(m => { if (!on) return; const e = new Map<string, { ex: string; ph: string[] }>(); for (const [t, v] of Object.entries(m) as [string, { items: { th: string; zh: string }[] }][]) e.set(t, { ex: '', ph: v.items.map((x: { th: string; zh: string }) => x.th + ' ' + x.zh) }); setExtra(e) }); return () => { on = false } }, [])
@@ -70,7 +72,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
     const m = new Map<string, { score: number; via?: string }>()
     const k = q.trim()
     if (!k || !isZh) return m
-    for (const w of words) {
+    for (const w of pool) {
       const segs = w.zh.split(/[；;]/).map(x => x.replace(/（[^）]*）|\([^)]*\)/g, '').trim())
       let score = 0, via: string | undefined
       if (segs.some(x => x === k)) score = 4
@@ -83,11 +85,11 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
       if (score) m.set(w.id, { score, via })
     }
     return m
-  }, [words, q, isZh, extra])
+  }, [pool, q, isZh, extra])
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase(), ns = strip(q.trim())
-    const out = words.filter(w => {
+    const out = pool.filter(w => {
       if (mine && !mineSet.has(w.id)) return false
       if (parkedOnly && !parkedSet.has(w.id)) return false
       if (lv !== null && (progress.get(w.id)?.level ?? 0) !== lv) return false
@@ -99,7 +101,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
     if (isZh) return out.sort((a, b) => (hits.get(b.id)?.score ?? 0) - (hits.get(a.id)?.score ?? 0))
     // 按关联排序：近义/反义/同类的词挨在一起，没分组的排最后
     return byCluster ? out.sort((a, b) => (clOrder.get(a.thai) ?? 1e6) - (clOrder.get(b.thai) ?? 1e6)) : out
-  }, [words, progress, q, lv, theme, mine, mineSet, isZh, hits, parkedOnly, parkedSet, byCluster, clOrder])
+  }, [pool, progress, q, lv, theme, mine, mineSet, isZh, hits, parkedOnly, parkedSet, byCluster, clOrder])
 
   const Row = ({ w, i }: { w: Word; i: number }) => {
     const l = progress.get(w.id)?.level ?? 0
@@ -132,6 +134,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
       {tab === 'words' && <>
         <input className="search" placeholder="搜索中文 / 泰文 / 拼音" value={q} onChange={e => setQ(e.target.value)} data-testid="search" />
         <div className="chips" style={{ marginBottom: 8 }}>
+          <button className={'chip' + (sentMode ? ' on' : '')} onClick={() => setSentMode(!sentMode)} data-testid="chip-sent">💬 句子<small>{sentences.length}</small></button>
           <button className={'chip' + (mine ? ' on' : '')} onClick={() => setMine(!mine)} data-testid="chip-mine">📝 我录入的词<small>{mineIds.length}</small></button>
           <button className={'chip' + (byCluster ? ' on' : '')} onClick={() => setByCluster(!byCluster)} data-testid="chip-cluster">🔗 按关联排序</button>
           <button className={'chip' + (parkedOnly ? ' on' : '')} onClick={() => setParkedOnly(!parkedOnly)} data-testid="chip-parked">⏸ 已忽略<small>{parkedSet.size}</small></button>
