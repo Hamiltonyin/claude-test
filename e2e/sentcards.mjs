@@ -19,6 +19,7 @@ try {
   const zh = await page.textContent('[data-testid=sent-zh]'); assert(/[一-鿿]/.test(zh)); assert(await page.locator('[data-testid=thai]').count() === 0); ok('卡片正面只有中文：' + zh)
   await page.tap('[data-testid=card]'); await page.waitForTimeout(700)
   const th = await page.textContent('[data-testid=back-thai]'); assert(/[฀-๿]/.test(th)); ok('翻面后是泰语：' + th)
+  assert(await page.locator('[data-testid=part-chip]').count() >= 3); assert((await page.textContent('[data-testid=parts-why]')).length > 10); ok('翻面后有逐词解释（' + await page.locator('[data-testid=part-chip]').count() + ' 个词）和「为什么这样说」')
   req.length = 0; await page.tap('[data-testid=next]'); await page.waitForTimeout(700)
   assert(req.length === 0, '前进时不该提前读泰语：' + req.join(',')); assert(await page.locator('[data-testid=sent-zh]').count() === 1); ok('下一张：又是中文在前，没有提前读泰语')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')

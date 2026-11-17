@@ -261,7 +261,7 @@ export default function Study({ title, ids, mode, onClose, startIdx, onDetail }:
             <div className="zh">{word.zh}</div>
             {isSent ? <ColorRoman roman={word.roman} className="sentrom" /> : <div className="rom" style={{ fontSize: 22, color: 'var(--blue)', fontWeight: 600 }} data-testid="roman">{word.roman}</div>}
             {!isSent && <ToneChips roman={word.roman} />}
-            {!isSent && <WordParts word={word} />}
+            <WordParts word={word} />
             {!isSent && <Mnemonics word={word} />}
             <ExampleBlock word={word} signal={exSig} show={exShown} />
             {!isSent && <RelatedWords word={word} />}

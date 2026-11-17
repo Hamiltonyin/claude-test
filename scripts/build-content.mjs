@@ -134,6 +134,34 @@ if (existsSync('content/parts.txt')) {
   writeFileSync('public/content/roots.json', JSON.stringify(roots))
   console.log(`构词规律：${roots.length} 个部件`)
 }
+// 句子逐词解释：content/sentence-notes.txt。`句子|词1/拼音=释义+词2=释义+…|为什么这样说`（拼接时忽略空格）。并入 parts.json，但不计入构词规律
+if (existsSync('content/sentence-notes.txt')) {
+  const lib = new Map(words.map(w => [w.thai, w])); const sentOut = {}
+  const nsp = t => t.replace(/\s+/g, '')
+  for (const [i, raw] of readFileSync('content/sentence-notes.txt', 'utf8').split('\n').entries()) {
+    const line = raw.trim(); if (!line || line.startsWith('#')) continue
+    const [th0, rest, why] = line.split('|'); const th = normThai(th0)
+    const key = [...lib.keys()].find(k => nsp(k) === nsp(th))
+    if (!rest || !why) { console.error(`✗ sentence-notes.txt:${i + 1} 格式错误（要有 句子|拆解|为什么）`); bad++; continue }
+    if (!key) { console.error(`✗ sentence-notes.txt:${i + 1} 「${th}」不在词库中`); bad++; continue }
+    const parts = []
+    for (const seg of rest.split('+')) {
+      const m = seg.match(/^([^/=]+)(?:\/([^=]+))?(?:=(.+))?$/)
+      if (!m) { console.error(`✗ sentence-notes.txt:${i + 1} 无法解析「${seg}」`); bad++; continue }
+      const pth = normThai(m[1]); const w = lib.get(pth)
+      const roman = m[2] || w?.roman; const zh = m[3] || w?.zh.split('；')[0]
+      if (!roman || !zh) { console.error(`✗ sentence-notes.txt:${i + 1} 「${pth}」缺拼音或释义`); bad++; continue }
+      let id = w?.id
+      if (!id) { id = 'prt-' + wordIdFor(pth); partClips.set(id, pth) }
+      parts.push({ th: pth, roman: roman.normalize('NFC'), zh, id })
+    }
+    if (nsp(parts.map(x => x.th).join('')) !== nsp(key)) { console.error(`✗ sentence-notes.txt:${i + 1} 「${th}」拼起来是「${parts.map(x => x.th).join('')}」`); bad++; continue }
+    sentOut[key] = { parts, why }
+  }
+  Object.assign(partsOut, sentOut)
+  writeFileSync('public/content/parts.json', JSON.stringify(partsOut))
+  console.log(`句子解释：${Object.keys(sentOut).length} 句`)
+}
 // 动词图集：content/verbs.json（每个动词必须在词库里）
 if (existsSync('content/verbs.json')) {
   const v = JSON.parse(readFileSync('content/verbs.json', 'utf8'))
