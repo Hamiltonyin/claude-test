@@ -11,7 +11,7 @@ const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 const openWord = async () => {
   await page.tap('.tabbar button:nth-child(3)'); await page.fill('input', 'ขอบคุณ'); await page.waitForTimeout(400)
-  await page.locator('[data-testid=word-row]').first().tap(); await page.waitForSelector('[data-testid=thai]')
+  await page.locator('[data-testid=word-row]', { has: page.locator('.th', { hasText: /^ขอบคุณ$/ }) }).first().tap(); await page.waitForSelector('[data-testid=thai]')
 }
 try {
   await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('.tabbar')
