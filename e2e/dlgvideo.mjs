@@ -17,10 +17,10 @@ const openDlg = async () => {
 }
 try {
   await openDlg()
-  assert(await page.locator('[data-testid=bubble]').count() === 7); ok('「真实录音：快递员的话」7 句')
+  assert(await page.locator('[data-testid=bubble]').count() === 8); ok('「真实录音：快递员的话」8 句')
   assert(await page.locator('[data-testid=dlg-vclip]').count() === 0); ok('没导入视频时没有视频按钮')
   await page.setInputFiles('[data-testid=dlg-vfile]', '/tmp/dlg-rec.mp4'); await page.waitForSelector('[data-testid=dlg-video]'); await page.waitForTimeout(400)
-  assert(await page.locator('[data-testid=dlg-vclip]').count() === 7); ok('导入视频后：每句多了「🎬 未设置时间」和「⚙ 校准」')
+  assert(await page.locator('[data-testid=dlg-vclip]').count() === 8); ok('导入视频后：每句多了「🎬 未设置时间」和「⚙ 校准」')
   await page.locator('[data-testid=dlg-calbtn]').nth(1).tap(); await page.waitForSelector('[data-testid=dlg-cal]')
   await page.evaluate(() => { document.querySelector('[data-testid=dlg-video]').currentTime = 2 }); await page.waitForTimeout(300)
   await page.tap('[data-testid=dlg-setstart]'); await page.waitForTimeout(150)
