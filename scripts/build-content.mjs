@@ -224,8 +224,10 @@ if (existsSync(dirD)) for (const f of readdirSync(dirD).filter(f => f.endsWith('
     if (!cur) { console.error(`✗ ${f}:${i + 1} 缺少对话头 # id|标题|场景|emoji`); bad++; continue }
     if (line.startsWith('== ')) { cur.items.push({ sec: line.slice(3).trim() }); continue }
     const c = line.split('|').map(x => x.trim().normalize('NFC'))
-    if (c.length !== 4 || c.some(x => !x)) { console.error(`✗ ${f}:${i + 1} 需要 4 段：说话人|泰文|拼音|中文`); bad++; continue }
-    n++; cur.items.push({ n, who: c[0], me: c[0] === '我', th: c[1], roman: c[2], zh: c[3], clip: `dlg-${cur.id}-${String(n).padStart(2, '0')}` })
+    if ((c.length !== 4 && c.length !== 5) || c.slice(0, 4).some(x => !x)) { console.error(`✗ ${f}:${i + 1} 需要 4 段：说话人|泰文|拼音|中文（可选第 5 段：视频起止秒 如 1.2-3.4）`); bad++; continue }
+    let t
+    if (c[4]) { const m = c[4].match(/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/); if (!m || +m[2] <= +m[1]) { console.error(`✗ ${f}:${i + 1} 起止秒格式应为 1.2-3.4`); bad++; continue } t = [+m[1], +m[2]] }
+    n++; cur.items.push({ n, who: c[0], me: c[0] === '我', th: c[1], roman: c[2], zh: c[3], ...(t ? { t } : {}), clip: `dlg-${cur.id}-${String(n).padStart(2, '0')}` })
   }
 }
 if (bad) { console.error(`${bad} 行对话校验失败，已中止`); process.exit(1) }

@@ -3,7 +3,7 @@ import { ColorRoman, Speaker } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
-interface Line { n: number; who: string; me: boolean; th: string; roman: string; zh: string; clip: string }
+interface Line { n: number; who: string; me: boolean; th: string; roman: string; zh: string; clip: string; t?: [number, number] }
 type Item = Line | { sec: string }
 interface Dlg { id: string; title: string; scene: string; emoji: string; items: Item[] }
 const isLine = (x: Item): x is Line => 'clip' in x
@@ -43,7 +43,10 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
     let u: string | null = null, ok = true
     setVurl(null); setVclips({}); setCalOpen(null); setVmsg('')
     get('meta', 'dlgvideo:' + curId).then((b: unknown) => { if (ok && b instanceof Blob) { u = URL.createObjectURL(b); setVurl(u) } }).catch(() => {})
-    get<Record<string, [number, number]>>('meta', 'dlgclips:' + curId).then(o => { if (ok && o) setVclips(o) }).catch(() => {})
+    const defs: Record<string, [number, number]> = {}   // 内容里预先记录好的起止秒（按原视频），自己调过的优先
+    for (const it of cur?.items ?? []) if (isLine(it) && it.t) defs[it.n] = it.t
+    setVclips(defs)
+    get<Record<string, [number, number]>>('meta', 'dlgclips:' + curId).then(o => { if (ok && o) setVclips({ ...defs, ...o }) }).catch(() => {})
     return () => { ok = false; if (u) URL.revokeObjectURL(u) }
   }, [curId])
   const importVideo = async (f: File | undefined) => {
