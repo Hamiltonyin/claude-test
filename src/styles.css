@@ -417,3 +417,13 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .bub .vowcal{margin:4px 6px 6px}
 
 .sentzh{font-size:28px;font-weight:700;line-height:1.5;text-align:center;padding:0 10px;color:var(--ink,#111)}.sentrom{font-size:17px;font-weight:600;text-align:center;line-height:1.5}
+.bplay .real{width:auto;padding:0 11px;font-size:12px;font-weight:700;background:#fff1e0;color:#d9730d}.bplay .real:disabled{opacity:.55;font-weight:500}
+.bplay .robot{width:auto;padding:0 9px;background:#f1f3f7;color:#8a93a6;font-size:11px;gap:3px;grid-auto-flow:column}.bplay .robot small{font-size:10.5px}
+.bplay .more{background:transparent;color:#9aa3b2;width:28px}
+.edtag{font-style:normal;color:#d9730d}
+.dlgedit{margin:4px 6px 6px;background:#fff;border:1px solid #dfe6f3;border-radius:12px;padding:8px 10px;display:grid;gap:6px}
+.dlgedit label{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:6px;font-size:12px;color:#6a7488}
+.dlgedit input{font-size:15px;padding:6px 8px;border:1px solid #d6deec;border-radius:8px;width:100%;box-sizing:border-box;background:#fafbfd}
+.dlgeditbtn{display:flex;gap:8px}.dlgeditbtn button{font-size:13px;padding:5px 12px;border-radius:9px;background:#eef1f6;color:#4a5570;border:0}.dlgeditbtn .save{background:var(--blue);color:#fff}
+.bplay{align-items:center}.bplay .more{font-size:15px;margin-left:0}.bplay .robot + .more,.bplay .slow + .more{margin-left:auto}
+.dlgpage .vowvid video{max-height:28vh}
