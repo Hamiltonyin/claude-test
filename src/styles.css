@@ -427,3 +427,4 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .dlgeditbtn{display:flex;gap:8px}.dlgeditbtn button{font-size:13px;padding:5px 12px;border-radius:9px;background:#eef1f6;color:#4a5570;border:0}.dlgeditbtn .save{background:var(--blue);color:#fff}
 .bplay{align-items:center}.bplay .more{font-size:15px;margin-left:0}.bplay .robot + .more,.bplay .slow + .more{margin-left:auto}
 .dlgpage .vowvid video{max-height:28vh}
+.vbar{display:flex;align-items:center;gap:6px;padding:6px 2px 0}.vbar button{border:0;background:#e6edfb;color:var(--blue);border-radius:10px;min-width:38px;height:34px;font-size:16px}.vbar button.sm{font-size:12px;min-width:36px;background:#eef1f6;color:#4a5570}.vbar input[type=range]{flex:1;min-width:0}.vbar .vt{font-size:11.5px;color:#7a8499;font-variant-numeric:tabular-nums}

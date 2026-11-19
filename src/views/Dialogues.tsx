@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ColorRoman, Speaker } from '../ui'
+import { ColorRoman, Speaker, VideoBar } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
@@ -124,7 +124,8 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
     <div className="study dlgpage" role="dialog" aria-label={cur.title}>
       <div className="sthead"><button className="close" onClick={() => { tok.current++; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null); setCur(null) }}>‹ 对话</button><div className="prog"><b>{cur.emoji} {cur.title}</b></div><div className="cnt">{lines.length} 句</div></div>
       {vurl && <div className="vowvid">
-        <video ref={vid} src={vurl} controls playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} data-testid="dlg-video" />
+        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} data-testid="dlg-video" />
+        <VideoBar vid={vid} />
         <button className="link" onClick={() => void removeVideo()}>移除视频</button> <button className="link" onClick={() => void exportClips()}>复制时间轴和修改</button>
         {vmsg && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{vmsg}</p>}
       </div>}

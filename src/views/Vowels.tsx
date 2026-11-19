@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
-import { ColorRoman, Speaker } from '../ui'
+import { ColorRoman, Speaker, VideoBar } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
@@ -108,7 +108,8 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
       <div className="sthead"><button className="close" onClick={onClose}>‹ 返回</button><div className="prog"><b>🔤 元音发音练习</b></div><div className="cnt">{data?.vowels.length ?? 0} 个</div></div>
       <div className="vowlist">
         {url && <div className="vowvid">
-            <video ref={vid} src={url} controls playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => setPlaying(null)} data-testid="vow-video" />
+            <video ref={vid} src={url} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => setPlaying(null)} data-testid="vow-video" />
+        <VideoBar vid={vid} />
             <button className="link" onClick={removeVideo}>移除本机视频</button> <button className="link" onClick={() => void exportClips()} data-testid="vow-export">复制全部时间轴</button>
             {cal && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{cal}</p>}
           </div>}

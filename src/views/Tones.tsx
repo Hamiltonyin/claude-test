@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
-import { ToneLine, TONE_COLOR, Speaker } from '../ui'
+import { ToneLine, TONE_COLOR, Speaker, VideoBar } from '../ui'
 import { TONE_ZH } from '../lib/tone'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
@@ -130,7 +130,8 @@ export default function Tones({ onClose }: { onClose: () => void }) {
       <div className="sthead"><button className="close" onClick={onClose}>‹ 返回</button><div className="prog"><b>🎼 声调校对</b></div><div className="cnt">{data?.sets.length ?? 0} 组</div></div>
       <div className="tonelist">
         {url && <div className="vowvid">
-          <video ref={vid} src={url} controls playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); finishClip() }} data-testid="tone-video" />
+          <video ref={vid} src={url} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); finishClip() }} data-testid="tone-video" />
+        <VideoBar vid={vid} />
           <button className="link" onClick={() => void removeVideo()}>移除本机视频</button> <button className="link" onClick={() => void exportClips()}>复制全部时间轴</button>
           {msg && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{msg}</p>}
         </div>}

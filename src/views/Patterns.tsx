@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
-import { ColorRoman, Speaker } from '../ui'
+import { ColorRoman, Speaker, VideoBar } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del, listKeys } from '../lib/db'
 
@@ -75,7 +75,8 @@ export default function Patterns({ onClose }: { onClose: () => void }) {
     <div className="study patpage" role="dialog" aria-label="常用句式">
       <div className="sthead"><button className="close" onClick={onClose}>‹ 返回</button><div className="prog"><b>🧱 常用句式</b></div><div className="cnt">{data?.patterns.length ?? 0} 个</div></div>
       <div className="recplayer" style={{ display: playingRec ? 'block' : 'none' }} data-testid="rec-player">
-        <video ref={vid} playsInline controls onEnded={() => setOn(null)} data-testid="rec-video" />
+        <video ref={vid} playsInline onEnded={() => setOn(null)} data-testid="rec-video" />
+        <VideoBar vid={vid} />
         {playingRec && <div className="recname">🎬 真人读音：<span className="th" lang="th">{playingRec.th}</span> <button className="link" onClick={() => { vid.current?.pause(); setPlayingRec(null); setOn(null) }}>关闭</button></div>}
       </div>
       <div className="patlist">

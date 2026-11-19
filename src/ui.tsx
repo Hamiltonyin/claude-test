@@ -313,3 +313,29 @@ export function Mnemonics({ word }: { word: Word }) {
     </div>
   )
 }
+
+/** 视频下方的播放条（代替视频自带的控制条：iPhone 上自带的暂停/快进按钮会盖在画面正中间，挡住看口型/字幕）。 */
+export function VideoBar({ vid }: { vid: React.RefObject<HTMLVideoElement | null> }) {
+  const [playing, setPlaying] = useState(false)
+  const [cur, setCur] = useState(0)
+  const [dur, setDur] = useState(0)
+  useEffect(() => {
+    const el = vid.current; if (!el) return
+    const sync = () => { setPlaying(!el.paused && !el.ended); setCur(el.currentTime || 0); setDur(Number.isFinite(el.duration) ? el.duration : 0) }
+    const evs = ['play', 'pause', 'ended', 'timeupdate', 'loadedmetadata', 'durationchange', 'seeked']
+    evs.forEach(e => el.addEventListener(e, sync)); sync()
+    return () => evs.forEach(e => el.removeEventListener(e, sync))
+  }, [vid])
+  const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`
+  const seek = (t: number) => { const el = vid.current; if (el) el.currentTime = Math.max(0, Math.min(dur || t, t)) }
+  const toggle = () => { const el = vid.current; if (!el) return; if (el.paused) void el.play().catch(() => {}); else el.pause() }
+  return (
+    <div className="vbar" data-testid="vbar">
+      <button onClick={toggle} aria-label={playing ? '暂停' : '播放'} data-testid="vbar-play">{playing ? '⏸' : '▶'}</button>
+      <button onClick={() => seek(cur - 2)} aria-label="后退2秒" className="sm">-2s</button>
+      <input type="range" min={0} max={dur || 1} step={0.05} value={Math.min(cur, dur || 1)} onChange={e => seek(+e.target.value)} aria-label="进度" />
+      <button onClick={() => seek(cur + 2)} aria-label="前进2秒" className="sm">+2s</button>
+      <span className="vt">{fmt(cur)}/{fmt(dur)}</span>
+    </div>
+  )
+}
