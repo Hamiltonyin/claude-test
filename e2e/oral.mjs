@@ -1,4 +1,4 @@
-// 口头禅：对话「口头禅①」导入视频后每句已有预设起止秒；句式卡片分类「口头禅」有 23 张，翻面有逐词解释
+// 口头禅：对话「口头禅①」导入视频后每句已有预设起止秒；句式卡片分类「口头禅」有 33 张，翻面有逐词解释
 import { chromium, devices } from 'playwright'
 import { spawn, execSync } from 'child_process'
 import assert from 'assert'
@@ -21,7 +21,7 @@ try {
   await page.goBack().catch(() => {})
   await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=tab-cats]'); await page.tap('[data-testid=tab-cats]')
   await page.waitForSelector('[data-testid=cat-sent10]'); await page.tap('[data-testid=cat-sent10]'); await page.waitForSelector('[data-testid=cat-all]')
-  const rows = await page.locator('.catrow').count(); assert(rows === 23, 'rows ' + rows); ok('句式卡片「口头禅」分类有 ' + rows + ' 张')
+  const rows = await page.locator('.catrow').count(); assert(rows === 33, 'rows ' + rows); ok('句式卡片「口头禅」分类有 ' + rows + ' 张')
   await page.tap('[data-testid=cat-all]'); await page.waitForSelector('[data-testid=sent-zh]'); await page.tap('[data-testid=card]'); await page.waitForTimeout(600)
   assert(await page.locator('[data-testid=part-chip]').count() >= 2); assert((await page.textContent('[data-testid=parts-why]')).length > 10); ok('翻面后有逐词解释和「为什么这样说」')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
