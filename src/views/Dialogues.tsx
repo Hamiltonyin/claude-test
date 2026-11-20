@@ -7,7 +7,15 @@ interface Line { n: number; who: string; me: boolean; th: string; roman: string;
 type Item = Line | { sec: string }
 interface Edit { th?: string; roman?: string; zh?: string }
 interface Dlg { id: string; title: string; scene: string; emoji: string; items: Item[] }
-const WH = 104   // 滚轴每一句的高度（px）
+// 透镜效果：离中间越近越大、越清楚；越远越小、越淡，而且往中间挤（像鱼眼/放大镜）。off＝这一句离中间的格数（可带小数，随手指连续变化）
+const lens = (off: number): React.CSSProperties => {
+  const a = Math.abs(off), A = 1.75
+  const g = Math.sign(off) * A * Math.tanh(a / A)                       // 压缩后的位置：近处基本不变，远处越来越挤
+  const sc = 0.42 + 0.86 * Math.exp(-(off * off) / 1.5)                  // 中间 1.28 倍 → 相邻 ≈0.85 → 再远 ≈0.5
+  const op = 0.08 + 0.92 * Math.exp(-(off * off) / 2.4)
+  return { opacity: op, transform: `perspective(700px) translateY(${((g - off) * WH).toFixed(1)}px) rotateX(${Math.max(-60, Math.min(60, -off * 16)).toFixed(1)}deg) scale(${sc.toFixed(3)})` }
+}
+const WH = 128   // 滚轴每一句的高度（px）
 const isLine = (x: Item): x is Line => 'clip' in x
 
 let cache: Promise<Dlg[]> | null = null
@@ -186,13 +194,14 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
                 const l = eff(l0), off = k - pos, ad = Math.abs(off)
                 const hidden = hideTh && !peek.has(l.n)
                 return (
-                  <div key={l.n} className={'wi' + (k === sel ? ' on' : '') + (playing === l.n ? ' playing' : '')} data-testid="wheel-item"
-                    style={{ height: WH, opacity: Math.max(0.12, 1 - ad * 0.45), transform: `rotateX(${Math.max(-70, Math.min(70, -off * 24))}deg) scale(${1 - Math.min(ad, 2.5) * 0.08})` }}
+                  <div key={l.n} className={'wi' + (k === sel ? ' on' : '') + (playing === l.n ? ' playing' : '')} data-testid="wheel-item" style={{ height: WH }}
                     onClick={() => { if (k !== sel) wheelTo(k); else if (hidden) setPeek(new Set(peek).add(l.n)); else if (vurl && vclips[l.n]) playClip(l); else playOne(l) }}>
+                    <div className="wic" style={lens(off)}>
                     {secOf.get(l.n) && <div className="wsec">{secOf.get(l.n)}</div>}
-                    {hidden ? <div className="th masked" lang="th">点一下看泰文</div> : <div className="th" lang="th">{l.th}</div>}
+                    {hidden ? <div className="th masked" lang="th">点一下看泰文</div> : <div className={"th" + (l.th.length > 16 ? " long" : "")} lang="th">{l.th}</div>}
                     {showRoman && !hidden && <ColorRoman roman={l.roman} />}
                     {showZh && <div className="dz">{l.zh}</div>}
+                    </div>
                   </div>)
               })}
               <div className="wspacer" />
