@@ -13,7 +13,7 @@ const lens = (off: number): React.CSSProperties => {
   const g = Math.sign(off) * A * Math.tanh(a / A)                       // 压缩后的位置：近处基本不变，远处越来越挤
   const sc = 0.42 + 0.86 * Math.exp(-(off * off) / 1.5)                  // 中间 1.28 倍 → 相邻 ≈0.85 → 再远 ≈0.5
   const op = 0.08 + 0.92 * Math.exp(-(off * off) / 2.4)
-  return { opacity: op, transform: `perspective(700px) translateY(${((g - off) * WH).toFixed(1)}px) rotateX(${Math.max(-60, Math.min(60, -off * 16)).toFixed(1)}deg) scale(${sc.toFixed(3)})` }
+  return { opacity: op, filter: a < 0.55 ? undefined : `blur(${Math.min(4, (a - 0.55) * 2.4).toFixed(1)}px)`, transform: `perspective(700px) translateY(${((g - off) * WH).toFixed(1)}px) rotateX(${Math.max(-60, Math.min(60, -off * 16)).toFixed(1)}deg) scale(${sc.toFixed(3)})` }
 }
 const WH = 128   // 滚轴每一句的高度（px）
 const isLine = (x: Item): x is Line => 'clip' in x
@@ -188,6 +188,7 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
         <div className="wheelpage" data-testid="wheelpage">
           <div className="wheelwrap">
             <div className="wheelband" />
+            <div className="wglass top" /><div className="wglass bot" />
             <div className="wheel" ref={wheel} data-testid="wheel" onScroll={e => { const t = e.currentTarget.scrollTop; cancelAnimationFrame(raf.current); raf.current = requestAnimationFrame(() => setPos(t / WH)) }}>
               <div className="wspacer" />
               {lines.map((l0, k) => {

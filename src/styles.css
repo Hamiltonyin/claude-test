@@ -450,3 +450,52 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .wheelband{border-radius:26px;background:linear-gradient(180deg,#fff,#f3f8ff);box-shadow:0 4px 18px rgba(40,90,200,.16),inset 0 0 0 1.5px #cfe0ff}
 .wi .th.long{font-size:17px}.wi .th.long ~ *{font-size:12px}
 .wi{will-change:auto}.wic{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:1px;will-change:transform,opacity}
+
+/* ================= iOS 风格 · 毛玻璃主题（放在最后，统一覆盖） ================= */
+:root{
+  --bgg:radial-gradient(60% 38% at 12% 6%,rgba(96,156,255,.38),transparent 72%),radial-gradient(50% 36% at 96% 22%,rgba(255,150,190,.30),transparent 72%),radial-gradient(60% 40% at 68% 98%,rgba(120,225,205,.32),transparent 72%),radial-gradient(50% 30% at 4% 70%,rgba(190,160,255,.22),transparent 72%),#eef2fa;
+  --card:rgba(255,255,255,.64);
+  --glass:rgba(255,255,255,.58);
+  --glass-edge:rgba(255,255,255,.78);
+  --glass-shadow:0 10px 32px rgba(30,55,110,.10),0 1px 0 rgba(255,255,255,.6) inset;
+  --line:rgba(60,80,120,.12);
+  --sub:#6e7686;
+}
+body{background:var(--bgg);background-attachment:fixed}
+.app{background:transparent}
+.study{background:var(--bgg)}
+.dlgpage,.patpage,.vowpage{background:var(--bgg)}
+.glassy,.panel,.entry,.stat,.catcard,.dlgcard,.chip,.vowintro,.lyrcard{-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow)}
+.panel,.entry,.stat,.catcard,.dlgcard{background:var(--glass)}
+.panel{border-radius:22px}.entry{border-radius:24px}.stat{border-radius:18px}.catcard{border-radius:28px}.dlgcard{border-radius:24px}
+.chip{background:rgba(255,255,255,.55);box-shadow:0 2px 8px rgba(30,55,110,.06)}.chip.on{background:linear-gradient(180deg,#3a92ff,#007aff);color:#fff;border-color:rgba(255,255,255,.35)}
+.tabbar{background:rgba(246,248,254,.68);-webkit-backdrop-filter:blur(28px) saturate(200%);backdrop-filter:blur(28px) saturate(200%);border-top:1px solid rgba(255,255,255,.7);box-shadow:0 -6px 24px rgba(30,55,110,.06)}
+.tabbar button.on{color:var(--blue);font-weight:600}
+.sthead{background:rgba(246,248,254,.55);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.6)}
+.vowvid{background:rgba(246,248,254,.7)!important;-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%)}
+.search{background:rgba(110,125,160,.14);border-radius:14px}
+.seg{background:rgba(110,125,160,.16);border-radius:12px}.seg button{border-radius:10px}.seg button.on{background:rgba(255,255,255,.92);box-shadow:0 2px 6px rgba(20,40,90,.14)}
+.seg2{background:rgba(110,125,160,.16)}.seg2 button.on{background:rgba(255,255,255,.92)}
+.btn{background:linear-gradient(180deg,#3a92ff,#007aff);border-radius:15px;box-shadow:0 6px 16px rgba(0,122,255,.28);border:1px solid rgba(255,255,255,.25)}
+.btn.sec{background:var(--glass);color:var(--blue);box-shadow:var(--glass-shadow);border:1px solid var(--glass-edge)}
+.btn.danger{background:rgba(255,240,239,.8)}
+.sheet{background:rgba(18,28,60,.28);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.sheet>div{background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.8);border-radius:28px}
+.card .face{border:1px solid rgba(255,255,255,.8)}
+.bbody{background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.8)}
+.bub.me .bbody{border-color:rgba(255,255,255,.3)}
+.dlgbar{background:linear-gradient(to top,rgba(238,242,250,.85),rgba(238,242,250,0))}
+.dlgbar .nx,.btn.block{border-radius:26px}
+.dlgedit,.vowcal{background:rgba(255,255,255,.7);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.8);border-radius:16px}
+.dlgtools label,.dlgtools .dlgvidimport{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+h1{font-weight:800;letter-spacing:-.6px}
+.row{border-bottom:1px solid var(--line)}
+
+/* 滚轴：中间那一格是清晰的「透镜窗口」，窗口外面盖一层毛玻璃，只有窗口里的字是清楚的 */
+.wheel{-webkit-mask-image:none;mask-image:none}
+.wheelband{border-radius:28px;background:rgba(255,255,255,.55);box-shadow:0 8px 30px rgba(40,90,200,.18),inset 0 0 0 1.5px rgba(255,255,255,.95),inset 0 1px 12px rgba(255,255,255,.9);border:0}
+.wglass{position:absolute;left:-14px;right:-14px;z-index:2;pointer-events:none;-webkit-backdrop-filter:blur(9px) saturate(160%);backdrop-filter:blur(9px) saturate(160%)}
+.wglass.top{top:0;height:calc(50% - 64px);background:linear-gradient(to bottom,rgba(238,243,252,.82),rgba(238,243,252,.38));-webkit-mask-image:linear-gradient(to bottom,#000 70%,transparent);mask-image:linear-gradient(to bottom,#000 70%,transparent)}
+.wglass.bot{bottom:0;height:calc(50% - 64px);background:linear-gradient(to top,rgba(238,243,252,.82),rgba(238,243,252,.38));-webkit-mask-image:linear-gradient(to top,#000 70%,transparent);mask-image:linear-gradient(to top,#000 70%,transparent)}
+.wglass.top{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55));mask-image:linear-gradient(to bottom,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55))}
+.wglass.bot{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55));mask-image:linear-gradient(to top,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55))}
