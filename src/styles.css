@@ -555,3 +555,4 @@ h1{font-weight:800;letter-spacing:-.6px}
 .vowvid.min .vbar{flex:1;min-width:0}.vowvid.min .vseek{margin-top:0}.vowvid.min .vrow{padding:0}.vowvid.min .vrow .vt,.vowvid.min .vrow .sm:not(:last-child){display:none}
 .vowvid.min .vrow .sm:last-child{display:inline-block!important}
 .dlgpage .vowvid:not(.min) video{max-height:38vh}
+.wi .lchunks{display:flex;flex-wrap:wrap;justify-content:center;gap:0 14px}.wi .lchunks .rom{font-size:13px}

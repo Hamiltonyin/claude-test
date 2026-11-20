@@ -8,6 +8,7 @@ const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPo
 await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
+await page.addInitScript(() => { try { localStorage.setItem('thai30-lyr-mode', '"chat"'); localStorage.setItem('thai30-lyr-act', 'true') } catch {} })
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const mp3 = []; page.on('request', r => { if (/audio\/[^/]+\.mp3/.test(r.url())) mp3.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
