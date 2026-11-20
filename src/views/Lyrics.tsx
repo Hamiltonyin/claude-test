@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { ColorRoman, Speaker } from '../ui'
+import { ColorRoman, Speaker, VideoBar } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
+import { get, put, del } from '../lib/db'
 
-interface Line { n: number; th: string; roman: string; zh: string; clip: string }
+interface Line { n: number; th: string; roman: string; zh: string; clip: string; t?: [number, number] }
 type Item = Line | { sec: string }
 interface Song { id: string; title: string; intro: string; emoji: string; items: Item[] }
 const isLine = (x: Item): x is Line => 'clip' in x
@@ -32,6 +33,44 @@ export default function Lyrics({ onClose }: { onClose: () => void }) {
   const [playing, setPlaying] = useState<number | null>(null)
   const [all, setAll] = useState(false)
   const tok = useRef(0)
+  // —— 真人视频（只存本机）：每句起止秒，点 🎬 播放那一段；预设时间来自歌词文件，可以自己校准 ——
+  const [vurl, setVurl] = useState<string | null>(null)
+  const [vclips, setVclips] = useState<Record<string, [number, number]>>({})
+  const [vidBig, setVidBig] = useState(true)
+  const [calOpen, setCalOpen] = useState<number | null>(null)
+  const vid = useRef<HTMLVideoElement>(null)
+  const stopAt = useRef<number | null>(null)
+  const clipDone = useRef<(() => void) | null>(null)
+  const curId = cur?.id
+  useEffect(() => {
+    if (!curId) return
+    let u: string | null = null, ok = true
+    setVurl(null); setCalOpen(null)
+    const defs: Record<string, [number, number]> = {}
+    for (const it of cur?.items ?? []) if (isLine(it) && it.t) defs[it.n] = it.t
+    setVclips(defs)
+    get('meta', 'lyrvideo:' + curId).then((b: unknown) => { if (ok && b instanceof Blob) { u = URL.createObjectURL(b); setVurl(u) } }).catch(() => {})
+    get<Record<string, [number, number]>>('meta', 'lyrclips:' + curId).then(o => { if (ok && o) setVclips({ ...defs, ...o }) }).catch(() => {})
+    return () => { ok = false; if (u) URL.revokeObjectURL(u) }
+  }, [curId])
+  const importVideo = async (f: File | undefined) => {
+    if (!f || !curId) return
+    try { await put('meta', f, 'lyrvideo:' + curId) } catch { /* 存不下也先能播这一次 */ }
+    if (vurl) URL.revokeObjectURL(vurl); setVurl(URL.createObjectURL(f))
+  }
+  const removeVideo = async () => { if (!curId) return; await del('meta', 'lyrvideo:' + curId).catch(() => {}); if (vurl) URL.revokeObjectURL(vurl); setVurl(null) }
+  const saveClip = (n: number, c: [number, number] | null) => {
+    if (!curId) return
+    const m = { ...vclips }; if (c) m[n] = [Math.max(0, +c[0].toFixed(2)), Math.max(0, +c[1].toFixed(2))]; else delete m[n]
+    setVclips(m); void put('meta', m, 'lyrclips:' + curId)
+  }
+  const playClip = (l: Line, done?: () => void) => {
+    const el = vid.current, c = vclips[l.n]; if (!el || !c) return
+    if (!done) { tok.current++; setAll(false) }
+    stopAudio(); setPlaying(l.n); clipDone.current = done ?? null
+    stopAt.current = c[1]; el.currentTime = c[0]; void el.play().catch(() => { setPlaying(null); clipDone.current = null; done?.() })
+  }
+  const onTime = () => { const el = vid.current; if (el && stopAt.current != null && el.currentTime >= stopAt.current) { el.pause(); stopAt.current = null; setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() } }
   const refs = useRef(new Map<number, HTMLDivElement>())
   useEffect(() => { let on = true; load().then(d => on && setList(d)); return () => { on = false } }, [])
   useEffect(() => () => { tok.current++; stopAudio() }, [])
@@ -41,7 +80,7 @@ export default function Lyrics({ onClose }: { onClose: () => void }) {
     setPlaying(l.n)
     try { await playFile(l.clip, slow) } catch { try { await playSystem(l.th, slow) } catch { /* 没有音频也没有系统语音 */ } }
   }
-  const stop = () => { tok.current++; stopAudio(); setAll(false); setPlaying(null) }
+  const stop = () => { tok.current++; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null) }
   const playOne = (l: Line, slow = false) => { tok.current++; setAll(false); void say(l, slow).then(() => setPlaying(p => (p === l.n ? null : p))) }
   const playAll = () => {
     if (!cur) return
@@ -54,7 +93,7 @@ export default function Lyrics({ onClose }: { onClose: () => void }) {
           for (let r = 0; r < rep; r++) {
             if (tok.current !== my) return
             refs.current.get(l.n)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            await say(l)
+            if (vurl && vclips[l.n]) { await new Promise<void>(r => { playClip(l, r); setTimeout(r, ((vclips[l.n][1] - vclips[l.n][0]) + 3) * 1000) }) } else await say(l)
             if (tok.current !== my) return
             await wait(r + 1 < rep ? 450 : 700)
           }
@@ -79,7 +118,11 @@ export default function Lyrics({ onClose }: { onClose: () => void }) {
   const lines = cur.items.filter(isLine)
   return (
     <div className="study dlgpage" role="dialog" aria-label={cur.title}>
-      <div className="sthead"><button className="close" onClick={() => { stop(); setCur(null) }}>‹ 歌词</button><div className="prog"><b>{cur.emoji} {cur.title}</b></div><div className="cnt">{lines.length} 句</div></div>
+      <div className="sthead"><button className="close" onClick={() => { stop(); setCur(null) }}>‹ 歌词</button><div className="prog"><b>{cur.emoji} {cur.title}</b></div>{!vurl && <label className="gdot" aria-label="导入真人视频" title="导入真人视频">📥<input type="file" accept="video/*,audio/*" hidden onChange={e => void importVideo(e.target.files?.[0])} data-testid="lyr-vfile" /></label>}{vurl && <button className="gdot" onClick={() => void removeVideo()} aria-label="移除视频" title="移除视频">🗑</button>}</div>
+      {vurl && <div className={'vowvid' + (vidBig ? '' : ' min')}>
+        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} onClick={() => { const el = vid.current; if (el) { if (el.paused) void el.play().catch(() => {}); else el.pause() } }} data-testid="lyr-video" />
+        <VideoBar vid={vid} big={vidBig} onSize={() => setVidBig(!vidBig)} />
+      </div>}
       <div className="dlgtools">
         <label><input type="checkbox" checked={showRoman} onChange={e => setShowRoman(e.target.checked)} data-testid="lyr-roman" /> 拼音</label>
         <label><input type="checkbox" checked={showZh} onChange={e => setShowZh(e.target.checked)} data-testid="lyr-zh" /> 中文</label>
@@ -97,15 +140,23 @@ export default function Lyrics({ onClose }: { onClose: () => void }) {
           return (
             <div key={i} ref={el => { if (el) refs.current.set(it.n, el); else refs.current.delete(it.n) }} className={'lyr' + (playing === it.n ? ' on' : '')} data-testid="lyr-line">
               <b className="lno">{it.n}</b>
-              <div className="lbody" onClick={() => hidden ? setPeek(new Set(peek).add(it.n)) : playOne(it)}>
+              <div className="lbody" onClick={() => hidden ? setPeek(new Set(peek).add(it.n)) : (vurl && vclips[it.n]) ? playClip(it) : playOne(it)}>
                 {hidden ? <div className="th masked" lang="th">{hint ? <>{first} …<small>（点一下看泰文）</small></> : '点一下看泰文'}</div> : <div className="th" lang="th">{it.th}</div>}
                 {showRoman && !hidden && <Chunks roman={it.roman} />}
                 {showZh && <div className="dz">{it.zh}</div>}
               </div>
               <div className="bplay">
-                <button onClick={() => playOne(it)} aria-label="播放这一句" data-testid="lyr-play"><Speaker /></button>
-                <button className="slow" onClick={() => playOne(it, true)} aria-label="慢速播放">🐢</button>
+                {vurl && <button className={'real' + (vclips[it.n] ? ' has' : '')} disabled={!vclips[it.n]} onClick={() => playClip(it)} aria-label="播放真人" data-testid="lyr-vclip">🎬{vclips[it.n] ? <small>{vclips[it.n][0].toFixed(1)}–{vclips[it.n][1].toFixed(1)}s</small> : <small>未设</small>}</button>}
+                <button className={vurl && vclips[it.n] ? 'robot' : ''} onClick={() => playOne(it)} aria-label="播放这一句" data-testid="lyr-play">{vurl && vclips[it.n] ? '🤖' : <Speaker />}</button>
+                {!(vurl && vclips[it.n]) && <button className="slow" onClick={() => playOne(it, true)} aria-label="慢速播放">🐢</button>}
+                {vurl && <button className="more" onClick={() => setCalOpen(calOpen === it.n ? null : it.n)} aria-label="校准时间" data-testid="lyr-calbtn">⏱</button>}
               </div>
+              {vurl && calOpen === it.n && (() => { const c = vclips[it.n]; const cur0 = () => vid.current?.currentTime ?? 0; const [a, b] = c ?? [0, 0]; return (
+                <div className="vowcal" data-testid="lyr-cal">
+                  <div className="vowcalh">时间轴 <b>{c ? `${a.toFixed(2)}s – ${b.toFixed(2)}s` : '未设置'}</b>{c && <button className="link" onClick={() => saveClip(it.n, null)}>清除</button>}</div>
+                  <div className="vowcalr"><span>起点</span><button onClick={() => saveClip(it.n, [a - 0.1, b])}>-0.1</button><button onClick={() => saveClip(it.n, [a + 0.1, b])}>+0.1</button><button className="set" onClick={() => saveClip(it.n, [cur0(), c ? Math.max(b, cur0() + 0.8) : cur0() + 1.5])}>设为视频当前位置</button></div>
+                  <div className="vowcalr"><span>终点</span><button onClick={() => saveClip(it.n, [a, b - 0.1])}>-0.1</button><button onClick={() => saveClip(it.n, [a, b + 0.1])}>+0.1</button><button className="set" onClick={() => saveClip(it.n, [a, cur0()])}>设为视频当前位置</button></div>
+                </div>) })()}
             </div>)
         })() : <div key={i} className="dsec"><span>{it.sec}</span></div>)}
       </div>

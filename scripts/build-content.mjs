@@ -209,8 +209,10 @@ if (existsSync(dirL)) for (const f of readdirSync(dirL).filter(f => f.endsWith('
     if (!cur) { console.error(`✗ ${f}:${i + 1} 缺少歌词头 # id|标题|简介|emoji`); bad++; continue }
     if (line.startsWith('== ')) { cur.items.push({ sec: line.slice(3).trim() }); continue }
     const c = line.split('|').map(x => x.trim().normalize('NFC'))
-    if (c.length !== 3 || c.some(x => !x)) { console.error(`✗ ${f}:${i + 1} 需要 3 段：泰文|拼音|中文`); bad++; continue }
-    n++; cur.items.push({ n, th: c[0], roman: c[1], zh: c[2], clip: `lyr-${cur.id}-${String(n).padStart(2, '0')}` })
+    if ((c.length !== 3 && c.length !== 4) || c.slice(0, 3).some(x => !x)) { console.error(`✗ ${f}:${i + 1} 需要 3 段：泰文|拼音|中文（可选第 4 段：视频起止秒 如 1.2-3.4）`); bad++; continue }
+    let t
+    if (c[3]) { const m = c[3].match(/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/); if (!m || +m[2] <= +m[1]) { console.error(`✗ ${f}:${i + 1} 起止秒格式应为 1.2-3.4`); bad++; continue } t = [+m[1], +m[2]] }
+    n++; cur.items.push({ n, th: c[0], roman: c[1], zh: c[2], ...(t ? { t } : {}), clip: `lyr-${cur.id}-${String(n).padStart(2, '0')}` })
   }
 }
 // 情景对话：content/dialogues/*.txt。首行 `# id|标题|场景|emoji`；`== 小节名`；每行 `说话人|泰文|拼音|中文`（说话人「我」显示在右边）
