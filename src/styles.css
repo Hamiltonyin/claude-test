@@ -428,3 +428,19 @@ table.pv{width:100%;border-collapse:collapse;font-size:13px}.pv td{padding:5px 3
 .bplay{align-items:center}.bplay .more{font-size:15px;margin-left:0}.bplay .robot + .more,.bplay .slow + .more{margin-left:auto}
 .dlgpage .vowvid video{max-height:28vh}
 .vbar{display:flex;align-items:center;gap:6px;padding:6px 2px 0}.vbar button{border:0;background:#e6edfb;color:var(--blue);border-radius:10px;min-width:38px;height:34px;font-size:16px}.vbar button.sm{font-size:12px;min-width:36px;background:#eef1f6;color:#4a5570}.vbar input[type=range]{flex:1;min-width:0}.vbar .vt{font-size:11.5px;color:#7a8499;font-variant-numeric:tabular-nums}
+/* 情景对话 · 滚轴视图（像 iPhone 选时间那样上下滚，中间那句是当前句） */
+.seg2{display:inline-flex;background:#e9edf5;border-radius:10px;padding:2px}.seg2 button{border:0;background:transparent;font-size:12.5px;padding:4px 10px;border-radius:8px;color:#5b667c}.seg2 button.on{background:#fff;color:var(--blue);font-weight:700;box-shadow:0 1px 3px rgba(20,40,80,.15)}
+.wheelpage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch}
+.wheelwrap{position:relative;flex:none;--wh:clamp(190px,32vh,312px);height:var(--wh);margin:0 14px}
+.wheelband{position:absolute;left:0;right:0;top:calc(50% - 52px);height:104px;border-radius:16px;background:#fff;box-shadow:0 2px 10px rgba(30,60,120,.12);border:1.5px solid #cfe0ff;pointer-events:none}
+.wheel{position:relative;height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;perspective:700px;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior:contain}.wheel::-webkit-scrollbar{display:none}
+.wspacer{height:calc((var(--wh) - 104px) / 2);flex:none}
+.wi{scroll-snap-align:center;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:4px 14px;gap:1px;cursor:pointer;will-change:transform,opacity;overflow:hidden}
+.wi .wsec{font-size:10.5px;color:#a0a9bb}.wi .th{font-size:22px;line-height:1.35}.wi .dz{font-size:14px;color:#5b667c}.wi .th.masked{color:#b6bdca;font-size:16px}
+.wi.playing .th{color:var(--blue)}
+.wheelfoot{padding:8px 14px calc(var(--sab) + 4px)}
+.wcount{text-align:center;font-size:12px;color:#8a93a6}
+.wnav{display:flex;justify-content:center;gap:12px;margin:4px 0}.wnav button{width:44px;height:30px;border:0;border-radius:10px;background:#e6edfb;color:var(--blue);font-size:13px}.wnav button:disabled{opacity:.35}
+.wactions .bplay{justify-content:center;flex-wrap:wrap;padding:2px 0}.wactions .bplay .robot + .more,.wactions .bplay .slow + .more{margin-left:0}
+.wactions .bplay button{margin:0 !important}
+.wheelwrap{--wh:clamp(230px,44vh,420px)}
