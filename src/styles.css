@@ -528,3 +528,10 @@ h1{font-weight:800;letter-spacing:-.6px}
 .wglass{-webkit-backdrop-filter:blur(3.5px) saturate(150%);backdrop-filter:blur(3.5px) saturate(150%)}
 .wglass.top{background:linear-gradient(to bottom,rgba(238,243,252,.50),rgba(238,243,252,.14))}
 .wglass.bot{background:linear-gradient(to top,rgba(238,243,252,.50),rgba(238,243,252,.14))}
+
+/* 滚轴占满中间的全部空间（原来下面那一大块是空的）；▶ 小圆点浮在右下角 */
+.wheelpage{overflow-y:auto}
+.wheelwrap{flex:1 1 auto;height:auto;min-height:260px;position:relative}
+.wheelwrap .wheel{position:absolute;inset:0;height:auto}
+.wspacer{height:calc(50% - 64px)}
+.wheelfoot{flex:none;padding:4px 14px calc(var(--sab) + 16px)}
