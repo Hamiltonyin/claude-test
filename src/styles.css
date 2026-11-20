@@ -523,3 +523,8 @@ h1{font-weight:800;letter-spacing:-.6px}
 .wnav .gdot{width:34px;height:34px;border-radius:50%;padding:0}
 .bplay .real{display:inline-flex!important;align-items:center;gap:2px;grid-auto-flow:column}
 .wheelwrap{--wh:clamp(260px,54vh,560px)}
+
+/* 毛玻璃要「隐约可见」：窗口外的话术淡淡透出来，不是完全看不见 */
+.wglass{-webkit-backdrop-filter:blur(3.5px) saturate(150%);backdrop-filter:blur(3.5px) saturate(150%)}
+.wglass.top{background:linear-gradient(to bottom,rgba(238,243,252,.50),rgba(238,243,252,.14))}
+.wglass.bot{background:linear-gradient(to top,rgba(238,243,252,.50),rgba(238,243,252,.14))}

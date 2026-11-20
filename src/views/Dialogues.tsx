@@ -12,8 +12,8 @@ const lens = (off: number): React.CSSProperties => {
   const a = Math.abs(off), A = 1.75
   const g = Math.sign(off) * A * Math.tanh(a / A)                       // 压缩后的位置：近处基本不变，远处越来越挤
   const sc = 0.42 + 0.86 * Math.exp(-(off * off) / 1.5)                  // 中间 1.28 倍 → 相邻 ≈0.85 → 再远 ≈0.5
-  const op = 0.08 + 0.92 * Math.exp(-(off * off) / 2.4)
-  return { opacity: op, filter: a < 0.55 ? undefined : `blur(${Math.min(4, (a - 0.55) * 2.4).toFixed(1)}px)`, transform: `perspective(700px) translateY(${((g - off) * WH).toFixed(1)}px) rotateX(${Math.max(-60, Math.min(60, -off * 16)).toFixed(1)}deg) scale(${sc.toFixed(3)})` }
+  const op = 0.22 + 0.78 * Math.exp(-(off * off) / 2.6)
+  return { opacity: op, filter: a < 0.55 ? undefined : `blur(${Math.min(1.8, (a - 0.55) * 1.1).toFixed(1)}px)`, transform: `perspective(700px) translateY(${((g - off) * WH).toFixed(1)}px) rotateX(${Math.max(-60, Math.min(60, -off * 16)).toFixed(1)}deg) scale(${sc.toFixed(3)})` }
 }
 const WH = 128   // 滚轴每一句的高度（px）
 const isLine = (x: Item): x is Line => 'clip' in x
@@ -31,6 +31,7 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   const [showRoman, setShowRoman] = useState(() => pref('roman', true))
   const [showZh, setShowZh] = useState(() => pref('zh', true))
   const [hideTh, setHideTh] = useState(() => pref('hideTh', false))
+  const [act, setAct] = useState<boolean>(() => pref('act', false))   // 小图标（播放/慢速/修改/校准…）默认藏起来
   const [mode, setMode] = useState<'chat' | 'wheel'>(() => pref('mode', 'wheel'))
   const [pos, setPos] = useState(0)                     // 滚轴当前位置（第几句，带小数）
   const wheel = useRef<HTMLDivElement>(null)
@@ -42,7 +43,7 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   const refs = useRef(new Map<number, HTMLDivElement>())
   useEffect(() => { let on = true; load().then(d => on && setList(d)); return () => { on = false } }, [])
   useEffect(() => () => { tok.current++; stopAudio() }, [])
-  useEffect(() => { savePref('roman', showRoman); savePref('zh', showZh); savePref('hideTh', hideTh); savePref('mode', mode) }, [showRoman, showZh, hideTh, mode])
+  useEffect(() => { savePref('roman', showRoman); savePref('zh', showZh); savePref('hideTh', hideTh); savePref('mode', mode); savePref('act', act) }, [showRoman, showZh, hideTh, mode, act])
 
   // —— 真人视频：每段对话可以导入一个自己的视频（只存本机），再给每一句设起止秒数，点 🎬 就播放那一段 ——
   const [vurl, setVurl] = useState<string | null>(null)
@@ -136,6 +137,7 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   // 每一句下面的操作：播放真人/电子音、改文字、校准时间（聊天视图和滚轴视图共用）
   const actions = (it0: Line) => {
     const it = eff(it0), edited = !!edits[it0.n], real = !!(vurl && vclips[it.n])
+    if (!act) return null
     return (<>
               <div className="bplay">
                 {vurl && <button className={'real' + (vclips[it.n] ? ' has' : '')} disabled={!vclips[it.n]} onClick={() => playClip(it)} aria-label="播放真人" data-testid="dlg-vclip">🎬{vclips[it.n] ? <small>{vclips[it.n][0].toFixed(1)}–{vclips[it.n][1].toFixed(1)}s</small> : <small>未设</small>}</button>}
@@ -173,13 +175,14 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
         <button className="close" onClick={() => { tok.current++; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null); setCur(null) }}>‹</button>
         <div className="prog"><b className="dtitle">{cur.emoji} {cur.title.replace(/（配视频）/, '')}</b></div>
         {!vurl && <label className="gdot" aria-label="导入真人视频" title="导入真人视频">📥<input type="file" accept="video/*,audio/*" hidden onChange={e => void importVideo(e.target.files?.[0])} data-testid="dlg-vfile" /></label>}
-        <button className="gdot" onClick={() => setMode(mode === 'wheel' ? 'chat' : 'wheel')} aria-label="切换滚轴/列表" data-testid="dlg-mode-toggle">{mode === 'wheel' ? '💬' : '🎡'}</button>
+        <button className={'gdot' + (act ? ' on' : '')} onClick={() => setAct(!act)} aria-label="显示/隐藏操作图标" data-testid="dlg-act">⋯</button>
         <button className={'gdot' + (setOpen ? ' on' : '')} onClick={() => setSetOpen(!setOpen)} aria-label="设置" data-testid="dlg-settings">⚙</button>
       </div>
       {setOpen && <div className="gpop" data-testid="dlg-setpanel">
         <label><input type="checkbox" checked={showRoman} onChange={e => setShowRoman(e.target.checked)} data-testid="dlg-roman" /> 拼音</label>
         <label><input type="checkbox" checked={showZh} onChange={e => setShowZh(e.target.checked)} data-testid="dlg-zh" /> 中文</label>
         <label><input type="checkbox" checked={hideTh} onChange={e => { setHideTh(e.target.checked); setPeek(new Set()) }} data-testid="dlg-hide" /> 遮住泰文</label>
+        <button className="link" onClick={() => setMode(mode === 'wheel' ? 'chat' : 'wheel')} data-testid="dlg-mode-toggle">{mode === 'wheel' ? '切到列表' : '切到滚轴'}</button>
         {vurl && <><button className="link" onClick={() => void exportClips()}>复制时间轴</button><button className="link" onClick={() => void removeVideo()}>移除视频</button></>}
         {vmsg && <p className="sub" style={{ fontSize: 11, wordBreak: 'break-all', flexBasis: '100%' }}>{vmsg}</p>}
       </div>}
@@ -212,7 +215,7 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <div className="wheelfoot">
-            <div className="wnav"><button className="gdot" onClick={() => wheelTo(Math.max(0, sel - 1))} disabled={sel <= 0} aria-label="上一句" data-testid="wheel-prev">▲</button><span className="wcount" data-testid="wheel-count">{sel + 1} / {lines.length}{selLine && edits[selLine.n] && <em className="edtag" data-testid="dlg-edited"> · 已改</em>}</span><button className="gdot" onClick={() => wheelTo(Math.min(lines.length - 1, sel + 1))} disabled={sel >= lines.length - 1} aria-label="下一句" data-testid="wheel-next">▼</button></div>
+            <div className="wnav">{act && <button className="gdot" onClick={() => wheelTo(Math.max(0, sel - 1))} disabled={sel <= 0} aria-label="上一句" data-testid="wheel-prev">▲</button>}<span className="wcount" data-testid="wheel-count">{sel + 1} / {lines.length}{selLine && edits[selLine.n] && <em className="edtag" data-testid="dlg-edited"> · 已改</em>}</span>{act && <button className="gdot" onClick={() => wheelTo(Math.min(lines.length - 1, sel + 1))} disabled={sel >= lines.length - 1} aria-label="下一句" data-testid="wheel-next">▼</button>}</div>
             {lines[sel] && <div className="wactions">{actions(lines[sel])}</div>}
           </div>
         </div>

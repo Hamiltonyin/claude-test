@@ -8,7 +8,7 @@ const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPo
 await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
-await page.addInitScript(() => { try { localStorage.setItem('thai30-dlg-mode', '"chat"') } catch {} })
+await page.addInitScript(() => { try { localStorage.setItem('thai30-dlg-mode', '"chat"'); localStorage.setItem('thai30-dlg-act', 'true') } catch {} })
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)
 try {

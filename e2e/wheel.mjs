@@ -8,6 +8,7 @@ const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPo
 await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
+await page.addInitScript(() => { try { localStorage.setItem('thai30-dlg-act', 'true') } catch {} })
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const mp3 = []; page.on('request', r => { if (/audio\/[^/]+\.mp3/.test(r.url())) mp3.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
@@ -33,7 +34,7 @@ try {
   assert((await page.locator('[data-testid=wheel-item].on').textContent()).includes('要吗？（改）')); ok('滚轴里也能修改文字')
   await page.tap('[data-testid=dlg-edit]', { trial: true }).catch(() => {})
   // 切换到列表
-  await page.tap('[data-testid=dlg-mode-toggle]'); await page.waitForSelector('[data-testid=chat]'); assert(await page.locator('[data-testid=bubble]').count() === 13); ok('切到「列表」：13 个气泡')
+  await page.tap('[data-testid=dlg-settings]'); await page.tap('[data-testid=dlg-mode-toggle]'); await page.waitForSelector('[data-testid=chat]'); assert(await page.locator('[data-testid=bubble]').count() === 13); ok('切到「列表」：13 个气泡')
   await page.tap('[data-testid=dlg-mode-toggle]'); await page.waitForSelector('[data-testid=wheel]'); ok('再切回滚轴')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/wheel-fail.png' }) }
