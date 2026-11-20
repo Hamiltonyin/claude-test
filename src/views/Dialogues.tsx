@@ -50,7 +50,7 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   const [vclips, setVclips] = useState<Record<string, [number, number]>>({})
   const [calOpen, setCalOpen] = useState<number | null>(null)
   const [setOpen, setSetOpen] = useState(false)          // 设置面板（拼音/中文/遮住/视频管理）
-  const [vidBig, setVidBig] = useState(false)            // 视频：默认缩成小缩略图，点一下放大
+  const [vidBig, setVidBig] = useState(true)             // 视频：默认大画面（YouTube 样式），可缩成小缩略图
   const [editOpen, setEditOpen] = useState<number | null>(null)
   const [edits, setEdits] = useState<Record<string, Edit>>({})   // 我改过的文字（只存本机）：泰文/拼音/中文
   const [draft, setDraft] = useState<Edit>({})
@@ -187,8 +187,8 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
         {vmsg && <p className="sub" style={{ fontSize: 11, wordBreak: 'break-all', flexBasis: '100%' }}>{vmsg}</p>}
       </div>}
       {vurl && <div className={'vowvid' + (vidBig ? '' : ' min')}>
-        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} onClick={() => setVidBig(!vidBig)} data-testid="dlg-video" />
-        <VideoBar vid={vid} />
+        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} onClick={() => { const el = vid.current; if (el) { if (el.paused) void el.play().catch(() => {}); else el.pause() } }} data-testid="dlg-video" />
+        <VideoBar vid={vid} big={vidBig} onSize={() => setVidBig(!vidBig)} />
       </div>}
       {mode === 'wheel' ? (
         <div className="wheelpage" data-testid="wheelpage">

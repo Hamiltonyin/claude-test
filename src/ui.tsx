@@ -314,11 +314,12 @@ export function Mnemonics({ word }: { word: Word }) {
   )
 }
 
-/** 视频下方的播放条（代替视频自带的控制条：iPhone 上自带的暂停/快进按钮会盖在画面正中间，挡住看口型/字幕）。 */
-export function VideoBar({ vid }: { vid: React.RefObject<HTMLVideoElement | null> }) {
+/** 视频下方的播放条（像 YouTube：进度条贴在画面下沿，下面一排：播放/时间/±5 秒/倍速）。不用视频自带的控制条——iPhone 上它的按钮会盖在画面正中间。 */
+export function VideoBar({ vid, big, onSize }: { vid: React.RefObject<HTMLVideoElement | null>; big?: boolean; onSize?: () => void }) {
   const [playing, setPlaying] = useState(false)
   const [cur, setCur] = useState(0)
   const [dur, setDur] = useState(0)
+  const [rate, setRate] = useState(1)
   useEffect(() => {
     const el = vid.current; if (!el) return
     const sync = () => { setPlaying(!el.paused && !el.ended); setCur(el.currentTime || 0); setDur(Number.isFinite(el.duration) ? el.duration : 0) }
@@ -326,16 +327,23 @@ export function VideoBar({ vid }: { vid: React.RefObject<HTMLVideoElement | null
     evs.forEach(e => el.addEventListener(e, sync)); sync()
     return () => evs.forEach(e => el.removeEventListener(e, sync))
   }, [vid])
+  useEffect(() => { const el = vid.current; if (el) el.playbackRate = rate; const f = () => { if (vid.current) vid.current.playbackRate = rate }; el?.addEventListener('loadedmetadata', f); el?.addEventListener('play', f); return () => { el?.removeEventListener('loadedmetadata', f); el?.removeEventListener('play', f) } }, [vid, rate])
   const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`
   const seek = (t: number) => { const el = vid.current; if (el) el.currentTime = Math.max(0, Math.min(dur || t, t)) }
   const toggle = () => { const el = vid.current; if (!el) return; if (el.paused) void el.play().catch(() => {}); else el.pause() }
+  const pct = dur ? Math.min(100, (cur / dur) * 100) : 0
   return (
     <div className="vbar" data-testid="vbar">
-      <button onClick={toggle} aria-label={playing ? '暂停' : '播放'} data-testid="vbar-play">{playing ? '⏸' : '▶'}</button>
-      <button onClick={() => seek(cur - 2)} aria-label="后退2秒" className="sm">-2s</button>
-      <input type="range" min={0} max={dur || 1} step={0.05} value={Math.min(cur, dur || 1)} onChange={e => seek(+e.target.value)} aria-label="进度" />
-      <button onClick={() => seek(cur + 2)} aria-label="前进2秒" className="sm">+2s</button>
-      <span className="vt">{fmt(cur)}/{fmt(dur)}</span>
+      <input type="range" className="vseek" min={0} max={dur || 1} step={0.05} value={Math.min(cur, dur || 1)} style={{ '--p': pct + '%' } as React.CSSProperties} onChange={e => seek(+e.target.value)} aria-label="进度" />
+      <div className="vrow">
+        <button onClick={toggle} aria-label={playing ? '暂停' : '播放'} data-testid="vbar-play">{playing ? '⏸' : '▶'}</button>
+        <span className="vt">{fmt(cur)} / {fmt(dur)}</span>
+        <span className="vsp" />
+        <button onClick={() => seek(cur - 5)} aria-label="后退5秒" className="sm">−5</button>
+        <button onClick={() => seek(cur + 5)} aria-label="前进5秒" className="sm">+5</button>
+        <button onClick={() => setRate(rate === 1 ? 0.75 : rate === 0.75 ? 0.5 : 1)} aria-label="倍速" className="sm" data-testid="vbar-rate">{rate}×</button>
+        {onSize && <button onClick={onSize} aria-label={big ? '缩小视频' : '放大视频'} className="sm">{big ? '⌄' : '⌃'}</button>}
+      </div>
     </div>
   )
 }
