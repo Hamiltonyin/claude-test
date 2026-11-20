@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ColorRoman, Speaker, VideoBar } from '../ui'
-import { playFile, playSystem, stopAudio } from '../lib/audio'
+import { playFile, playSystem, prefetchAudio, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
 interface Line { n: number; who?: string; me?: boolean; th: string; roman: string; zh: string; clip: string; t?: [number, number] }
@@ -117,24 +117,61 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
     try { await playFile(l.clip, slow) } catch { try { await playSystem(l.th, slow) } catch { /* 没有音频也没有系统语音 */ } }
   }
   const playOne = (l: Line, slow = false) => { tok.current++; setAll(false); void say(l, slow).then(() => setPlaying(p => (p === l.n ? null : p))) }
+  // 滚轴滑到第 k 句：自己做 220ms 的缓动（临时关掉吸附，避免和吸附打架），这样自动播放时滚动的时刻是可预期的
+  const anim = useRef(0)
+  const GLIDE = 0.22
+  const glide = (k: number, ms = GLIDE * 1000) => {
+    const el = wheel.current; if (!el) return
+    cancelAnimationFrame(anim.current)
+    const from = el.scrollTop, to = k * WH; if (Math.abs(to - from) < 1) return
+    el.style.scrollSnapType = 'none'
+    const t0 = performance.now()
+    const step = (t: number) => { const p = Math.min(1, (t - t0) / ms); el.scrollTop = from + (to - from) * (1 - Math.pow(1 - p, 3)); if (p < 1) anim.current = requestAnimationFrame(step); else el.style.scrollSnapType = '' }
+    anim.current = requestAnimationFrame(step)
+  }
+  const stopAll = () => { tok.current++; cancelAnimationFrame(anim.current); if (wheel.current) wheel.current.style.scrollSnapType = ''; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null) }
   const playAll = () => {
     if (!cur) return
-    if (all) { tok.current++; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null); return }
+    if (all) return stopAll()
     const my = ++tok.current; setAll(true)
     const lines = cur.items.filter(isLine)
+    const reps = K === 'lyr' ? rep : 1
+    const show = (l: Line) => { setPlaying(l.n); if (mode === 'wheel') glide(lines.indexOf(l)); else refs.current.get(l.n)?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }
+    const clipLines = lines.filter(l => vurl && vclips[l.n]).sort((a, b) => vclips[a.n][0] - vclips[b.n][0])
+    const useVideo = !!vurl && reps === 1 && clipLines.length >= Math.ceil(lines.length * 0.6)
     void (async () => {
-      const reps = K === 'lyr' ? rep : 1
-      do {
-        for (const l of lines) {
-          for (let r = 0; r < reps; r++) {
-            if (tok.current !== my) return
-            if (mode === 'wheel') wheel.current?.scrollTo({ top: lines.indexOf(l) * WH, behavior: 'smooth' }); else refs.current.get(l.n)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            if (vurl && vclips[l.n]) { await new Promise<void>(res => { playClip(l, res); setTimeout(res, ((vclips[l.n][1] - vclips[l.n][0]) + 3) * 1000) }) } else await say(l)
-            if (tok.current !== my) return
-            await wait(K === 'lyr' ? (r + 1 < reps ? 450 : 700) : 650)
+      if (useVideo) {
+        // 视频连续播放：视频一直往下走（不停顿），每一句「开始前 0.22 秒」滚轴开始滑，到这句开始时刚好停在中间
+        const el = vid.current!; stopAudio(); stopAt.current = null; clipDone.current = null
+        const first = clipLines[0], endT = Math.max(...clipLines.map(l => vclips[l.n][1]))
+        do {
+          el.currentTime = vclips[first.n][0]; await el.play().catch(() => {})
+          let idx = -1
+          await new Promise<void>(res => {
+            const tick = () => {
+              if (tok.current !== my) return res()
+              const t = el.currentTime; let k = idx
+              while (k + 1 < clipLines.length && t >= vclips[clipLines[k + 1].n][0] - GLIDE) k++
+              if (k !== idx) { idx = k; show(clipLines[k]) }
+              if (t >= endT || el.ended) return res()
+              requestAnimationFrame(tick)
+            }
+            tick()
+          })
+          el.pause()
+        } while (K === 'lyr' && loop && tok.current === my)
+      } else {
+        prefetchAudio(lines.map(l => l.clip))
+        do {
+          for (const l of lines) {
+            for (let r = 0; r < reps; r++) {
+              if (tok.current !== my) return
+              show(l)
+              if (vurl && vclips[l.n]) { await new Promise<void>(res => { playClip(l, res); setTimeout(res, ((vclips[l.n][1] - vclips[l.n][0]) + 3) * 1000) }) } else await say(l)
+            }
           }
-        }
-      } while (K === 'lyr' && loop && tok.current === my)
+        } while (K === 'lyr' && loop && tok.current === my)
+      }
       if (tok.current === my) { setAll(false); setPlaying(null) }
     })()
   }
@@ -189,7 +226,7 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
   return (
     <div className="study dlgpage" role="dialog" aria-label={cur.title}>
       <div className="sthead">
-        <button className="close" onClick={() => { tok.current++; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null); setCur(null) }}>‹</button>
+        <button className="close" onClick={() => { stopAll(); setCur(null) }}>‹</button>
         <div className="prog"><b className="dtitle">{cur.emoji} {cur.title.replace(/（配视频）/, '')}</b></div>
         {!vurl && <label className="gdot" aria-label="导入真人视频" title="导入真人视频">📥<input type="file" accept="video/*,audio/*" hidden onChange={e => void importVideo(e.target.files?.[0])} data-testid={tp + '-vfile'} /></label>}
         <button className={'gdot' + (act ? ' on' : '')} onClick={() => setAct(!act)} aria-label="显示/隐藏操作图标" data-testid={tp + '-act'}>⋯</button>

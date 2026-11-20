@@ -50,6 +50,9 @@ export function playFile(id: string, slow: boolean, suffix = ''): Promise<void> 
   })
 }
 
+/** 提前把一批音频拉进缓存（Service Worker/HTTP 缓存），连续播放时下一句不用再等网络。 */
+export function prefetchAudio(ids: string[]) { for (const id of ids) void fetch(audioUrl(id)).then(r => r.arrayBuffer()).catch(() => {}) }
+
 export function systemVoiceAvailable(lang = 'th'): boolean {
   if (!('speechSynthesis' in window)) return false
   return window.speechSynthesis.getVoices().some(v => v.lang.toLowerCase().startsWith(lang))
