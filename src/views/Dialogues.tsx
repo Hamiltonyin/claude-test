@@ -48,6 +48,8 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   const [vurl, setVurl] = useState<string | null>(null)
   const [vclips, setVclips] = useState<Record<string, [number, number]>>({})
   const [calOpen, setCalOpen] = useState<number | null>(null)
+  const [setOpen, setSetOpen] = useState(false)          // 设置面板（拼音/中文/遮住/视频管理）
+  const [vidBig, setVidBig] = useState(false)            // 视频：默认缩成小缩略图，点一下放大
   const [editOpen, setEditOpen] = useState<number | null>(null)
   const [edits, setEdits] = useState<Record<string, Edit>>({})   // 我改过的文字（只存本机）：泰文/拼音/中文
   const [draft, setDraft] = useState<Edit>({})
@@ -128,7 +130,6 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
           <button key={d.id} className="dlgcard" onClick={() => { setCur(d); setPeek(new Set()) }} data-testid={'dlg-' + d.id}>
             <i>{d.emoji}</i><div><b>{d.title}</b><span>{d.scene} · {d.items.filter(isLine).length} 句</span></div><em>›</em>
           </button>))}
-        <p className="sub" style={{ margin: '16px 4px' }}>用法：点一句话听发音（导入了真人视频的句子优先播真人，电子音是旁边的小按钮）；✏️ 可以改泰文/拼音/中文，⏱ 校准视频时间；可以遮住泰文只看中文，自己先说一遍再点开对答案。</p>
       </div>
     </div>)
 
@@ -137,8 +138,8 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
     const it = eff(it0), edited = !!edits[it0.n], real = !!(vurl && vclips[it.n])
     return (<>
               <div className="bplay">
-                {vurl && <button className={'real' + (vclips[it.n] ? ' has' : '')} disabled={!vclips[it.n]} onClick={() => playClip(it)} aria-label="播放真人" data-testid="dlg-vclip">🎬 {vclips[it.n] ? `真人 ${vclips[it.n][0].toFixed(1)}–${vclips[it.n][1].toFixed(1)}s` : '未设时间'}</button>}
-                <button className={real ? 'robot' : ''} onClick={() => playOne(it)} aria-label={real ? '电子语音' : '播放这一句'} data-testid="bplay">{real ? <>🤖<small>电子音</small></> : <Speaker />}</button>
+                {vurl && <button className={'real' + (vclips[it.n] ? ' has' : '')} disabled={!vclips[it.n]} onClick={() => playClip(it)} aria-label="播放真人" data-testid="dlg-vclip">🎬{vclips[it.n] ? <small>{vclips[it.n][0].toFixed(1)}–{vclips[it.n][1].toFixed(1)}s</small> : <small>未设</small>}</button>}
+                <button className={real ? 'robot' : ''} onClick={() => playOne(it)} aria-label={real ? '电子语音' : '播放这一句'} data-testid="bplay">{real ? '🤖' : <Speaker />}</button>
                 {!real && <button className="slow" onClick={() => playOne(it, true)} aria-label="慢速播放">🐢</button>}
                 <button className="more" onClick={() => { setEditOpen(editOpen === it.n ? null : it.n); setCalOpen(null); setDraft({ th: it.th, roman: it.roman, zh: it.zh }) }} aria-label="修改文字" data-testid="dlg-editbtn">✏️</button>
                 {vurl && <button className="more" onClick={() => { setCalOpen(calOpen === it.n ? null : it.n); setEditOpen(null) }} aria-label="校准时间" data-testid="dlg-calbtn">⏱</button>}
@@ -149,14 +150,12 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
                   <label>拼音<input value={draft.roman ?? ''} onChange={e => setDraft({ ...draft, roman: e.target.value })} data-testid="dlg-edit-roman" /></label>
                   <label>中文<input value={draft.zh ?? ''} onChange={e => setDraft({ ...draft, zh: e.target.value })} data-testid="dlg-edit-zh" /></label>
                   <div className="dlgeditbtn"><button className="save" onClick={() => saveEdit(it0, draft)} data-testid="dlg-edit-save">保存</button>{edited && <button onClick={() => saveEdit(it0, null)} data-testid="dlg-edit-reset">恢复原文</button>}<button onClick={() => setEditOpen(null)}>取消</button></div>
-                  <p className="sub" style={{ fontSize: 11.5, margin: '4px 0 0' }}>听到的读音和标的不一样？直接改泰文/拼音。改了泰文后，「电子音」会按新泰文读；真人视频不受影响。只存在这台手机，可在「我的」里备份。</p>
                 </div>)}
               {vurl && calOpen === it.n && (() => { const c = vclips[it.n]; const cur0 = () => vid.current?.currentTime ?? 0; const [a, b] = c ?? [0, 0]; return (
                 <div className="vowcal" data-testid="dlg-cal">
                   <div className="vowcalh">时间轴 <b data-testid="dlg-range">{c ? `${a.toFixed(2)}s – ${b.toFixed(2)}s` : '未设置'}</b>{c && <button className="link" onClick={() => saveClip(it.n, null)}>清除</button>}</div>
                   <div className="vowcalr"><span>起点</span><button onClick={() => saveClip(it.n, [a - 0.1, b])}>-0.1</button><button onClick={() => saveClip(it.n, [a + 0.1, b])}>+0.1</button><button className="set" onClick={() => saveClip(it.n, [cur0(), c ? Math.max(b, cur0() + 0.8) : cur0() + 1.5])} data-testid="dlg-setstart">设为视频当前位置</button></div>
                   <div className="vowcalr"><span>终点</span><button onClick={() => saveClip(it.n, [a, b - 0.1])}>-0.1</button><button onClick={() => saveClip(it.n, [a, b + 0.1])}>+0.1</button><button className="set" onClick={() => saveClip(it.n, [a, cur0()])} data-testid="dlg-setend">设为视频当前位置</button></div>
-                  <p className="sub" style={{ fontSize: 11.5, margin: '4px 0 0' }}>拖上面的视频到这句刚开始说的位置 →「起点」设为当前位置；说完的位置 →「终点」。设好后点「🎬 视频」试听。</p>
                 </div>) })()}
     </>)
   }
@@ -170,20 +169,24 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
   const wheelTo = (k: number) => wheel.current?.scrollTo({ top: k * WH, behavior: 'smooth' })
   return (
     <div className="study dlgpage" role="dialog" aria-label={cur.title}>
-      <div className="sthead"><button className="close" onClick={() => { tok.current++; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null); setCur(null) }}>‹ 对话</button><div className="prog"><b>{cur.emoji} {cur.title}</b></div><div className="cnt">{lines.length} 句</div></div>
-      {vurl && <div className="vowvid">
-        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} data-testid="dlg-video" />
-        <VideoBar vid={vid} />
-        <button className="link" onClick={() => void removeVideo()}>移除视频</button> <button className="link" onClick={() => void exportClips()}>复制时间轴和修改</button>
-        {vmsg && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{vmsg}</p>}
-      </div>}
-      <div className="dlgtools">
-        {!vurl && <label className="dlgvidimport">📥 导入真人视频（可选，只存在这台手机）<input type="file" accept="video/*,audio/*" onChange={e => void importVideo(e.target.files?.[0])} data-testid="dlg-vfile" /></label>}
-        <span className="seg2" data-testid="dlg-mode"><button className={mode === 'wheel' ? 'on' : ''} onClick={() => setMode('wheel')} data-testid="dlg-mode-wheel">🎡 滚轴</button><button className={mode === 'chat' ? 'on' : ''} onClick={() => setMode('chat')} data-testid="dlg-mode-chat">💬 列表</button></span>
+      <div className="sthead">
+        <button className="close" onClick={() => { tok.current++; stopAudio(); vid.current?.pause(); setAll(false); setPlaying(null); setCur(null) }}>‹</button>
+        <div className="prog"><b className="dtitle">{cur.emoji} {cur.title.replace(/（配视频）/, '')}</b></div>
+        {!vurl && <label className="gdot" aria-label="导入真人视频" title="导入真人视频">📥<input type="file" accept="video/*,audio/*" hidden onChange={e => void importVideo(e.target.files?.[0])} data-testid="dlg-vfile" /></label>}
+        <button className="gdot" onClick={() => setMode(mode === 'wheel' ? 'chat' : 'wheel')} aria-label="切换滚轴/列表" data-testid="dlg-mode-toggle">{mode === 'wheel' ? '💬' : '🎡'}</button>
+        <button className={'gdot' + (setOpen ? ' on' : '')} onClick={() => setSetOpen(!setOpen)} aria-label="设置" data-testid="dlg-settings">⚙</button>
+      </div>
+      {setOpen && <div className="gpop" data-testid="dlg-setpanel">
         <label><input type="checkbox" checked={showRoman} onChange={e => setShowRoman(e.target.checked)} data-testid="dlg-roman" /> 拼音</label>
         <label><input type="checkbox" checked={showZh} onChange={e => setShowZh(e.target.checked)} data-testid="dlg-zh" /> 中文</label>
-        <label><input type="checkbox" checked={hideTh} onChange={e => { setHideTh(e.target.checked); setPeek(new Set()) }} data-testid="dlg-hide" /> 遮住泰文（自测）</label>
-      </div>
+        <label><input type="checkbox" checked={hideTh} onChange={e => { setHideTh(e.target.checked); setPeek(new Set()) }} data-testid="dlg-hide" /> 遮住泰文</label>
+        {vurl && <><button className="link" onClick={() => void exportClips()}>复制时间轴</button><button className="link" onClick={() => void removeVideo()}>移除视频</button></>}
+        {vmsg && <p className="sub" style={{ fontSize: 11, wordBreak: 'break-all', flexBasis: '100%' }}>{vmsg}</p>}
+      </div>}
+      {vurl && <div className={'vowvid' + (vidBig ? '' : ' min')}>
+        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} onClick={() => setVidBig(!vidBig)} data-testid="dlg-video" />
+        <VideoBar vid={vid} />
+      </div>}
       {mode === 'wheel' ? (
         <div className="wheelpage" data-testid="wheelpage">
           <div className="wheelwrap">
@@ -209,8 +212,7 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <div className="wheelfoot">
-            <div className="wcount" data-testid="wheel-count">{sel + 1} / {lines.length}{selLine && <span> · {selLine.who}</span>}{selLine && edits[selLine.n] && <em className="edtag" data-testid="dlg-edited"> · 已修改</em>}</div>
-            <div className="wnav"><button onClick={() => wheelTo(Math.max(0, sel - 1))} disabled={sel <= 0} aria-label="上一句" data-testid="wheel-prev">▲</button><button onClick={() => wheelTo(Math.min(lines.length - 1, sel + 1))} disabled={sel >= lines.length - 1} aria-label="下一句" data-testid="wheel-next">▼</button></div>
+            <div className="wnav"><button className="gdot" onClick={() => wheelTo(Math.max(0, sel - 1))} disabled={sel <= 0} aria-label="上一句" data-testid="wheel-prev">▲</button><span className="wcount" data-testid="wheel-count">{sel + 1} / {lines.length}{selLine && edits[selLine.n] && <em className="edtag" data-testid="dlg-edited"> · 已改</em>}</span><button className="gdot" onClick={() => wheelTo(Math.min(lines.length - 1, sel + 1))} disabled={sel >= lines.length - 1} aria-label="下一句" data-testid="wheel-next">▼</button></div>
             {lines[sel] && <div className="wactions">{actions(lines[sel])}</div>}
           </div>
         </div>
@@ -231,6 +233,6 @@ export default function Dialogues({ onClose }: { onClose: () => void }) {
             </div>)
         })() : <div key={i} className="dsec"><span>{(it0 as { sec: string }).sec}</span></div>)}
       </div>)}
-      <div className="dlgbar"><button className={'nx' + (all ? ' stop' : '')} onClick={playAll} data-testid="dlg-playall">{all ? '⏹ 停止' : '▶ 连续播放整段对话'}</button></div>
+      <div className="dlgbar"><button className={'nx' + (all ? ' stop' : '')} onClick={playAll} aria-label={all ? '停止' : '连续播放整段对话'} data-testid="dlg-playall">{all ? '⏹' : '▶'}</button></div>
     </div>)
 }

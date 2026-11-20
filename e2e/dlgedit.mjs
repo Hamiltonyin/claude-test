@@ -22,7 +22,7 @@ try {
   // 没有视频：电子音是主按钮
   assert(await page.locator('[data-testid=bplay] svg').count() > 0); ok('没导入视频：喇叭是主按钮')
   await page.setInputFiles('[data-testid=dlg-vfile]', '/tmp/edit-rec.mp4'); await page.waitForSelector('[data-testid=dlg-video]'); await page.waitForTimeout(500)
-  assert((await page.locator('[data-testid=bplay]').first().textContent()).includes('电子音')); ok('导入视频后：电子音弱化成小按钮「🤖电子音」')
+  assert((await page.locator('[data-testid=bplay]').first().textContent()).includes('🤖')); ok('导入视频后：电子音弱化成小圆点「🤖」')
   assert(await page.evaluate(() => !document.querySelector('[data-testid=dlg-video]').controls)); ok('视频本身没有控制条（不再盖在画面中间）')
   await page.tap('[data-testid=vbar-play]'); await page.waitForTimeout(500); assert(await page.evaluate(() => !document.querySelector('[data-testid=dlg-video]').paused)); await page.tap('[data-testid=vbar-play]'); await page.waitForTimeout(300); assert(await page.evaluate(() => document.querySelector('[data-testid=dlg-video]').paused)); ok('视频下方的播放条：播放/暂停可用')
   mp3.length = 0

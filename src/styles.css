@@ -499,3 +499,27 @@ h1{font-weight:800;letter-spacing:-.6px}
 .wglass.bot{bottom:0;height:calc(50% - 64px);background:linear-gradient(to top,rgba(238,243,252,.82),rgba(238,243,252,.38));-webkit-mask-image:linear-gradient(to top,#000 70%,transparent);mask-image:linear-gradient(to top,#000 70%,transparent)}
 .wglass.top{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55));mask-image:linear-gradient(to bottom,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55))}
 .wglass.bot{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55));mask-image:linear-gradient(to top,transparent 0,#000 32%,#000 86%,rgba(0,0,0,.55))}
+
+/* ===== 精简：只留话术文字，其余收成小的毛玻璃圆点 ===== */
+.gdot{width:34px;height:34px;border-radius:50%;display:inline-grid;place-items:center;font-size:15px;flex:none;cursor:pointer;color:var(--blue);background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:0 3px 10px rgba(30,55,110,.12)}
+.gdot.on{background:rgba(0,122,255,.18)}.gdot:disabled{opacity:.35}
+.dlgpage .sthead{gap:8px;padding-bottom:6px}.dlgpage .sthead .close{min-width:28px;font-size:22px}
+.dtitle{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gpop{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:0 14px 6px;padding:8px 12px;font-size:13px;color:var(--sub);background:rgba(255,255,255,.66);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 8px 24px rgba(30,55,110,.12)}.gpop input{margin-right:4px;vertical-align:-2px}.gpop .link{font-size:13px}
+/* 视频：默认是一排「小缩略图 + 播放条」，点缩略图放大 */
+.vowvid.min{display:flex;align-items:center;gap:8px;padding:4px 14px}
+.vowvid.min video{width:84px;height:48px;max-height:48px;flex:none;object-fit:cover;border-radius:10px;margin:0}
+.vowvid.min .vbar{flex:1;padding:0;min-width:0}.vowvid.min .vbar button.sm,.vowvid.min .vbar .vt{display:none}
+.vowvid.min .vbar button{min-width:34px;height:32px}
+/* 连续播放：右下角一个小圆点 */
+.dlgbar{position:absolute;right:14px;bottom:calc(var(--sab) + 14px);padding:0;background:none;z-index:6}
+.dlgbar .nx{width:52px;height:52px;border-radius:50%!important;font-size:18px;padding:0;display:grid;place-items:center;box-shadow:0 8px 20px rgba(70,90,255,.38)}
+.chat{padding-bottom:84px}.wheelfoot{padding-bottom:calc(var(--sab) + 70px)}
+/* 滚轴下方：一行小圆点 */
+.wnav{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 4px}.wcount{font-size:12px;color:#8a93a6;min-width:64px;text-align:center}
+.wactions .bplay button{width:36px;height:36px}.wactions .bplay .real{width:auto;padding:0 12px}
+.bplay .real small{font-size:10.5px;margin-left:4px;font-weight:500}
+.bplay .robot{width:30px!important;padding:0!important}
+.wnav .gdot{width:34px;height:34px;border-radius:50%;padding:0}
+.bplay .real{display:inline-flex!important;align-items:center;gap:2px;grid-auto-flow:column}
+.wheelwrap{--wh:clamp(260px,54vh,560px)}

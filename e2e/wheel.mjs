@@ -33,8 +33,8 @@ try {
   assert((await page.locator('[data-testid=wheel-item].on').textContent()).includes('要吗？（改）')); ok('滚轴里也能修改文字')
   await page.tap('[data-testid=dlg-edit]', { trial: true }).catch(() => {})
   // 切换到列表
-  await page.tap('[data-testid=dlg-mode-chat]'); await page.waitForSelector('[data-testid=chat]'); assert(await page.locator('[data-testid=bubble]').count() === 13); ok('切到「列表」：13 个气泡')
-  await page.tap('[data-testid=dlg-mode-wheel]'); await page.waitForSelector('[data-testid=wheel]'); ok('再切回滚轴')
+  await page.tap('[data-testid=dlg-mode-toggle]'); await page.waitForSelector('[data-testid=chat]'); assert(await page.locator('[data-testid=bubble]').count() === 13); ok('切到「列表」：13 个气泡')
+  await page.tap('[data-testid=dlg-mode-toggle]'); await page.waitForSelector('[data-testid=wheel]'); ok('再切回滚轴')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/wheel-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)

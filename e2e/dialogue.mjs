@@ -21,7 +21,7 @@ try {
   assert(await page.locator('.bub.me').count() > 5 && await page.locator('.bub.other').count() > 5); ok('说话人左右分开')
   await page.locator('[data-testid=bubble] [data-testid=bplay]').first().tap(); await page.waitForTimeout(700)
   assert(req.some(u => /dlg-rent-h2-01\.mp3/.test(u))); ok('点喇叭播放这一句：dlg-rent-h2-01.mp3')
-  await page.locator('[data-testid=dlg-hide]').check(); await page.waitForTimeout(200)
+  await page.tap('[data-testid=dlg-settings]'); await page.locator('[data-testid=dlg-hide]').check(); await page.waitForTimeout(200)
   assert((await page.locator('.th.masked').count()) === n); ok('勾「遮住泰文」：全部只剩中文')
   await page.locator('[data-testid=bubble] .bbody').first().tap(); await page.waitForTimeout(200)
   assert((await page.locator('.th.masked').count()) === n - 1); ok('点一句 → 看到泰文对答案')
