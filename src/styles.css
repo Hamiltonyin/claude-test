@@ -522,3 +522,13 @@ h1{font-weight:800;letter-spacing:-.6px}
 .vowvid.min video{width:84px;height:48px;max-height:48px;flex:none;object-fit:cover;border-radius:10px;margin:0}
 .vowvid.min .vbar{flex:1;min-width:0}.vowvid.min .vseek{margin-top:0}.vowvid.min .vrow{padding:0}
 .vowvid.min .vrow button{min-width:34px;height:32px}.vowvid.min .vrow .vt,.vowvid.min .vrow .sm{display:none}.vowvid.min .vrow .sm:last-child{display:inline-block}
+
+/* ================= 图解记忆 · 3D 人体（Body3D.tsx，three.js） ================= */
+.seg2{display:inline-flex;background:rgba(110,125,160,.16);border-radius:10px;padding:2px}.seg2 button{font-size:12.5px;padding:4px 12px;border-radius:8px;color:#5b667c}.seg2 button.on{background:rgba(255,255,255,.92);color:var(--blue);font-weight:700;box-shadow:0 1px 3px rgba(20,40,80,.15)}
+.b3dtop{display:flex;justify-content:space-between;align-items:center;margin:2px 0 6px}
+.body3d{position:relative;width:100%;height:min(56vh,520px);border-radius:24px;overflow:hidden;background:radial-gradient(60% 50% at 50% 38%,rgba(255,255,255,.75),rgba(255,255,255,.18));border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow);touch-action:none}
+.body3d canvas{display:block;width:100%;height:100%;touch-action:none}
+.b3dload{display:grid;place-items:center;color:var(--sub);font-size:13px}
+.b3dsel{min-height:66px;display:grid;place-items:center;margin:8px 0 2px}.b3dsel .pt{transform:scale(1.15)}
+.b3dlist .cur .pt{outline:2px solid var(--blue);outline-offset:1px}
+.b3d .body3d{position:sticky;top:0;z-index:3;height:min(46vh,440px);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}

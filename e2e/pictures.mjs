@@ -7,6 +7,7 @@ const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPo
 await new Promise(r => setTimeout(r, 2500))
 const b = await chromium.launch()
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
+await page.addInitScript(() => { try { localStorage.setItem('thai30-body-view', '"2d"') } catch {} })   // 这个测试看平面图；3D 人体在 body3d.mjs
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 const req = []; page.on('request', r => { if (/audio\//.test(r.url())) req.push(r.url()) })
 let bad = 0; const ok = (n) => console.log('✓', n)

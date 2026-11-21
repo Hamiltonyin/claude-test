@@ -1,9 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
 import { ColorRoman } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { wordIdFor } from '../lib/ids'
 import type { Word } from '../types'
+
+const Body3D = lazy(() => import('./Body3D'))   // three.js 比较大，进到人体页才加载
+const FACE_KEYS = new Set(['ผม', 'หน้าผาก', 'คิ้ว', 'ตา', 'จมูก', 'แก้ม', 'ปาก', 'คาง', 'หู'])
 
 type Tab = 'body' | 'time' | 'week' | 'num' | 'verb' | 'cls'
 
@@ -36,7 +39,7 @@ export default function Pictures({ onClose }: { onClose: () => void }) {
         <label className="pichide"><input type="checkbox" checked={hideZh} onChange={e => setHideZh(e.target.checked)} /> 遮住中文</label>
       </div>
       <div className="piclist">
-        {tab === 'body' && <Body Tag={Tag} />}
+        {tab === 'body' && <Body Tag={Tag} say={th => void say(th)} />}
         {tab === 'time' && <TimeOfDay Tag={Tag} />}
         {tab === 'week' && <Week Tag={Tag} />}
         {tab === 'cls' && <ClassifierAtlas byThai={byThai} say={say} on={on} hideZh={hideZh} />}
@@ -65,9 +68,35 @@ const PARTS: [string, string, 'L' | 'R', number, number, number][] = [
   ...BODY_L.map(r => [r.th, r.zh, 'L', r.ly, r.x, r.y] as [string, string, 'L', number, number, number]),
   ...BODY_R.map(r => [r.th, r.zh, 'R', r.ly, r.x, r.y] as [string, string, 'R', number, number, number]),
 ]
-function Body({ Tag }: { Tag: TagC }) {
+// 3D 小人上能点的部位（泰文 → 中文）；点模型或点下面的词条都会选中
+const PARTS3D: [string, string][] = [['หัว', '头'], ['ผม', '头发'], ['หน้าผาก', '额头'], ['คิ้ว', '眉毛'], ['ตา', '眼睛'], ['หู', '耳朵'], ['จมูก', '鼻子'], ['แก้ม', '脸颊'], ['ปาก', '嘴'], ['คาง', '下巴'], ['คอ', '脖子'], ['ไหล่', '肩膀'], ['หน้าอก', '胸'], ['หัวใจ', '心脏'], ['หลัง', '后背'], ['ท้อง', '肚子'], ['เอว', '腰'], ['ก้น', '屁股'], ['แขน', '手臂'], ['ศอก', '手肘'], ['ข้อมือ', '手腕'], ['มือ', '手'], ['นิ้วมือ', '手指'], ['เล็บ', '指甲'], ['ต้นขา', '大腿'], ['เข่า', '膝盖'], ['น่อง', '小腿肚'], ['ข้อเท้า', '脚踝'], ['เท้า', '脚'], ['ส้นเท้า', '脚后跟'], ['นิ้วเท้า', '脚趾']]
+const ZH3D = new Map(PARTS3D)
+const bodyPref = (): '3d' | '2d' => { try { return localStorage.getItem('thai30-body-view') === '"2d"' ? '2d' : '3d' } catch { return '3d' } }
+
+function Body({ Tag, say }: { Tag: TagC; say: (th: string) => void }) {
+  const [view, setView] = useState<'3d' | '2d'>(bodyPref)
+  const [sel, setSel] = useState<string | null>(null)
+  const [zoom, setZoom] = useState<'body' | 'face'>('body')
+  const setV = (v: '3d' | '2d') => { setView(v); try { localStorage.setItem('thai30-body-view', JSON.stringify(v)) } catch { /* 无痕模式 */ } }
+  const pick = (th: string, speak: boolean) => { setSel(th); if (FACE_KEYS.has(th)) setZoom('face'); if (speak) say(th) }
+  if (view === '3d') return (
+    <div className="b3d">
+      <div className="b3dtop">
+        <span className="seg2"><button className="on">3D</button><button onClick={() => setV('2d')} data-testid="body-2d">平面图</button></span>
+        <span className="seg2"><button className={zoom === 'body' ? 'on' : ''} onClick={() => setZoom('body')} data-testid="b3d-body">全身</button><button className={zoom === 'face' ? 'on' : ''} onClick={() => setZoom('face')} data-testid="b3d-face">脸部</button></span>
+      </div>
+      <Suspense fallback={<div className="body3d b3dload">加载 3D 模型…</div>}>
+        <Body3D selected={sel} zoom={zoom} onPick={th => pick(th, true)} onFail={() => setV('2d')} />
+      </Suspense>
+      <div className="b3dsel" data-testid="b3d-sel">{sel ? <Tag th={sel} zh={ZH3D.get(sel) ?? ''} /> : <span className="sub">拖动可以旋转 · 点身体的任何部位</span>}</div>
+      <div className="ptrow b3dlist" data-testid="b3d-list">
+        {PARTS3D.map(([th, zh]) => <span key={th} className={sel === th ? 'cur' : ''} onClickCapture={() => pick(th, false)}><Tag th={th} zh={zh} cls="small" /></span>)}
+      </div>
+      <div className="ptrow"><Tag th="ผิว" zh="皮肤" cls="small" /><Tag th="ศีรษะ" zh="头（正式）" cls="small" /><Tag th="ร่างกาย" zh="身体" cls="small" /><Tag th="ฟัน" zh="牙齿" cls="small" /><Tag th="ลิ้น" zh="舌头" cls="small" /></div>
+    </div>)
   return (
     <div>
+      <div className="b3dtop"><span className="seg2"><button onClick={() => setV('3d')} data-testid="body-3d">3D</button><button className="on">平面图</button></span></div>
       <div className="bodywrap" data-testid="body-fig" style={{ aspectRatio: '400 / 580' }}>
         <svg viewBox="0 0 400 580" className="bodysvg" aria-hidden>
           <g transform="translate(200 14) scale(0.86) translate(-150 0)">

@@ -19,7 +19,7 @@ try {
   for (const sel of ['learn-cta', 'start-review', 'start-verify', 'start-master', 'open-dialogues', 'open-vowels', 'open-tones', 'open-lyrics', 'open-roots', 'open-pictures', 'open-library', 'pick-day', 'open-mine', 'start-weak']) assert(await page.locator(`[data-testid=${sel}]`).count() === 1, sel)
   ok('「学习」页顶部：今日任务、升级通道、全部模块入口都在')
   assert(await page.locator('[data-testid=cat-all], .catgrid, .catcard').count() >= 0); ok('下面接着原来的分类列表')
-  await page.tap('[data-testid=open-pictures]'); await page.waitForSelector('[data-testid=body-fig]'); await page.tap('.close'); ok('模块入口可以打开')
+  await page.tap('[data-testid=open-pictures]'); await page.waitForSelector('[data-testid=body3d]'); await page.tap('.close'); ok('模块入口可以打开')
   await page.tap('[data-testid=tab-stats]'); await page.waitForSelector('[data-testid=achievements]')
   assert(await page.locator('[data-testid=today-line]').count() === 1); ok('「统计」页顶部：今日完成度、成就、学习记录')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
