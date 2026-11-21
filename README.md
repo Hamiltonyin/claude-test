@@ -9,7 +9,7 @@ npm install
 npm run dev            # 本地开发
 npm run check:data     # 校验内置词库：泰文字符、拼音声调符号 ↔ 声调标注、60 条课程记录、初始熟练度
 npm run build          # 类型检查 + 构建（BASE=/子路径/ 用于子路径部署）
-npm run test:e2e       # 需先 build；Playwright iPhone 视口端到端测试
+npm run build:all && npm run test:e2e   # 并行跑全部端到端测试（Playwright iPhone 视口）；部署时 CI 也会跑，失败不发布
 ```
 
 ## 部署（HTTPS）

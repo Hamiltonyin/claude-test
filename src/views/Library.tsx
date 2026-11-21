@@ -46,7 +46,7 @@ export function WordSheet({ word, onClose }: { word: Word; onClose: () => void }
 }
 
 export default function Library({ onStudy, startMine, onMineShown, initialQuery, onQueryUsed }: { onStudy: (title: string, ids: string[], mode: 'day' | 'free', startIdx?: number) => void; startMine?: boolean; onMineShown?: () => void; initialQuery?: string; onQueryUsed?: () => void }) {
-  const { words, allWords, sentences, progress, lessons, wordMap, parkedSet } = useApp()
+  const { words, allWords, sentences, sentenceIds, progress, lessons, wordMap, parkedSet } = useApp()
   const [sentMode, setSentMode] = useState(false)
   const [parkedOnly, setParkedOnly] = useState(false)
   const [byCluster, setByCluster] = useState(false)
@@ -63,7 +63,7 @@ export default function Library({ onStudy, startMine, onMineShown, initialQuery,
   const [day, setDay] = useState<number | null>(null)
   const [mine, setMine] = useState(!!startMine)
   useEffect(() => { if (startMine) onMineShown?.() }, [])   // 带着「我录入的词」筛选进来后，清掉父组件里的标记
-  const mineIds = useMemo(() => myAddedIds(lessons), [lessons])
+  const mineIds = useMemo(() => myAddedIds(lessons).filter(id => !sentenceIds.has(id)), [lessons, sentenceIds])   // 句子单独统计，不算进「我录入的词」
   const mineSet = useMemo(() => new Set(mineIds), [mineIds])
 
   const isZh = /[\u4e00-\u9fff]/.test(q)

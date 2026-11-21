@@ -23,7 +23,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,6 +36,12 @@ jobs:
           node scripts/check-data.mjs
           node scripts/build-content.mjs
           node jp/scripts/build-jp.mjs      # 日语：假名表 + 职场词汇（读音/罗马音/重复校验）
+      - name: 端到端测试（失败则不生成音频、不部署）
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          npx playwright install --with-deps chromium
+          npm run build:all            # 测试用的构建（不带 BASE），后面「构建」一步会按子路径重新构建
+          npm run test:e2e
       - name: 生成缺失的泰语音频（edge-tts，已有文件不覆盖）
         run: |
           pip install edge-tts gTTS

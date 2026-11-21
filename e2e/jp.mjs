@@ -9,13 +9,13 @@ const tmp = mkdtempSync(tmpdir() + '/jp-')
 cpSync('dist', tmp + '/dist', { recursive: true })
 for (const d of [tmp + '/dist/audio', tmp + '/dist/jp/audio']) { rmSync(d, { recursive: true, force: true }); mkdirSync(d, { recursive: true }) }
 execSync(`ffmpeg -y -loglevel error -f lavfi -i "sine=frequency=440:duration=0.5" ${tmp}/dist/jp/audio/h_3042.mp3`)   // 只给「あ」一个测试音
-const port = 4800 + Math.floor(Math.random() * 90)
+const port = Number(process.env.E2E_PORT) || 4800 + Math.floor(Math.random() * 90)
 const srv = spawn('npx', ['vite', 'preview', '--outDir', tmp + '/dist', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
 const URL = `http://localhost:${port}/`
 let bad = 0; const ok = (n) => console.log('✓', n)
 const errors = []
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const b = await chromium.launch()
 const ctx = await b.newContext({ ...devices['iPhone 14'], serviceWorkers: 'allow' })
 const page = await ctx.newPage()
 page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|404|audio/i.test(m.text())) errors.push(m.text()) })
@@ -64,7 +64,7 @@ try {
 
   // 与泰语 App 并存：两个 Service Worker 作用域互不干扰
   await page.waitForTimeout(1500)
-  await page.goto(URL); await page.waitForSelector('[data-testid=start-today]'); await page.waitForTimeout(1500)
+  await page.goto(URL + '?home=full'); await page.waitForSelector('[data-testid=start-today]'); await page.waitForTimeout(1500)
   assert((await page.textContent('body')).includes('泰语每日30词')); ok('同站点根路径仍是泰语 App')
   const scopes = await page.evaluate(async () => (await navigator.serviceWorker.getRegistrations()).map(r => new URL(r.scope).pathname).sort())
   assert(scopes.includes('/') && scopes.includes('/jp/')); ok('两个 Service Worker 作用域独立：' + scopes.join(' , '))

@@ -10,7 +10,7 @@ const tmp = mkdtempSync(tmpdir() + '/t30-')
 cpSync('dist', tmp + '/dist', { recursive: true })
 rmSync(tmp + '/dist/audio', { recursive: true, force: true }); mkdirSync(tmp + '/dist/audio', { recursive: true })
 execSync(`ffmpeg -y -loglevel error -f lavfi -i "sine=frequency=440:duration=0.6" ${tmp}/dist/audio/w001.mp3`)
-const port = 4400 + Math.floor(Math.random() * 500)
+const port = Number(process.env.E2E_PORT) || 4400 + Math.floor(Math.random() * 500)
 const srv = spawn('npx', ['vite', 'preview', '--outDir', tmp + '/dist', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
 const URL = `http://localhost:${port}/?home=full`
@@ -18,7 +18,7 @@ const results = []
 const ok = (name) => { results.push(name); console.log('✓', name) }
 const iphone = devices['iPhone 14']
 const userDir = tmp + '/profile'
-const launch = () => chromium.launchPersistentContext(userDir, { executablePath: '/opt/pw-browsers/chromium', ...iphone, serviceWorkers: 'allow', permissions: [] })
+const launch = () => chromium.launchPersistentContext(userDir, { ...iphone, serviceWorkers: 'allow', permissions: [] })
 const errors = []
 const hook = (page) => { page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) }); page.on('pageerror', e => errors.push(String(e))) }
 const swipe = async (page, dx) => {
@@ -119,7 +119,7 @@ finally {
     // 离线
     await p2.waitForTimeout(1500)
     await ctx2.setOffline(true); try { process.kill(-srv.pid) } catch {}; await new Promise(r => setTimeout(r, 800)); await p2.reload(); await p2.waitForSelector('[data-testid=start-today]'); ok('断网后刷新仍可打开应用 (Service Worker)')
-    await p2.tap('[data-testid=tab-library]'); await p2.fill('[data-testid=search]', 'ขอบคุณ'); await p2.tap('[data-testid=word-row]')
+    await p2.tap('[data-testid=tab-library]'); await p2.fill('[data-testid=search]', 'ขอบคุณ'); await p2.locator('[data-testid=word-row]').filter({ has: p2.locator('.th', { hasText: /^ขอบคุณ$/ }) }).first().tap()
     await p2.tap('.study .face.front .spk button[aria-label="播放发音"]'); await p2.waitForSelector('.toast .note.err', { timeout: 4000 })
     const t = await p2.textContent('.toast'); assert(/离线|没有生成|网络/.test(t)); ok('离线且无缓存音频 → 明确提示：' + t.slice(0, 40))
     await ctx2.close()

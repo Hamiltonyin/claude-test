@@ -2,10 +2,10 @@
 import { chromium, devices } from 'playwright'
 import { spawn } from 'child_process'
 import assert from 'assert'
-const port = 4300 + Math.floor(Math.random() * 90)
+const port = Number(process.env.E2E_PORT) || 4300 + Math.floor(Math.random() * 90)
 const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const b = await chromium.launch()
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if (m.type() === 'error' && !/Failed to load|404|audio/i.test(m.text())) errors.push(m.text()) })
 let bad = 0; const ok = (n) => console.log('✓', n)
@@ -16,7 +16,7 @@ try {
   await page.tap('[data-testid=open-mine]'); await page.waitForSelector('[data-testid=chip-mine].on')
   const rows = await page.locator('[data-testid=word-row]').count(); assert(rows > 0 && rows <= n); ok(`进入词库，已自动筛选「我录入的词」（${rows} 行）`)
   await page.fill('[data-testid=search]', 'เจอกัน'); await page.waitForTimeout(200)
-  assert.equal(await page.locator('[data-testid=word-row]').count(), 2); ok('搜索 เจอกัน → 找到 เจอกัน 和 แล้วเจอกัน')
+  assert.equal(await page.locator('[data-testid=word-row]').count(), 1); ok('搜索 เจอกัน → 只找到单词 เจอกัน（整句 แล้วเจอกัน 归到「句子」，不算我录入的词）')
   await page.fill('[data-testid=search]', 'ตลาด'); await page.waitForTimeout(200)
   assert.equal(await page.locator('[data-testid=word-row]').count(), 0); ok('内置词（ตลาด 市场）不在「我录入的词」里')
   await page.fill('[data-testid=search]', ''); await page.tap('[data-testid=study-mine]'); await page.waitForSelector('[data-testid=card]')

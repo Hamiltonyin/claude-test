@@ -1,9 +1,9 @@
 import { chromium, devices } from 'playwright'
 import { spawn } from 'child_process'
-const port = 4900 + Math.floor(Math.random() * 90)
+const port = Number(process.env.E2E_PORT) || 4900 + Math.floor(Math.random() * 90)
 const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const b = await chromium.launch()
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 let bad = 0
 try {

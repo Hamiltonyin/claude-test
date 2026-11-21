@@ -2,10 +2,10 @@
 import { chromium, devices } from 'playwright'
 import { spawn } from 'child_process'
 import assert from 'assert'
-const port = 7800 + Math.floor(Math.random() * 90)
+const port = Number(process.env.E2E_PORT) || 7800 + Math.floor(Math.random() * 90)
 const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const b = await chromium.launch()
 const page = await (await b.newContext({ ...devices['iPhone 14'] })).newPage()
 const errors = []; page.on('pageerror', e => errors.push(String(e)))
 let bad = 0; const ok = (n) => console.log('✓', n)

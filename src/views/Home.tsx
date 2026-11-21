@@ -130,7 +130,7 @@ export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCat
   const [hq, setHq] = useState('')
   const { progress, words, settings, sessions, lessons, logs: allLogs, session, flips, plays, exPlays, daily, parkedSet, skipSet, sentenceIds } = useApp()
   const logs = useMemo(() => allLogs.filter(l => !sentenceIds.has(l.wordId)), [allLogs, sentenceIds])
-  const mineN = useMemo(() => myAddedIds(lessons).length, [lessons])
+  const mineN = useMemo(() => myAddedIds(lessons).filter(id => !sentenceIds.has(id)).length, [lessons, sentenceIds])
   const due = dueWords(progress, undefined, 4, skipSet).length
   const counts = useMemo(() => {
     const c = [0, 0, 0, 0, 0]

@@ -2,10 +2,10 @@
 import { chromium, devices } from 'playwright'
 import { spawn } from 'child_process'
 import assert from 'assert'
-const port = 5200 + Math.floor(Math.random() * 90)
+const port = Number(process.env.E2E_PORT) || 5200 + Math.floor(Math.random() * 90)
 const srv = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
+const b = await chromium.launch()
 const ctx = await b.newContext({ ...devices['iPhone 14'] })
 await ctx.addInitScript(() => Object.defineProperty(navigator, 'webdriver', { get: () => false }))   // 让应用以为是真人，弹出成就
 const page = await ctx.newPage()
