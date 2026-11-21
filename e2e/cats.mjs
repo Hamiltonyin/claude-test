@@ -13,6 +13,7 @@ try {
   await page.goto(`http://localhost:${port}/?home=full`); await page.waitForSelector('[data-testid=tab-cats]')
   await page.tap('[data-testid=tab-cats]'); await page.waitForSelector('[data-testid=cat-food]')
   assert((await page.textContent('[data-testid=cat-food]')).includes('已学')); ok('分类页：已解锁分类卡片显示「已学 x/N」')
+  await page.tap('[data-testid=cat-more]'); await page.waitForTimeout(200)
   assert(await page.locator('.catcard.locked').count() >= 1 && await page.locator('[data-testid=cat-beauty]').isDisabled()); ok('没有词的分类显示为未解锁（美容美发）')
   await page.screenshot({ path: '/tmp/cats.png' })
   await page.tap('[data-testid=cat-fruit]'); await page.waitForSelector('[data-testid=cat-all]')

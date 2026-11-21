@@ -22,6 +22,7 @@ export default function Categories({ onStudy }: { onStudy: (title: string, ids: 
   }
   const [groups, setGroups] = useState<Group[] | null>(null)
   const [open, setOpen] = useState<Cat | null>(null)
+  const [showLocked, setShowLocked] = useState(false)   // 还没有词的分类默认收起
   useEffect(() => { let on = true; load().then(g => on && setGroups(g)); return () => { on = false } }, [])
 
   const idOf = useMemo(() => new Map(words.map(w => [w.thai, w.id])), [words])
@@ -46,14 +47,14 @@ export default function Categories({ onStudy }: { onStudy: (title: string, ids: 
   const lv = (id: string) => progress.get(id)?.level ?? 0
   return (
     <div className="cats">
-      {head('🔓', '已解锁分类')}
+      
       <div className="catgrid">{unlocked.map(c => card(c, false))}</div>
+      {groups.some(g => !g.own && g.cats.some(c => !c.words.length)) && <button className="catmore" onClick={() => setShowLocked(!showLocked)} data-testid="cat-more">{showLocked ? '收起未开放分类 ▴' : '未开放分类 ▾'}</button>}
       {groups.map(g => {
-        if (g.own) return <div key={g.name}>{head(g.icon, g.name + `（每类不超过 10 个词）`)}<div className="catgrid">{g.cats.map(c => card(c, !c.words.length))}</div></div>
+        if (g.own) return <div key={g.name}>{head(g.icon, g.name)}<div className="catgrid">{g.cats.map(c => card(c, !c.words.length))}</div></div>
         const locked = g.cats.filter(c => !c.words.length)
-        return locked.length ? <div key={g.name}>{head(g.icon, g.name)}<div className="catgrid">{locked.map(c => card(c, true))}</div></div> : null
+        return showLocked && locked.length ? <div key={g.name}>{head(g.icon, g.name)}<div className="catgrid">{locked.map(c => card(c, true))}</div></div> : null
       })}
-      <p className="sub" style={{ textAlign: 'center', margin: '18px 0 4px' }}>灰色带锁的分类还没有词，之后会陆续补充。</p>
       {open && cur && (
         <Sheet onClose={() => setOpen(null)}>
           <h2>{open.emoji} {open.name}</h2>

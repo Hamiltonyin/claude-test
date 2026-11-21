@@ -556,3 +556,20 @@ h1{font-weight:800;letter-spacing:-.6px}
 .vowvid.min .vrow .sm:last-child{display:inline-block!important}
 .dlgpage .vowvid:not(.min) video{max-height:38vh}
 .wi .lchunks{display:flex;flex-wrap:wrap;justify-content:center;gap:0 14px}.wi .lchunks .rom{font-size:13px}
+
+/* ===== 简洁化：学习页（任务/入口/分类都压成紧凑版） ===== */
+.tasks{gap:8px}
+.task{padding:10px 12px;border-radius:18px;gap:2px}.task .td{display:none}.task .tn b{font-size:22px}.task .tt{font-size:14px}.task .bar{height:5px;margin-top:2px}
+.tasks.up2{margin-top:8px}.tasks.up2 .task{flex-direction:row;align-items:center;justify-content:space-between;padding:9px 12px}.tasks.up2 .tn{margin:0}.tasks.up2 .tn b{font-size:18px}.tasks.up2 .tn small{display:none}
+.minis{grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.mini{grid-template-columns:1fr;justify-items:center;text-align:center;padding:9px 2px 7px;gap:3px;border-radius:16px}.mini i{grid-row:auto;width:34px;height:34px}.mini b{font-size:11.5px;font-weight:600;white-space:nowrap}.mini span{display:none}
+.sentrow{display:flex;align-items:center;gap:8px;margin:10px 0;padding:8px 12px;background:var(--glass);border:1px solid var(--glass-edge);border-radius:16px;font-size:14px}.sentrow>span{flex:1}.sentrow small{color:var(--sub)}
+.sentrow button{background:rgba(0,122,255,.12);color:var(--blue);border-radius:12px;padding:6px 12px;font-size:13px;font-weight:600}.sentrow button:disabled{opacity:.4}
+.chips.scrollrow{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:2px 16px 6px}.chips.scrollrow::-webkit-scrollbar{display:none}.chips.scrollrow .chip{flex:none;padding:6px 12px;font-size:13px}
+/* 分类：三列小卡片，不再是大圆圈 */
+.cats{background:transparent}
+.catgrid{grid-template-columns:repeat(3,1fr);gap:8px}
+.catcard{min-height:84px;border-radius:20px;padding:9px 3px 8px;gap:2px;background:var(--glass);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow)}
+.catemoji{width:38px;height:38px;border-width:2px;font-size:20px}.catcard b{font-size:13px;color:var(--ink)}.catcard small{font-size:11px;color:var(--sub)}
+.catmore{display:block;margin:12px auto 0;font-size:12.5px;color:var(--sub);background:rgba(110,125,160,.14);border-radius:99px;padding:6px 14px}
+.cathead{margin:10px 0 8px}.cathead h2{font-size:16px}.caticon{width:30px;height:30px;font-size:15px}

@@ -82,7 +82,7 @@ function UnlockModal({ list, onClose }: { list: BadgeState[]; onClose: () => voi
 
 
 /** 句子统计：和单词分开算（句式卡片 + 词库里原来就是整句的条目） */
-export function SentencePanel({ onStudyIds }: { onStudyIds?: (title: string, ids: string[]) => void }) {
+export function SentencePanel({ onStudyIds, compact }: { onStudyIds?: (title: string, ids: string[]) => void; compact?: boolean }) {
   const { sentences, sentenceIds, progress, logs } = useApp()
   const date = today()
   const st = useMemo(() => {
@@ -100,6 +100,11 @@ export function SentencePanel({ onStudyIds }: { onStudyIds?: (title: string, ids
   const n = sentences.length
   if (!n) return null
   const learned = st.c[1] + st.c[2] + st.c[3] + st.c[4]
+  if (compact) return (
+    <div className="sentrow" data-testid="sent-panel">
+      <span>💬 句子 <b data-testid="sent-total">{n}</b><small> · 学过 <span data-testid="sent-learned">{learned}</span></small></span>
+      {onStudyIds && <><button disabled={!st.due.length} onClick={() => onStudyIds('句子复习', st.due)} data-testid="sent-review">复习 {st.due.length}</button><button onClick={() => onStudyIds('新句子', st.fresh.slice(0, 20))} disabled={!st.fresh.length} data-testid="sent-new">新学 {Math.min(20, st.fresh.length)}</button></>}
+    </div>)
   return (
     <div className="panel" data-testid="sent-panel"><h3>💬 句子统计（和单词分开算）</h3>
       <div className="dgrid today">
@@ -221,7 +226,6 @@ export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCat
       </>)}
       {isLearn && <button className="herocta learncta" onClick={() => onStudy(cta.m)} data-testid="learn-cta">{cta.t}</button>}
       {(full || isLearn) && (<>
-      <div className="sech"><h2>今日任务</h2></div>
       <div className="tasks">
         <button className="task" onClick={() => onStudy('today')} data-testid="start-today">
           <div className="tt"><i style={{ background: 'var(--blue)' }}>📖</i>新词</div>
@@ -237,8 +241,7 @@ export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCat
         </button>
       </div>
 
-      <div className="sech"><h2>升级通道</h2><span>把词升一级，赚成就</span></div>
-      <div className="tasks">
+      <div className="tasks up2">
         <button className="task up" onClick={() => onPractice('verify')} data-testid="start-verify">
           <div className="tt"><i style={{ background: '#007aff' }}>✅</i>验收 → 熟悉</div>
           <div className="tn"><b>{weak}</b><small> 个待验收</small></div>
@@ -275,7 +278,6 @@ export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCat
 
       </>)}
       {(full || isLearn) && (<>
-      <div className="sech"><h2>更多学习方式</h2></div>
       <div className="minis">
         <button className="mini" onClick={() => onStudy('weak')} data-testid="start-weak"><i style={{ background: 'var(--orange)' }}>🎧</i><b>重点复习</b><span>陌生 {counts[1]} · 不熟悉 {counts[2]}</span></button>
         <button className="mini" onClick={onPickDay} data-testid="pick-day"><i style={{ background: '#5856d6' }}>📅</i><b>选择天数</b><span>共 {lessons.length} 天可选</span></button>
@@ -298,10 +300,9 @@ export default function Home({ view = 'full', onStudy, onLibrary, onTheme, onCat
       <div className="sech"><h2>学习记录</h2><button className="sub" style={{ fontSize: 13, color: 'var(--blue)' }} onClick={onMoreRecords}>全部 ›</button></div>
       <Records limit={7} compact onCatchup={onCatchup} />
       </>)}
-      {(full || isLearn) && <SentencePanel onStudyIds={onStudyIds} />}
+      {(full || isLearn) && <SentencePanel onStudyIds={onStudyIds} compact />}
       {(full || isLearn) && (<>
-      <div className="sech"><h2>按主题学习</h2></div>
-      <div className="chips">
+      <div className="chips scrollrow">
         {THEMES.map(t => <button key={t} className="chip" disabled={!themeCount.get(t)} style={!themeCount.get(t) ? { opacity: .45 } : undefined} onClick={() => onTheme(t)}>{t}<small>{themeCount.get(t) ?? 0}</small></button>)}
       </div>
       </>)}
