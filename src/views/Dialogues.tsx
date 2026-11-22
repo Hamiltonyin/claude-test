@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ColorRoman, Speaker, VideoBar } from '../ui'
 import { playFile, playSystem, prefetchAudio, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
@@ -11,14 +11,14 @@ export type Kind = 'dlg' | 'lyr'
 const SRC: Record<Kind, string> = { dlg: 'dialogues.json', lyr: 'lyrics.json' }
 const T = { dlg: { name: '情景对话', noun: '对话', empty: '还没有对话。把你整理好的对话发给我，我来放进来。', all: '连续播放整段对话' }, lyr: { name: '🎤 歌词背诵', noun: '歌词', empty: '还没有歌词。把整理好的歌词发给我，我来放进来。', all: '从头播放整首' } } as const
 // 透镜效果：离中间越近越大、越清楚；越远越小、越淡，而且往中间挤（像鱼眼/放大镜）。off＝这一句离中间的格数（可带小数，随手指连续变化）
-const lens = (off: number): React.CSSProperties => {
+const lens = (off: number, cap = 9): React.CSSProperties => {   // cap：这一句最大能放大到几倍（长句子放大后会超出中间的毛玻璃框，就少放大一点）
   const a = Math.abs(off), A = 1.75
   const g = Math.sign(off) * A * Math.tanh(a / A)                       // 压缩后的位置：近处基本不变，远处越来越挤
-  const sc = 0.42 + 0.86 * Math.exp(-(off * off) / 1.5)                  // 中间 1.28 倍 → 相邻 ≈0.85 → 再远 ≈0.5
+  const sc = Math.min(cap, 0.42 + 0.86 * Math.exp(-(off * off) / 1.5))  // 中间 1.28 倍 → 相邻 ≈0.85 → 再远 ≈0.5
   const op = 0.22 + 0.78 * Math.exp(-(off * off) / 2.6)
   return { opacity: op, filter: a < 0.55 ? undefined : `blur(${Math.min(1.8, (a - 0.55) * 1.1).toFixed(1)}px)`, transform: `perspective(700px) translateY(${((g - off) * WH).toFixed(1)}px) rotateX(${Math.max(-60, Math.min(60, -off * 16)).toFixed(1)}deg) scale(${sc.toFixed(3)})` }
 }
-const WH = 128   // 滚轴每一句的高度（px）
+const WH = 150   // 滚轴每一句的高度（px）
 const isLine = (x: Item): x is Line => 'clip' in x
 
 const caches: Partial<Record<Kind, Promise<Dlg[]>>> = {}
@@ -47,6 +47,9 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
   const [pos, setPos] = useState(0)                     // 滚轴当前位置（第几句，带小数）
   const wheel = useRef<HTMLDivElement>(null)
   const raf = useRef(0)
+  // 每一句内容的实际高度 → 放大到中间时最多放大多少倍，保证整句都在毛玻璃框（高 150px）里
+  const wics = useRef(new Map<number, HTMLDivElement>())
+  const [fit, setFit] = useState<Record<number, number>>({})
   const [peek, setPeek] = useState<Set<number>>(new Set())      // 遮住泰文时，点开看的那几句
   const [playing, setPlaying] = useState<number | null>(null)
   const [all, setAll] = useState(false)
@@ -54,6 +57,16 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
   const refs = useRef(new Map<number, HTMLDivElement>())
   useEffect(() => { let on = true; load(K).then(d => on && setList(d)); return () => { on = false } }, [])
   useEffect(() => () => { tok.current++; stopAudio() }, [])
+  useLayoutEffect(() => {
+    if (mode !== 'wheel') return
+    const f: Record<number, number> = {}
+    for (const [n, el] of wics.current) {
+      const kids = [...el.children] as HTMLElement[]; if (!kids.length) continue
+      const h = kids[kids.length - 1].offsetTop + kids[kids.length - 1].offsetHeight - kids[0].offsetTop   // 不受缩放影响的原始高度
+      f[n] = Math.max(0.6, Math.min(1.28, (WH - 12) / Math.max(1, h)))
+    }
+    setFit(old => JSON.stringify(old) === JSON.stringify(f) ? old : f)
+  })
   useEffect(() => { savePref(K, 'roman', showRoman); savePref(K, 'zh', showZh); savePref(K, 'hideTh', hideTh); savePref(K, 'mode', mode); savePref(K, 'act', act); savePref(K, 'hint', hint); savePref(K, 'rep', rep); savePref(K, 'loop', loop) }, [showRoman, showZh, hideTh, mode, act, hint, rep, loop])
 
   // —— 真人视频：每段对话可以导入一个自己的视频（只存本机），再给每一句设起止秒数，点 🎬 就播放那一段 ——
@@ -74,6 +87,7 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
     if (!curId) return
     let u: string | null = null, ok = true
     setVurl(null); setVclips({}); setCalOpen(null); setEditOpen(null); setEdits({}); setVmsg('')
+    setPos(0); if (wheel.current) wheel.current.scrollTop = 0   // 换一首/一段时滚轴回到第一句
     get('meta', K + 'video:' + curId).then((b: unknown) => { if (ok && b instanceof Blob) { u = URL.createObjectURL(b); setVurl(u) } }).catch(() => {})
     const defs: Record<string, [number, number]> = {}   // 内容里预先记录好的起止秒（按原视频），自己调过的优先
     for (const it of cur?.items ?? []) if (isLine(it) && it.t) defs[it.n] = it.t
@@ -260,7 +274,7 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
                 return (
                   <div key={l.n} className={'wi' + (k === sel ? ' on' : '') + (playing === l.n ? ' playing' : '')} data-testid="wheel-item" style={{ height: WH }}
                     onClick={() => { if (k !== sel) wheelTo(k); else if (hidden) setPeek(new Set(peek).add(l.n)); else if (vurl && vclips[l.n]) playClip(l); else playOne(l) }}>
-                    <div className="wic" style={lens(off)}>
+                    <div className="wic" style={lens(off, fit[l.n])} ref={el => { if (el) wics.current.set(l.n, el); else wics.current.delete(l.n) }}>
                     {secOf.get(l.n) && <div className="wsec">{secOf.get(l.n)}</div>}
                     {hidden ? <div className="th masked" lang="th">{mask(l)}</div> : <div className={"th" + (l.th.length > 16 ? " long" : "")} lang="th">{l.th}</div>}
                     {showRoman && !hidden && <Rom roman={l.roman} />}

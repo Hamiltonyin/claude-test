@@ -17,7 +17,7 @@ try {
   await page.waitForSelector('[data-testid=open-dialogues]'); await page.tap('[data-testid=open-dialogues]'); await page.waitForSelector('[data-testid=dlg-oral-1]')
   await page.tap('[data-testid=dlg-oral-1]'); await page.waitForSelector('[data-testid=wheel]'); ok('默认就是滚轴视图')
   assert(await page.locator('[data-testid=wheel-item]').count() === 13); assert((await page.textContent('[data-testid=wheel-count]')).startsWith('1 / 13')); ok('13 句，当前是第 1 句')
-  await page.evaluate(() => { document.querySelector('[data-testid=wheel]').scrollTop = 128 * 4 }); await page.waitForTimeout(500)
+  await page.evaluate(() => { document.querySelector('[data-testid=wheel]').scrollTop = 150 * 4 }); await page.waitForTimeout(500)
   assert((await page.textContent('[data-testid=wheel-count]')).startsWith('5 / 13'), await page.textContent('[data-testid=wheel-count]')); ok('滚动到第 5 句，计数跟着变')
   await page.tap('[data-testid=wheel-next]'); await page.waitForTimeout(900)
   assert((await page.textContent('[data-testid=wheel-count]')).startsWith('6 / 13')); ok('点 ▼ 下一句')
@@ -36,6 +36,9 @@ try {
   // 切换到列表
   await page.tap('[data-testid=dlg-settings]'); await page.tap('[data-testid=dlg-mode-toggle]'); await page.waitForSelector('[data-testid=chat]'); assert(await page.locator('[data-testid=bubble]').count() === 13); ok('切到「列表」：13 个气泡')
   await page.tap('[data-testid=dlg-mode-toggle]'); await page.waitForSelector('[data-testid=wheel]'); ok('再切回滚轴')
+  // 换到另一段对话：滚轴回到第 1 句，中间那句是看得见的
+  await page.tap('.sthead .close'); await page.tap('[data-testid=dlg-oral-3]'); await page.waitForSelector('[data-testid=wheel]'); await page.waitForTimeout(400)
+  assert((await page.textContent('[data-testid=wheel-count]')).startsWith('1 /')); const op = await page.evaluate(() => getComputedStyle(document.querySelector('[data-testid=wheel-item].on .wic')).opacity); assert(+op > 0.9, 'opacity ' + op); ok('换一段对话后回到第 1 句，中间那句清楚可见')
   assert(errors.length === 0, errors.join('\n')); ok('无页面错误')
 } catch (e) { bad++; console.error('✗', e.message); await page.screenshot({ path: '/tmp/wheel-fail.png' }) }
 await b.close(); try { process.kill(-srv.pid) } catch {}; process.exit(bad ? 1 : 0)
