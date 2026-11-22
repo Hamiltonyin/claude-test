@@ -532,3 +532,4 @@ h1{font-weight:800;letter-spacing:-.6px}
 .b3dsel{min-height:66px;display:grid;place-items:center;margin:8px 0 2px}.b3dsel .pt{transform:scale(1.15)}
 .b3dlist .cur .pt{outline:2px solid var(--blue);outline-offset:1px}
 .b3d .body3d{position:sticky;top:0;z-index:3;height:min(46vh,440px);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.gdot.wide{width:auto;border-radius:17px;padding:0 12px;font-size:13px;font-weight:600;white-space:nowrap}
