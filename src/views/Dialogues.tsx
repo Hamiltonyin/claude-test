@@ -227,7 +227,7 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
     <div className="study dlgpage" role="dialog" aria-label={cur.title}>
       <div className="sthead">
         <button className="close" onClick={() => { stopAll(); setCur(null) }}>‹</button>
-        <div className="prog"><b className="dtitle">{cur.emoji} {cur.title.replace(/（配视频）/, '')}</b></div>
+        <div className="prog"><b className="dtitle">{cur.emoji} {cur.title.replace(/（[^）]*）/g, '')}</b></div>
         {!vurl && <label className="gdot wide" aria-label="导入真人视频" title="导入真人视频">📥 导入视频<input type="file" accept="video/*,audio/*" hidden onChange={e => void importVideo(e.target.files?.[0])} data-testid={tp + '-vfile'} /></label>}
         <button className={'gdot' + (act ? ' on' : '')} onClick={() => setAct(!act)} aria-label="显示/隐藏操作图标" data-testid={tp + '-act'}>⋯</button>
         <button className={'gdot' + (setOpen ? ' on' : '')} onClick={() => setSetOpen(!setOpen)} aria-label="设置" data-testid={tp + '-settings'}>⚙</button>
