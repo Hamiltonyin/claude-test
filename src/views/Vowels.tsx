@@ -4,8 +4,8 @@ import { ColorRoman, Speaker, VideoBar } from '../ui'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
-interface Vowel { id: string; group: string; form: string; video: string; ipa: string; len: string; carrier: string; hint: string; ex: string[]; clip: [number, number]; pair: string | null }
-interface Data { source: string; vowels: Vowel[]; groupNotes?: Record<string, string> }
+interface Vowel { id: string; group: string; form: string; glyph: string; rom: string; video: string; ipa: string; len: string; carrier: string; hint: string; ex: string[]; clip: [number, number]; pair: string | null }
+interface Data { source: string; vowels: Vowel[]; groupNotes?: Record<string, string>; romNote?: string }
 
 let cache: Promise<Data | null> | null = null
 const load = () => (cache ??= fetch(`${import.meta.env.BASE_URL}content/vowels.json`).then(r => r.ok ? r.json() : null).catch(() => { cache = null; return null }))
@@ -113,6 +113,7 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
             <button className="link" onClick={removeVideo}>移除本机视频</button> <button className="link" onClick={() => void exportClips()} data-testid="vow-export">复制全部时间轴</button>
             {cal && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{cal}</p>}
           </div>}
+        {data?.romNote && <p className="vowrule" data-testid="vow-rule">{data.romNote}</p>}
         <div className="vowintro">
           <b>怎么用</b>
           <p>可以同时展开两个元音（再点第三个会收起最早的那个），底部出现「对比」条，A→B 连着听两轮，比较区别。点元音卡片展开：先听「示范音」（合成语音），有视频的话再点「🎬 老师这一段」对照听。红色字母 = 元音；短音收得快，长音拉长约两倍。</p>
@@ -131,9 +132,8 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
               return (
                 <div key={v.id} data-vid={v.id} className={'vowcard' + (on ? ' on' : '')} data-testid="vowel">
                   <button className="vowtop" onClick={() => toggle(v.id)}>
-                    <span className="vowform th" lang="th">{v.form}</span>
-                    <span className="vowmeta"><b>{v.video}</b><i>{v.len}</i></span>
-                    <span className="vowipa">/{v.ipa}/</span>
+                    <span className="vowform th" lang="th">{v.glyph}</span>
+                    <span className="vowmeta"><b className="rom">{v.rom}</b><i>{v.len}</i></span>
                     <em>{on ? '⌃' : '⌄'}</em>
                   </button>
                   {on && <div className="vowbody">
@@ -170,7 +170,7 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
           </section>))}
       </div>
       {pair.length === 2 && <div className="vowcmp" data-testid="vow-cmp">
-        <b className="th" lang="th">{pair[0].form} ⇄ {pair[1].form}</b>
+        <b className="th" lang="th">{pair[0].glyph} {pair[0].rom} ⇄ {pair[1].glyph} {pair[1].rom}</b>
         {cmpBusy ? <button className="stop" onClick={stopCmp}>⏹ 停止</button> : <>
           <button onClick={() => void compare('tts')} data-testid="vow-cmp-tts"><Speaker /> 对比示范音</button>
           <button onClick={() => void compare('tts', true)}>🐢</button>
