@@ -26,7 +26,7 @@ try {
   // 导入视频：中间那句点一下 → 播放真人
   await page.setInputFiles('[data-testid=dlg-vfile]', '/tmp/wheel-rec.mp4'); await page.waitForSelector('[data-testid=dlg-video]'); await page.waitForTimeout(500)
   mp3.length = 0
-  await page.locator('[data-testid=wheel-item].on').tap(); await page.waitForTimeout(800)
+  await page.locator('[data-testid=wheel-item].on .th').first().tap(); await page.waitForTimeout(800)
   const t = await page.evaluate(() => document.querySelector('[data-testid=dlg-video]').currentTime); assert(t >= 3.4, 't=' + t); assert(mp3.length === 0); ok('点中间那句：播放真人片段（' + t.toFixed(1) + 's），没放电子音')
   // 滚轴里改文字
   await page.tap('[data-testid=dlg-editbtn]'); await page.waitForSelector('[data-testid=dlg-edit]')

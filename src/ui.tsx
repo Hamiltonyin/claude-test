@@ -5,6 +5,7 @@ import { useApp } from './store'
 import { today } from './lib/dates'
 import { loadClusters, type Cluster } from './lib/clusters'
 import { TONE_SYMBOL, TONE_ZH, toneCodes, toneDescription } from './lib/tone'
+import { lookupSyllable } from './lib/vowelLookup'
 
 export const Speaker = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>
@@ -346,4 +347,25 @@ export function VideoBar({ vid, big, onSize }: { vid: React.RefObject<HTMLVideoE
       </div>
     </div>
   )
+}
+
+/** 可以点的拼音：每个音节是一个按钮，点了回调 onTap(音节)（用来查这个音节的元音）。颜色和 ColorRoman 一样按声调着色。 */
+export function TapRoman({ roman, onTap, className = 'rom' }: { roman: string; onTap: (syl: string) => void; className?: string }) {
+  const parts = roman.split(/([-\s｜,，]+)/)
+  return <div className={className + ' taprom'}>{parts.map((p, i) => /^[-\s｜,，]+$/.test(p) || !p ? p : <button key={i} className="tsyl" style={{ color: TONE_COLOR[toneCodes(p)] ?? undefined }} onClick={e => { e.stopPropagation(); onTap(p) }} data-testid="tap-syl">{p}</button>)}</div>
+}
+
+/** 一个音节的元音说明卡（滚轴里点拼音、元音页搜索都用它） */
+export function VowelInfoCard({ q, onClose }: { q: ReturnType<typeof lookupSyllable>; onClose?: () => void }) {
+  if (!q) return null
+  return (
+    <div className="vinfo" data-testid="vinfo" onClick={e => e.stopPropagation()}>
+      <b className="vsyl">{q.syl}</b>
+      {q.info ? <>
+        <span className="vmain">元音 <b>{q.info.rom}</b> → <b className="th" lang="th">{q.info.th}</b> <i>{q.info.len}</i></span>
+        <span className="vsub">{q.info.desc}{q.finalNote && ` · 尾辅音 ${q.finalNote}`}{q.tone && ` · ${q.tone}`}</span>
+        {q.spell && <span className="vsub vspell">✍️ {q.spell}</span>}
+      </> : <span className="vsub">这不是泰语音节（中文拼音或英文），不用查元音</span>}
+      {onClose && <button className="vx" onClick={onClose} aria-label="关闭">✕</button>}
+    </div>)
 }

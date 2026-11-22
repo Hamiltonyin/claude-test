@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useApp } from '../store'
-import { ColorRoman, Speaker, VideoBar } from '../ui'
+import { ColorRoman, Speaker, VideoBar, VowelInfoCard } from '../ui'
+import { COMBOS, lookupSyllable } from '../lib/vowelLookup'
 import { playFile, playSystem, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
@@ -79,6 +80,10 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
     const el = vid.current
     if (el && stopAt.current != null && el.currentTime >= stopAt.current) { el.pause(); stopAt.current = null; setPlaying(null); finishClip() }
   }
+  // 查拼音：输入歌词/词库里的一个音节，告诉你是哪个元音，并打开对应的卡片
+  const [vs, setVs] = useState('')
+  const vres = vs.trim() ? lookupSyllable(vs.trim().split(/[-\s｜]+/)[0]) : null
+  const jump = (id: string) => { if (!open.includes(id)) toggle(id); setTimeout(() => document.querySelector(`[data-vid=${id}]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60) }
   const toggle = (id: string) => setOpen(o => o.includes(id) ? o.filter(x => x !== id) : [...o.slice(-1), id])
   const pair = open.map(id => data?.vowels.find(v => v.id === id)).filter((v): v is Vowel => !!v)
   const stopCmp = () => { cmpTok.current++; setCmpBusy(false); stopAudio(); const el = vid.current; if (el) el.pause(); stopAt.current = null; finishClip(); setPlaying(null) }
@@ -114,6 +119,10 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
             {cal && <p className="sub" style={{ fontSize: 11.5, wordBreak: 'break-all' }}>{cal}</p>}
           </div>}
         {data?.romNote && <p className="vowrule" data-testid="vow-rule">{data.romNote}</p>}
+        <input className="search" value={vs} onChange={e => setVs(e.target.value)} placeholder="查拼音：输入一个音节，如 lɛ́ɛo、khâo、rák（也可以打 ae / or / oe / ue）" autoCapitalize="off" autoCorrect="off" data-testid="vow-search" />
+        {vres && <VowelInfoCard q={vres} />}
+        {vres?.info?.card && <button className="link vjump" onClick={() => jump(vres.info!.card!)} data-testid="vow-jump">打开「{vres.info.th}」这张卡片 ›</button>}
+        {vres?.info && !vres.info.card && <button className="link vjump" onClick={() => document.querySelector('[data-testid=vow-combos]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>看「元音 + 尾音」表 ›</button>}
         <div className="vowintro">
           <b>怎么用</b>
           <p>可以同时展开两个元音（再点第三个会收起最早的那个），底部出现「对比」条，A→B 连着听两轮，比较区别。点元音卡片展开：先听「示范音」（合成语音），有视频的话再点「🎬 老师这一段」对照听。红色字母 = 元音；短音收得快，长音拉长约两倍。</p>
@@ -168,6 +177,11 @@ export default function Vowels({ onClose }: { onClose: () => void }) {
                 </div>)
             })}
           </section>))}
+        <section data-testid="vow-combos">
+          <h3 className="vowh">元音 + 尾音（结尾是 i / o / u）</h3>
+          <p className="vownote">歌词里像 lɛ́ɛo、ləəi、khǎao 这种，后面的 i / o / u 是「尾音」，元音页上没有单独的卡片，这里写出泰文怎么拼。长短照样看字母个数。</p>
+          <div className="combos">{COMBOS.map(c => <div key={c.rom} className="combo"><b className="rom">{c.rom}</b><span className="th" lang="th">{c.th}</span><i>{c.len}</i><small>{c.desc}</small></div>)}</div>
+        </section>
       </div>
       {pair.length === 2 && <div className="vowcmp" data-testid="vow-cmp">
         <b className="th" lang="th">{pair[0].glyph} {pair[0].rom} ⇄ {pair[1].glyph} {pair[1].rom}</b>

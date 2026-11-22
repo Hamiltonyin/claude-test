@@ -14,7 +14,7 @@ try {
   await page.goto(`http://localhost:${port}/`); await page.waitForSelector('[data-testid=tab-cats]'); await page.tap('[data-testid=tab-cats]')
   await page.tap('[data-testid=open-dialogues]'); await page.tap('[data-testid=dlg-oral-1]'); await page.waitForSelector('[data-testid=wheel]')
   assert(await page.locator('[data-testid=bplay]').count() === 0 && await page.locator('[data-testid=dlg-editbtn]').count() === 0 && await page.locator('[data-testid=wheel-prev]').count() === 0); ok('默认：播放/慢速/修改/校准/▲▼ 都藏起来了')
-  await page.locator('[data-testid=wheel-item].on').tap(); await page.waitForTimeout(1200)
+  await page.locator('[data-testid=wheel-item].on .th').first().tap(); await page.waitForTimeout(1200)
   assert(mp3.length >= 1); ok('不展开图标，点中间那句照样能播放')
   await page.tap('[data-testid=dlg-act]'); await page.waitForSelector('[data-testid=bplay]')
   assert(await page.locator('[data-testid=dlg-editbtn]').count() === 1 && await page.locator('[data-testid=wheel-prev]').count() === 1); ok('点 ⋯：图标调出来')

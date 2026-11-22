@@ -50,6 +50,7 @@ jp/                 日语 App（独立的 vite 配置）
 - **iOS 限制**：`play()` 必须在点击回调里同步调用；本地视频以 Blob 存 IndexedDB；不用视频自带的 `controls`（会盖住画面），用 `ui.tsx` 的 `VideoBar`。
 - **IndexedDB `meta` 键**：`settings` `flips` `plays` `daily` `parked` `vowelClips` `toneClips`，以及按内容 id 的 `dlgvideo:` `dlgclips:` `dlgedit:` `lyrvideo:` `lyrclips:` `lyredit:` `patrec:`。新增「用户校准/修改」类的键时，同步加进 `src/lib/clipsBackup.ts`。
 - **情景对话和歌词共用一套界面**：`src/views/Dialogues.tsx`（`kind` 为 `dlg` 或 `lyr`），`Lyrics.tsx` 只是薄包装。改一处两边都变。
+- **拼音 ↔ 元音**：`src/lib/vowelLookup.ts` 把一个拼音音节（如 lɛ́ɛo）对到元音卡片或「元音 + 尾音」组合；歌词/对话滚轴中间那句的拼音可以点（`TapRoman`），元音页有搜索框。新增拼音写法时要保证它能在这里查到。
 - **3D 人体**：`src/views/Body3D.tsx` 用 three.js 的基本几何体拼成（没有外部模型文件），懒加载；每个网格的 `userData.key` 是对应的泰文词。加部位就在 `buildBody()` 里加一个网格，并在 `Pictures.tsx` 的 `PARTS3D` 里加词条。
 - **界面风格**：iOS 毛玻璃。屏幕上只留学习内容，其余功能收成小圆点（`.gdot`）或收进 ⚙ 设置，说明文字尽量不要。
 

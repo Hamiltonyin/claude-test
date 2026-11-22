@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ColorRoman, Speaker, VideoBar } from '../ui'
+import { ColorRoman, Speaker, TapRoman, VideoBar, VowelInfoCard } from '../ui'
+import { lookupSyllable } from '../lib/vowelLookup'
 import { playFile, playSystem, prefetchAudio, stopAudio } from '../lib/audio'
 import { get, put, del } from '../lib/db'
 
@@ -34,6 +35,11 @@ const savePref = (K: string, k: string, v: unknown) => { try { localStorage.setI
 export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => void; kind?: Kind }) {
   const K = kind, tp = kind, tx = T[kind]
   const Rom = ({ roman }: { roman: string }) => K === 'lyr' ? <Chunks roman={roman} /> : <ColorRoman roman={roman} />
+  // 滚轴中间那句的拼音可以点：点一个音节，下方显示它的元音（泰文怎么写、长短、尾辅音）
+  const [vq, setVq] = useState<ReturnType<typeof lookupSyllable>>(null)
+  const TapRom = ({ roman }: { roman: string }) => K === 'lyr'
+    ? <div className="lchunks">{roman.split('｜').map((c, i) => <TapRoman key={i} roman={c.trim()} onTap={syl => setVq(lookupSyllable(syl))} />)}</div>
+    : <TapRoman roman={roman} onTap={syl => setVq(lookupSyllable(syl))} />
   const [list, setList] = useState<Dlg[] | null>(null)
   const [cur, setCur] = useState<Dlg | null>(null)
   const [showRoman, setShowRoman] = useState(() => pref(K, 'roman', true))
@@ -45,6 +51,8 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
   const [act, setAct] = useState<boolean>(() => pref(K, 'act', false))   // 小图标（播放/慢速/修改/校准…）默认藏起来
   const [mode, setMode] = useState<'chat' | 'wheel'>(() => pref(K, 'mode', 'wheel'))
   const [pos, setPos] = useState(0)                     // 滚轴当前位置（第几句，带小数）
+  const selN = Math.round(pos)
+  useEffect(() => { setVq(null) }, [selN, cur?.id])   // 滑到别的句子：收起元音卡
   const wheel = useRef<HTMLDivElement>(null)
   const raf = useRef(0)
   // 每一句内容的实际高度 → 放大到中间时最多放大多少倍，保证整句都在毛玻璃框（高 150px）里
@@ -277,7 +285,7 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
                     <div className="wic" style={lens(off, fit[l.n])} ref={el => { if (el) wics.current.set(l.n, el); else wics.current.delete(l.n) }}>
                     {secOf.get(l.n) && <div className="wsec">{secOf.get(l.n)}</div>}
                     {hidden ? <div className="th masked" lang="th">{mask(l)}</div> : <div className={"th" + (l.th.length > 16 ? " long" : "")} lang="th">{l.th}</div>}
-                    {showRoman && !hidden && <Rom roman={l.roman} />}
+                    {showRoman && !hidden && (k === sel ? <TapRom roman={l.roman} /> : <Rom roman={l.roman} />)}
                     {showZh && <div className="dz">{l.zh}</div>}
                     </div>
                   </div>)
@@ -286,6 +294,7 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
             </div>
           </div>
           <div className="wheelfoot">
+            {vq && <VowelInfoCard q={vq} onClose={() => setVq(null)} />}
             <div className="wnav">{act && <button className="gdot" onClick={() => wheelTo(Math.max(0, sel - 1))} disabled={sel <= 0} aria-label="上一句" data-testid="wheel-prev">▲</button>}<span className="wcount" data-testid="wheel-count">{sel + 1} / {lines.length}{selLine && edits[selLine.n] && <em className="edtag" data-testid={tp + '-edited'}> · 已改</em>}</span>{act && <button className="gdot" onClick={() => wheelTo(Math.min(lines.length - 1, sel + 1))} disabled={sel >= lines.length - 1} aria-label="下一句" data-testid="wheel-next">▼</button>}</div>
             {lines[sel] && <div className="wactions">{actions(lines[sel])}</div>}
           </div>
