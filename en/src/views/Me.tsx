@@ -33,7 +33,7 @@ export default function Me() {
     setMsg({ t: 'ok', s: `已导出备份（${b.words.length} 张卡片，${b.progress.length} 条进度，${b.logs.length} 条复习日志）。请保存到「文件」或 iCloud。` })
   }
   const onRestore = async (f: File) => {
-    try { const j = JSON.parse(await readFile(f)); if (!isBackup(j)) throw new Error('不是「生活英语」的备份文件'); pending.current = j; setConfirm(true); setMsg(null) }
+    try { const j = JSON.parse(await readFile(f)); if (!isBackup(j)) throw new Error('不是「进阶英语」的备份文件'); pending.current = j; setConfirm(true); setMsg(null) }
     catch (e: any) { setMsg({ t: 'err', s: '读取备份失败：' + e.message }) }
   }
   const doRestore = async (mode: 'replace' | 'merge') => {
@@ -76,7 +76,7 @@ export default function Me() {
       <div className="panel"><h3>内容更新</h3>
         <p className="sub">在线时每次打开会自动合并服务器新增的课程（只新增，不覆盖你的进度）。</p>
         <button className="btn sec block" onClick={refreshLib}>立即检查更新</button></div>
-      <div className="panel"><h3>说明</h3><p className="sub">这是「生活英语」，与「泰语每日30词」是两个独立应用，学习数据互不影响。账号登录与云同步尚未实现；请用 JSON 备份迁移设备。</p></div>
+      <div className="panel"><h3>说明</h3><p className="sub">这是「进阶英语」，与「泰语每日30词」是两个独立应用，学习数据互不影响。账号登录与云同步尚未实现；请用 JSON 备份迁移设备。</p></div>
     </>
   )
 }

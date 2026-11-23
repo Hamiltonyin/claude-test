@@ -2,7 +2,7 @@ import { openDB, type IDBPDatabase } from 'idb'
 import type { Word, Lesson, Progress, ReviewLog, Session, Settings } from '../types'
 
 // 数据库版本只做「增量」升级，绝不清空任何 store，保证升级后学习进度保留。
-const DB_NAME = 'english'
+const DB_NAME = 'english-adv'   // 进阶版：换新库，基础版的旧卡不会混进来
 const DB_VERSION = 1
 let dbp: Promise<IDBPDatabase> | null = null
 

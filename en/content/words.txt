@@ -1,255 +1,315 @@
-# day 1 问候与礼貌
-hello|/həˈloʊ/|你好|问候|Hello, nice to meet you.|你好，很高兴认识你。
-hi|/haɪ/|嗨；你好（随意）|问候|Hi, how are you?|嗨，你好吗？
-good morning||早上好|问候|Good morning, everyone.|大家早上好。
-good afternoon||下午好|问候|Good afternoon. How can I help you?|下午好，有什么可以帮您？
-good evening||晚上好|问候|Good evening, sir.|先生，晚上好。
-how are you||你好吗|问候|Hi Tom, how are you?|嗨，汤姆，你好吗？
-I'm fine, thank you||我很好，谢谢|问候|I'm fine, thank you. And you?|我很好，谢谢。你呢？
-thank you||谢谢|问候|Thank you for your help.|谢谢你的帮助。
-thanks|/θæŋks/|谢了（随意）|问候|Thanks a lot!|多谢！
-you're welcome||不客气|问候|“Thanks!” “You're welcome.”|“谢谢！”“不客气。”
-sorry|/ˈsɑri/|对不起；抱歉|问候|Sorry, I'm late.|对不起，我迟到了。
-excuse me||打扰一下；劳驾|问候|Excuse me, where is the toilet?|打扰一下，洗手间在哪里？
-please|/pliz/|请|问候|Please wait a moment.|请稍等。
-no problem||没问题|问候|“Can you help me?” “No problem.”|“能帮我吗？”“没问题。”
-goodbye|/ɡʊdˈbaɪ/|再见|问候|Goodbye, see you tomorrow.|再见，明天见。
-see you later||回头见|问候|I have to go. See you later!|我得走了，回头见！
-nice to meet you||很高兴认识你|问候|Hi, I'm Lin. Nice to meet you.|你好，我是林，很高兴认识你。
-yes|/jɛs/|是；对|问候|Yes, that's right.|对，没错。
-no|/noʊ/|不；不是|问候|No, thank you.|不用了，谢谢。
-okay|/oʊˈkeɪ/|好的；可以|问候|Okay, I understand.|好的，我明白了。
-pardon|/ˈpɑrdən/|请再说一遍|问候|Pardon? Could you say that again?|什么？能再说一遍吗？|听不清时说 Pardon? 或 Sorry? 都可以
-slowly|/ˈsloʊli/|慢慢地|问候|Could you speak slowly, please?|请你说慢一点好吗？
-# day 2 自我介绍
-name|/neɪm/|名字|自我介绍|My name is Lin.|我的名字叫林。
-I'm from China||我来自中国|自我介绍|I'm from China. I live in Bangkok now.|我来自中国，现在住在曼谷。
-live|/lɪv/|住；生活|自我介绍|I live near the BTS station.|我住在轻轨站附近。|作动词「住」读 /lɪv/；作形容词「现场的」读 /laɪv/
-work|/wɝk/|工作|自我介绍|I work in an office.|我在办公室工作。
-job|/dʒɑb/|工作；职业|自我介绍|What's your job?|你做什么工作？
-company|/ˈkʌmpəni/|公司|自我介绍|I work for a Chinese company.|我在一家中国公司工作。
-year|/jɪr/|年；岁|自我介绍|I have lived here for two years.|我在这里住了两年。
-married|/ˈmærid/|已婚的|自我介绍|Are you married?|你结婚了吗？
-family|/ˈfæməli/|家人；家庭|自我介绍|My family is in China.|我的家人在中国。
-hobby|/ˈhɑbi/|爱好|自我介绍|My hobby is cooking.|我的爱好是做饭。
-speak|/spik/|说（语言）|自我介绍|I speak a little English.|我会说一点英语。
-a little||一点点|自我介绍|I can speak a little Thai.|我会说一点泰语。
-understand|/ˌʌndɚˈstænd/|明白；听懂|自我介绍|Sorry, I don't understand.|对不起，我没听懂。
-learn|/lɝn/|学习|自我介绍|I'm learning English.|我在学英语。
-phone number||电话号码|自我介绍|What's your phone number?|你的电话号码是多少？
-address|/ˈædrɛs/|地址|自我介绍|Can you send me your address?|你能把地址发给我吗？
-birthday|/ˈbɝθdeɪ/|生日|自我介绍|When is your birthday?|你生日是哪天？
-friend|/frɛnd/|朋友|自我介绍|This is my friend, Mei.|这是我的朋友小梅。
-Chinese|/tʃaɪˈniz/|中国人；中文|自我介绍|I'm Chinese.|我是中国人。
-Thai|/taɪ/|泰国人；泰语|自我介绍|Do you speak Thai?|你会说泰语吗？|th 在这里读 t，不读 θ
-# day 3 数字与钱
-how much||多少钱|数字与钱|How much is this?|这个多少钱？
-price|/praɪs/|价格|数字与钱|The price is too high.|价格太高了。
-cheap|/tʃip/|便宜的|数字与钱|This one is cheaper.|这个更便宜。
-expensive|/ɪkˈspɛnsɪv/|贵的|数字与钱|It's too expensive.|太贵了。
-discount|/ˈdɪskaʊnt/|折扣|数字与钱|Can I get a discount?|能打个折吗？
-cash|/kæʃ/|现金|数字与钱|Can I pay by cash?|可以付现金吗？
-card|/kɑrd/|卡|数字与钱|Do you take cards?|可以刷卡吗？
-change|/tʃeɪndʒ/|零钱；找零|数字与钱|Keep the change.|不用找了。
-receipt|/rɪˈsit/|收据；小票|数字与钱|Can I have a receipt, please?|可以给我一张收据吗？|p 不发音
-baht|/bɑt/|泰铢|数字与钱|It's two hundred baht.|两百泰铢。
-hundred|/ˈhʌndrəd/|百|数字与钱|Three hundred baht, please.|请付三百泰铢。
-thousand|/ˈθaʊzənd/|千|数字与钱|The rent is ten thousand a month.|房租每月一万。
-total|/ˈtoʊtəl/|总共；合计|数字与钱|What's the total?|总共多少？
-pay|/peɪ/|付钱|数字与钱|I'll pay now.|我现在付。
-transfer|/ˈtrænsfɚ/|转账|数字与钱|Can I transfer the money?|我可以转账吗？
-deposit|/dɪˈpɑzɪt/|押金；存款|数字与钱|The deposit is two months' rent.|押金是两个月房租。
-fee|/fi/|费用|数字与钱|Is there a service fee?|有服务费吗？
-free|/fri/|免费的；空闲的|数字与钱|Is it free?|这是免费的吗？
-bill|/bɪl/|账单|数字与钱|Can I have the bill, please?|请给我账单。
-first|/fɝst/|第一|数字与钱|It's on the first floor.|在一楼。
-second|/ˈsɛkənd/|第二；秒|数字与钱|Wait a second.|等一下。
-# day 4 购物
-shop|/ʃɑp/|商店；购物|购物|Is there a shop near here?|附近有商店吗？
-buy|/baɪ/|买|购物|I want to buy a phone case.|我想买个手机壳。
-look for||寻找|购物|I'm looking for a charger.|我在找充电器。
-just looking||随便看看|购物|No thanks, I'm just looking.|不用了，我只是看看。
-size|/saɪz/|尺码；大小|购物|Do you have a bigger size?|有大一号的吗？
-color|/ˈkʌlɚ/|颜色|购物|Do you have another color?|有别的颜色吗？
-try on||试穿|购物|Can I try it on?|我可以试穿吗？
-fitting room||试衣间|购物|Where is the fitting room?|试衣间在哪里？
-bag|/bæɡ/|袋子；包|购物|I don't need a bag, thanks.|我不需要袋子，谢谢。
-return|/rɪˈtɝn/|退货；归还|购物|Can I return this?|这个可以退吗？
-exchange|/ɪksˈtʃeɪndʒ/|换货；兑换|购物|I'd like to exchange it for a smaller one.|我想换一个小一点的。
-broken|/ˈbroʊkən/|坏了的|购物|It's broken. It doesn't work.|它坏了，不能用。
-sold out||卖完了|购物|Sorry, it's sold out.|抱歉，卖完了。
-in stock||有货|购物|Is this in stock?|这个有货吗？
-open|/ˈoʊpən/|开门；营业|购物|What time do you open?|你们几点开门？
-close|/kloʊz/|关门|购物|What time do you close?|你们几点关门？|动词读 /kloʊz/；形容词「近的」读 /kloʊs/
-supermarket|/ˈsupɚˌmɑrkɪt/|超市|购物|I go to the supermarket every week.|我每周去超市。
-convenience store||便利店|购物|There's a convenience store downstairs.|楼下有家便利店。
-online|/ˌɑnˈlaɪn/|网上的|购物|I bought it online.|我在网上买的。
-which one||哪一个|购物|Which one is better?|哪一个更好？
-# day 5 吃饭点餐
-menu|/ˈmɛnju/|菜单|吃饭点餐|Can I see the menu?|能看一下菜单吗？
-order|/ˈɔrdɚ/|点菜；订单|吃饭点餐|Are you ready to order?|可以点菜了吗？
-I'd like||我想要（客气）|吃饭点餐|I'd like a fried rice, please.|我要一份炒饭。
-spicy|/ˈspaɪsi/|辣的|吃饭点餐|Not too spicy, please.|请不要太辣。
-not spicy||不辣|吃饭点餐|Can you make it not spicy?|能做成不辣的吗？
-water|/ˈwɔtɚ/|水|吃饭点餐|A bottle of water, please.|请来一瓶水。
-ice|/aɪs/|冰|吃饭点餐|No ice, please.|请不要加冰。
-sugar|/ˈʃʊɡɚ/|糖|吃饭点餐|Less sugar, please.|请少放糖。
-take away||打包带走|吃饭点餐|For here or take away?|在这吃还是带走？|美国人多说 to go
-for here||在这儿吃|吃饭点餐|For here, please.|在这儿吃。
-table|/ˈteɪbəl/|桌子|吃饭点餐|A table for two, please.|两位，谢谢。
-delicious|/dɪˈlɪʃəs/|好吃的|吃饭点餐|This is delicious!|这个真好吃！
-vegetarian|/ˌvɛdʒəˈtɛriən/|素食的；素食者|吃饭点餐|Do you have vegetarian food?|有素食吗？
-allergic|/əˈlɝdʒɪk/|过敏的|吃饭点餐|I'm allergic to peanuts.|我对花生过敏。
-chicken|/ˈtʃɪkɪn/|鸡肉|吃饭点餐|Chicken or pork?|鸡肉还是猪肉？
-pork|/pɔrk/|猪肉|吃饭点餐|I'll have the pork.|我要猪肉的。
-beef|/bif/|牛肉|吃饭点餐|I don't eat beef.|我不吃牛肉。
-seafood|/ˈsifud/|海鲜|吃饭点餐|Let's have seafood tonight.|今晚吃海鲜吧。
-check please||买单|吃饭点餐|Excuse me, check please.|你好，买单。|英国人说 bill please
-full|/fʊl/|饱的；满的|吃饭点餐|I'm full. Thank you.|我吃饱了，谢谢。
-# day 6 交通出行
-taxi|/ˈtæksi/|出租车|交通出行|Let's take a taxi.|我们打车吧。
-station|/ˈsteɪʃən/|车站|交通出行|Where is the nearest station?|最近的车站在哪里？
-airport|/ˈɛrpɔrt/|机场|交通出行|How long does it take to the airport?|去机场要多久？
-ticket|/ˈtɪkɪt/|票|交通出行|One ticket to Siam, please.|一张去暹罗的票。
-go straight||直走|交通出行|Go straight for two hundred meters.|直走两百米。
-turn left||左转|交通出行|Turn left at the traffic lights.|在红绿灯处左转。
-turn right||右转|交通出行|Turn right here, please.|请在这里右转。
-stop here||在这里停|交通出行|Please stop here.|请在这里停车。
-traffic jam||堵车|交通出行|Sorry, there's a traffic jam.|抱歉，堵车了。
-far|/fɑr/|远的|交通出行|Is it far from here?|离这里远吗？
-near|/nɪr/|近的；在附近|交通出行|Is there an ATM near here?|这附近有取款机吗？
-map|/mæp/|地图|交通出行|Can you show me on the map?|能在地图上指给我看吗？
-pick up||接（人）|交通出行|I'll pick you up at six.|我六点来接你。
-drop off||让…下车|交通出行|Can you drop me off at the mall?|能在商场放我下车吗？
-driver|/ˈdraɪvɚ/|司机|交通出行|The driver is waiting outside.|司机在外面等。
-on the way||在路上|交通出行|I'm on the way.|我在路上了。
-late|/leɪt/|迟到的；晚的|交通出行|Sorry, I'll be ten minutes late.|抱歉，我会晚十分钟。
-arrive|/əˈraɪv/|到达|交通出行|What time will we arrive?|我们几点到？
-flight|/flaɪt/|航班|交通出行|My flight is at nine.|我的航班九点起飞。
-passport|/ˈpæspɔrt/|护照|交通出行|Please show your passport.|请出示您的护照。
-# day 7 租房与房东
-rent|/rɛnt/|房租；租|租房与房东|How much is the rent?|房租多少钱？
-landlord|/ˈlændlɔrd/|房东|租房与房东|I need to call my landlord.|我得给房东打电话。
-apartment|/əˈpɑrtmənt/|公寓|租房与房东|I live in an apartment.|我住公寓。
-contract|/ˈkɑntrækt/|合同|租房与房东|How long is the contract?|合同签多久？
-room|/rum/|房间|租房与房东|The room is very clean.|房间很干净。
-key|/ki/|钥匙|租房与房东|I lost my key.|我把钥匙弄丢了。
-air conditioner||空调|租房与房东|The air conditioner is not working.|空调坏了。|口语常说 the AC
-leak|/lik/|漏水；漏|租房与房东|The bathroom is leaking.|浴室漏水了。
-fix|/fɪks/|修理|租房与房东|Can you fix it today?|今天能修吗？
-repair|/rɪˈpɛr/|修理；维修|租房与房东|When will the repair man come?|维修工什么时候来？
-electricity|/ɪˌlɛkˈtrɪsəti/|电|租房与房东|How much is the electricity bill?|电费多少钱？
-water bill||水费|租房与房东|The water bill is included.|水费包含在内。
-included|/ɪnˈkludɪd/|包含在内的|租房与房东|Is Wi-Fi included?|包含网费吗？
-move in||搬进来|租房与房东|Can I move in next week?|我下周可以搬进来吗？
-move out||搬出去|租房与房东|I'm moving out at the end of the month.|我月底搬走。
-noisy|/ˈnɔɪzi/|吵闹的|租房与房东|My neighbor is very noisy.|我的邻居很吵。
-neighbor|/ˈneɪbɚ/|邻居|租房与房东|My neighbor is very kind.|我的邻居很友善。|gh 不发音
-furniture|/ˈfɝnɪtʃɚ/|家具|租房与房东|Is it furnished?|有家具吗？
-parking|/ˈpɑrkɪŋ/|停车位；停车|租房与房东|Is there parking?|有停车位吗？
-lift|/lɪft/|电梯（英式）|租房与房东|The lift is out of order.|电梯坏了。|美式说 elevator
-# day 8 快递与外卖
-delivery|/dɪˈlɪvəri/|送货；外卖|快递与外卖|Do you have delivery?|可以送货吗？
-package|/ˈpækɪdʒ/|包裹|快递与外卖|I have a package for you.|有您的包裹。
-parcel|/ˈpɑrsəl/|包裹（英式常用）|快递与外卖|Your parcel has arrived.|你的包裹到了。
-downstairs|/ˌdaʊnˈstɛrz/|楼下|快递与外卖|I'm downstairs. Can you come down?|我在楼下，您能下来吗？
-lobby|/ˈlɑbi/|大堂|快递与外卖|Please leave it in the lobby.|请放在大堂。
-leave it||放下就行|快递与外卖|Please leave it at the door.|请放在门口。
-front door||前门；正门|快递与外卖|I'm at the front door.|我在正门。
-security guard||保安|快递与外卖|Give it to the security guard, please.|请交给保安。
-sign|/saɪn/|签名|快递与外卖|Please sign here.|请在这里签字。|g 不发音
-tracking number||快递单号|快递与外卖|What's the tracking number?|快递单号是多少？
-cash on delivery||货到付款|快递与外卖|Is it cash on delivery?|是货到付款吗？
-wrong|/rɔŋ/|错的|快递与外卖|This is the wrong order.|这个订单送错了。
-missing|/ˈmɪsɪŋ/|缺少的；丢失的|快递与外卖|One item is missing.|少了一样东西。
-call me||给我打电话|快递与外卖|Please call me when you arrive.|到了请给我打电话。
-wait|/weɪt/|等|快递与外卖|Please wait five minutes.|请等五分钟。
-coming|/ˈkʌmɪŋ/|来了|快递与外卖|I'm coming down now.|我现在下来。
-floor|/flɔr/|楼层；地板|快递与外卖|I live on the 12th floor.|我住在12楼。
-room number||房间号|快递与外卖|My room number is 1205.|我的房号是1205。
-tip|/tɪp/|小费|快递与外卖|This is a tip for you.|这是给你的小费。
-on time||准时|快递与外卖|The food came on time.|饭准时送到了。
-# day 9 看病
-hospital|/ˈhɑspɪtəl/|医院|看病|I need to go to the hospital.|我得去医院。
-doctor|/ˈdɑktɚ/|医生|看病|I want to see a doctor.|我想看医生。
-sick|/sɪk/|生病的|看病|I feel sick.|我觉得不舒服。
-fever|/ˈfivɚ/|发烧|看病|I have a fever.|我发烧了。
-cough|/kɔf/|咳嗽|看病|I have a bad cough.|我咳得很厉害。|gh 读 f
-headache|/ˈhɛdeɪk/|头疼|看病|I have a headache.|我头疼。|ch 读 k
-stomachache|/ˈstʌməkeɪk/|肚子疼|看病|I have a stomachache.|我肚子疼。
-sore throat||嗓子疼|看病|I have a sore throat.|我嗓子疼。
-cold|/koʊld/|感冒；冷的|看病|I caught a cold.|我感冒了。
-pain|/peɪn/|疼痛|看病|Where is the pain?|哪里疼？
-hurt|/hɝt/|疼；受伤|看病|My back hurts.|我背疼。
-medicine|/ˈmɛdəsən/|药|看病|Take this medicine three times a day.|这药一天吃三次。
-pharmacy|/ˈfɑrməsi/|药店|看病|Is there a pharmacy near here?|附近有药店吗？|ph 读 f
-appointment|/əˈpɔɪntmənt/|预约|看病|I'd like to make an appointment.|我想预约。
-insurance|/ɪnˈʃʊrəns/|保险|看病|Do you accept my insurance?|你们接受我的保险吗？
-emergency|/ɪˈmɝdʒənsi/|紧急情况；急诊|看病|Where is the emergency room?|急诊室在哪里？
-dizzy|/ˈdɪzi/|头晕的|看病|I feel dizzy.|我头晕。
-better|/ˈbɛtɚ/|好些了|看病|I feel better now.|我现在好多了。
-before meals||饭前|看病|Take it before meals.|饭前服用。
-after meals||饭后|看病|Take two tablets after meals.|饭后吃两片。
-# day 10 银行与手机
-bank|/bæŋk/|银行|银行与手机|I need to go to the bank.|我得去银行。
-account|/əˈkaʊnt/|账户|银行与手机|I want to open a bank account.|我想开个银行账户。
-ATM|/ˌeɪ ti ˈɛm/|取款机|银行与手机|The ATM ate my card.|取款机把我的卡吞了。
-withdraw|/wɪðˈdrɔ/|取钱|银行与手机|I want to withdraw some cash.|我想取点现金。
-password|/ˈpæswɝd/|密码|银行与手机|I forgot my password.|我忘记密码了。
-SIM card||电话卡|银行与手机|Where can I buy a SIM card?|在哪里能买电话卡？
-top up||充值|银行与手机|I need to top up my phone.|我要给手机充值。
-signal|/ˈsɪɡnəl/|信号|银行与手机|There's no signal here.|这里没信号。
-battery|/ˈbætəri/|电池；电量|银行与手机|My battery is dead.|我手机没电了。
-charger|/ˈtʃɑrdʒɚ/|充电器|银行与手机|Can I borrow your charger?|能借一下你的充电器吗？
-Wi-Fi password||Wi-Fi 密码|银行与手机|What's the Wi-Fi password?|Wi-Fi 密码是多少？
-screenshot|/ˈskrinʃɑt/|截图|银行与手机|Send me a screenshot.|给我发张截图。
-download|/ˈdaʊnloʊd/|下载|银行与手机|Download the app first.|先下载这个应用。
-app|/æp/|应用；App|银行与手机|Do you use this app?|你用这个应用吗？
-message|/ˈmɛsɪdʒ/|消息|银行与手机|I'll send you a message.|我给你发消息。
-call back||回电话|银行与手机|Can I call you back later?|我晚点回你电话好吗？
-busy|/ˈbɪzi/|忙的；占线|银行与手机|Sorry, I'm busy now.|抱歉，我现在在忙。
-ID card||身份证|银行与手机|Please bring your ID card.|请带上身份证。
-form|/fɔrm/|表格|银行与手机|Please fill in this form.|请填写这张表。
-fill in||填写|银行与手机|Fill in your name here.|在这里填你的名字。
-# day 11 工作与办公室
-office|/ˈɔfɪs/|办公室|工作与办公室|I'm in the office now.|我现在在办公室。
-meeting|/ˈmitɪŋ/|会议|工作与办公室|We have a meeting at ten.|我们十点开会。
-boss|/bɔs/|老板；上司|工作与办公室|My boss is in a meeting.|我老板在开会。
-colleague|/ˈkɑliɡ/|同事|工作与办公室|This is my colleague, Anna.|这是我的同事安娜。
-schedule|/ˈskɛdʒul/|日程；安排|工作与办公室|What's your schedule tomorrow?|你明天的安排是什么？
-deadline|/ˈdɛdlaɪn/|截止日期|工作与办公室|The deadline is Friday.|截止日期是周五。
-report|/rɪˈpɔrt/|报告|工作与办公室|I'm writing the report.|我在写报告。
-project|/ˈprɑdʒɛkt/|项目|工作与办公室|How is the project going?|项目进展如何？
-customer|/ˈkʌstəmɚ/|客户；顾客|工作与办公室|The customer is waiting.|客户在等。
-check|/tʃɛk/|检查；确认|工作与办公室|Let me check.|我查一下。
-confirm|/kənˈfɝm/|确认|工作与办公室|Please confirm the time.|请确认一下时间。
-ready|/ˈrɛdi/|准备好的|工作与办公室|Are you ready?|准备好了吗？
-finish|/ˈfɪnɪʃ/|完成|工作与办公室|I'll finish it today.|我今天会做完。
-help|/hɛlp/|帮助|工作与办公室|Can you help me with this?|你能帮我弄一下这个吗？
-problem|/ˈprɑbləm/|问题|工作与办公室|We have a problem.|我们遇到了一个问题。
-question|/ˈkwɛstʃən/|问题；疑问|工作与办公室|Can I ask a question?|我可以问个问题吗？
-day off||休假日|工作与办公室|Tomorrow is my day off.|明天我休息。
-overtime|/ˈoʊvɚtaɪm/|加班|工作与办公室|I worked overtime last night.|我昨晚加班了。
-salary|/ˈsæləri/|工资|工作与办公室|When do we get our salary?|什么时候发工资？
-lunch break||午休|工作与办公室|Let's talk after the lunch break.|午休后再谈吧。
-# day 12 邮件电话会议
-email|/ˈimeɪl/|邮件；发邮件|邮件电话会议|I'll email you the file.|我把文件发邮件给你。
-attachment|/əˈtætʃmənt/|附件|邮件电话会议|Please see the attachment.|请查看附件。
-reply|/rɪˈplaɪ/|回复|邮件电话会议|Thanks for your quick reply.|谢谢你的快速回复。
-as soon as possible||尽快|邮件电话会议|Please reply as soon as possible.|请尽快回复。|缩写 ASAP
-let me know||告诉我一声|邮件电话会议|Let me know if you have any questions.|有任何问题告诉我。
-I'm afraid||恐怕（委婉地说坏消息）|邮件电话会议|I'm afraid I can't come tomorrow.|恐怕我明天来不了。
-could you||你能…吗（客气）|邮件电话会议|Could you send it again?|你能再发一次吗？
-speaking|/ˈspikɪŋ/|（电话里）我就是|邮件电话会议|“Is this Lin?” “Speaking.”|“是林吗？”“我就是。”
-hold on||稍等（电话）|邮件电话会议|Hold on, please.|请稍等。
-can you hear me||你能听到我吗|邮件电话会议|Hello? Can you hear me?|喂？你能听到我吗？
-mute|/mjut/|静音|邮件电话会议|You're on mute.|你开着静音呢。
-share screen||共享屏幕|邮件电话会议|Can you share your screen?|你能共享一下屏幕吗？
-agree|/əˈɡri/|同意|邮件电话会议|I agree with you.|我同意你的看法。
-suggest|/səɡˈdʒɛst/|建议|邮件电话会议|I suggest we meet on Monday.|我建议我们周一见。
-available|/əˈveɪləbəl/|有空的；可用的|邮件电话会议|Are you available this afternoon?|你今天下午有空吗？
-reschedule|/riˈskɛdʒul/|改期|邮件电话会议|Can we reschedule the meeting?|我们能改一下开会时间吗？
-cancel|/ˈkænsəl/|取消|邮件电话会议|The meeting is cancelled.|会议取消了。
-remind|/rɪˈmaɪnd/|提醒|邮件电话会议|Please remind me tomorrow.|明天请提醒我。
-by the way||顺便说一下|邮件电话会议|By the way, did you get my email?|顺便问一下，你收到我的邮件了吗？
-best regards||此致敬礼（邮件结尾）|邮件电话会议|Best regards, Lin|此致，林
+# day 1 地道口语
+I'm swamped||我忙得不可开交|地道口语|Sorry, I'm swamped this week. Can we talk on Monday?|抱歉，我这周忙疯了，周一再聊行吗？|比 I'm very busy 地道得多
+it slipped my mind||我一下子忘了|地道口语|I meant to call you, but it slipped my mind.|我本来想给你打电话的，结果忘了。|比 I forgot 委婉，强调不是故意的
+I'm on it||我马上处理|地道口语|“Can you fix the invoice?” “I'm on it.”|“你能改一下发票吗？”“我这就弄。”|同事间常用，表示已经接手
+fair enough||有道理；行吧|地道口语|“I can't come, I'm sick.” “Fair enough.”|“我来不了，我病了。”“那好吧。”|接受对方理由，不一定完全赞同
+no worries||没事；别在意|地道口语|“Sorry I'm late.” “No worries.”|“抱歉我迟到了。”“没事。”|澳英常用，现在很普遍
+it's up to you||你决定|地道口语|Thai or Japanese food? It's up to you.|吃泰餐还是日料？你定。
+I'll play it by ear||到时候看情况|地道口语|I don't have a plan yet. I'll play it by ear.|我还没计划，到时候看情况。|不提前计划，随机应变
+that makes sense||有道理；明白了|地道口语|Oh, that makes sense now.|哦，现在明白了。
+I can't make it||我去不了|地道口语|I'm afraid I can't make it tonight.|恐怕我今晚去不了。|make it＝赶到、出席
+let's call it a day||今天就到这吧|地道口语|It's eight o'clock. Let's call it a day.|八点了，今天就到这吧。
+I'm running late||我要晚到了|地道口语|I'm running late. Be there in ten.|我要晚点，十分钟到。
+long story short||长话短说|地道口语|Long story short, we missed the flight.|长话短说，我们误机了。
+for what it's worth||不管有没有用（说一句）|地道口语|For what it's worth, I think you did the right thing.|不管有没有用，我觉得你做得对。|给意见前的谦虚开头
+to be honest||说实话|地道口语|To be honest, I'm not a fan of the new design.|说实话，我不太喜欢新设计。|缩写 tbh
+it's not a big deal||没什么大不了|地道口语|Don't worry, it's not a big deal.|别担心，没什么大不了的。
+I couldn't care less||我一点都不在乎|地道口语|He couldn't care less about the rules.|他根本不在乎规定。|常被误说成 could care less，意思一样
+you can say that again||说得太对了|地道口语|“It's so hot today.” “You can say that again.”|“今天真热。”“可不是嘛。”
+what's the catch||有什么猫腻；附加条件是什么|地道口语|Free rent for a month? What's the catch?|免一个月房租？有什么条件？
+I'll take a rain check||改天吧|地道口语|Thanks for the invite, but I'll take a rain check.|谢谢邀请，不过改天吧。|礼貌地推掉，暗示以后愿意
+my bad||我的错|地道口语|Oh, my bad. I sent it to the wrong person.|哎，我的错，发错人了。|很随意，不要对上司用
+# day 2 短语动词·工作
+follow up|/ˈfɑloʊ ˌʌp/|跟进|短语动词·工作|I'll follow up with the client tomorrow.|我明天跟进客户。|名词 a follow-up 跟进邮件
+touch base||联系一下；碰个头|短语动词·工作|Let's touch base next week.|我们下周再碰一下。
+reach out||联系；主动找|短语动词·工作|Feel free to reach out if you need anything.|有需要随时联系我。
+put off||推迟|短语动词·工作|We had to put off the launch until May.|我们不得不把发布推迟到五月。|＝postpone，更口语
+bring up||提出（话题）|短语动词·工作|I'll bring it up at the meeting.|我会在会上提这件事。
+carry out||执行；实施|短语动词·工作|The survey was carried out last year.|调查是去年做的。
+figure out||弄明白；想出办法|短语动词·工作|We need to figure out what went wrong.|我们得搞清楚哪里出了问题。
+sort out||解决；整理|短语动词·工作|Don't worry, I'll sort it out.|别担心，我来解决。|英式常用
+run into||遇到（问题）；偶遇|短语动词·工作|We ran into some problems with the supplier.|我们和供应商之间遇到了一些问题。
+step down||辞职；下台|短语动词·工作|The CEO stepped down last month.|CEO 上个月辞职了。
+take over||接管；接手|短语动词·工作|Who will take over the project?|谁来接手这个项目？
+hand over||移交|短语动词·工作|Please hand over the files before you leave.|走之前请把文件交接好。|名词 handover 交接
+lay off||裁员|短语动词·工作|The company laid off 200 people.|公司裁了 200 人。|名词 layoffs
+fill in for||代班；顶替|短语动词·工作|Can you fill in for me on Friday?|周五你能帮我顶一下班吗？
+get back to||回复；再联系|短语动词·工作|I'll get back to you by the end of the day.|我今天下班前回复你。
+come up with||想出（主意）|短语动词·工作|She came up with a great idea.|她想出了一个好主意。
+keep up with||跟上|短语动词·工作|It's hard to keep up with all the emails.|邮件多得跟不上。
+wrap up||收尾；结束|短语动词·工作|Let's wrap up the meeting.|我们把会议收个尾吧。
+back up||支持；备份|短语动词·工作|Can you back me up in the meeting?|开会时你能支持我吗？
+look into||调查；研究一下|短语动词·工作|I'll look into it and let you know.|我查一下再告诉你。
+# day 3 短语动词·生活
+put up with||忍受|短语动词·生活|I can't put up with the noise anymore.|我再也忍受不了这噪音了。
+run out of||用完|短语动词·生活|We've run out of drinking water.|我们的饮用水用完了。
+get by||勉强过得去|短语动词·生活|I can get by in Thai, but I'm not fluent.|我的泰语能应付，但不流利。
+show up||出现；露面|短语动词·生活|The plumber didn't show up.|水管工没来。
+turn down||拒绝；调低|短语动词·生活|She turned down the job offer.|她拒绝了那份工作。
+end up||最后落得；最终|短语动词·生活|We ended up staying at home.|我们最后待在家里了。
+come across||偶然发现；给人印象|短语动词·生活|He comes across as a bit rude.|他给人感觉有点粗鲁。
+look forward to||期待|短语动词·生活|I'm looking forward to the trip.|我很期待这次旅行。|to 后面接名词或 -ing
+get over||从…中恢复；释怀|短语动词·生活|It took me weeks to get over the flu.|我花了几周才从流感中恢复。
+cut down on||减少|短语动词·生活|I'm trying to cut down on sugar.|我在尽量少吃糖。
+drop by||顺便拜访|短语动词·生活|Drop by anytime.|随时过来坐坐。
+pick up|/ˌpɪk ˈʌp/|学会（不刻意地）；取|短语动词·生活|I picked up some Thai from my neighbors.|我从邻居那学了点泰语。|多义：接人、拿东西、顺便学会
+set up||建立；安排|短语动词·生活|Can you help me set up the Wi-Fi?|你能帮我设置一下 Wi-Fi 吗？
+work out||锻炼；解决；结果是|短语动词·生活|Things worked out in the end.|最后事情都解决了。
+look after||照顾|短语动词·生活|Could you look after my cat this weekend?|周末你能帮我照看猫吗？
+go through||经历；仔细查看|短语动词·生活|She's going through a hard time.|她正在经历一段艰难时期。
+give up||放弃；戒掉|短语动词·生活|Don't give up so easily.|别那么容易放弃。
+check out||看看；退房|短语动词·生活|You should check out that new café.|你应该去看看那家新咖啡馆。
+calm down||冷静下来|短语动词·生活|Calm down, it's not your fault.|冷静点，这不是你的错。
+blow off||放鸽子；不当回事|短语动词·生活|He blew off our meeting again.|他又放了我们鸽子。|很口语
+# day 4 描述人
+reliable|/rɪˈlaɪəbəl/|可靠的|描述人|She's the most reliable person on the team.|她是团队里最靠谱的人。
+straightforward|/ˌstreɪtˈfɔrwɚd/|坦率的；简单明了的|描述人|He's very straightforward. He says what he thinks.|他很直接，想什么说什么。|也可形容事情「简单」
+considerate|/kənˈsɪdərət/|体贴的|描述人|It was considerate of you to call.|你打电话来真贴心。
+stubborn|/ˈstʌbɚn/|固执的|描述人|My landlord is so stubborn.|我房东太固执了。
+outgoing|/ˈaʊtˌɡoʊɪŋ/|外向的|描述人|She's outgoing and makes friends easily.|她很外向，容易交朋友。
+reserved|/rɪˈzɝvd/|内敛的；矜持的|描述人|He's a bit reserved at first.|他一开始有点拘谨。
+arrogant|/ˈærəɡənt/|傲慢的|描述人|I found him quite arrogant.|我觉得他挺傲慢的。
+humble|/ˈhʌmbəl/|谦虚的|描述人|She's very humble about her success.|她对自己的成功很谦虚。
+ambitious|/æmˈbɪʃəs/|有野心的；有抱负的|描述人|He's ambitious and works very hard.|他很有抱负，工作很努力。
+easygoing|/ˌiziˈɡoʊɪŋ/|随和的|描述人|My boss is pretty easygoing.|我老板挺随和的。
+moody|/ˈmudi/|喜怒无常的|描述人|Teenagers can be really moody.|青少年有时很情绪化。|不是「有情调」
+nosy|/ˈnoʊzi/|爱打听的|描述人|My neighbor is a bit nosy.|我邻居有点八卦。
+picky|/ˈpɪki/|挑剔的|描述人|He's a picky eater.|他挑食。
+tactful|/ˈtæktfəl/|圆滑的；得体的|描述人|Try to be tactful when you give feedback.|给反馈时尽量讲究方式。
+blunt|/blʌnt/|说话直白（有点冲）的|描述人|Sorry to be blunt, but this won't work.|恕我直言，这行不通。|比 straightforward 更带负面色彩
+resourceful|/rɪˈsɔrsfəl/|足智多谋的|描述人|She's resourceful and always finds a way.|她很有办法，总能找到出路。
+gullible|/ˈɡʌləbəl/|容易上当的|描述人|Don't be so gullible.|别那么好骗。
+sociable|/ˈsoʊʃəbəl/|好交际的|描述人|He's very sociable at parties.|他在聚会上很活跃。
+self-centered|/ˌsɛlfˈsɛntɚd/|以自我为中心的|描述人|She can be a little self-centered.|她有时候有点自我。
+down-to-earth|/ˌdaʊn tu ˈɝθ/|接地气的；务实的|描述人|Despite being rich, he's very down-to-earth.|虽然有钱，他很接地气。
+# day 5 高级动词
+clarify|/ˈklærəfaɪ/|澄清；说明|高级动词|Could you clarify what you mean?|你能说清楚一点是什么意思吗？|替代 explain again
+prioritize|/praɪˈɔrətaɪz/|优先处理|高级动词|We need to prioritize safety.|我们要把安全放在首位。
+anticipate|/ænˈtɪsəpeɪt/|预料；预期|高级动词|We didn't anticipate so many guests.|我们没料到来这么多客人。
+acknowledge|/əkˈnɑlɪdʒ/|承认；确认收到|高级动词|Please acknowledge receipt of this email.|请确认收到此邮件。
+facilitate|/fəˈsɪləteɪt/|促进；使便利|高级动词|The new app facilitates online payments.|新应用让网上付款更方便。
+compromise|/ˈkɑmprəmaɪz/|妥协；折中|高级动词|We had to compromise on the price.|我们在价格上不得不让步。|也作名词：reach a compromise
+emphasize|/ˈɛmfəsaɪz/|强调|高级动词|I want to emphasize one point.|我想强调一点。
+undermine|/ˌʌndɚˈmaɪn/|削弱；暗中破坏|高级动词|Don't undermine your colleagues.|别拆同事的台。
+overlook|/ˌoʊvɚˈlʊk/|忽视；俯瞰|高级动词|I overlooked a small mistake.|我漏看了一个小错误。|不是「看过」
+reconsider|/ˌrikənˈsɪdɚ/|重新考虑|高级动词|Would you reconsider your decision?|你能重新考虑一下你的决定吗？
+negotiate|/nɪˈɡoʊʃieɪt/|谈判；协商|高级动词|I negotiated a lower rent.|我谈下了更低的房租。
+deteriorate|/dɪˈtɪriəreɪt/|恶化|高级动词|His health deteriorated quickly.|他的健康迅速恶化。
+alleviate|/əˈliviˌeɪt/|缓解；减轻|高级动词|This medicine will alleviate the pain.|这药能缓解疼痛。
+comply|/kəmˈplaɪ/|遵守|高级动词|All tenants must comply with the rules.|所有租户必须遵守规定。|comply with
+postpone|/poʊstˈpoʊn/|推迟|高级动词|The event has been postponed.|活动延期了。
+reimburse|/ˌriɪmˈbɝs/|报销；偿还|高级动词|The company will reimburse your travel costs.|公司会报销你的差旅费。
+streamline|/ˈstrimlaɪn/|精简；简化（流程）|高级动词|We need to streamline the process.|我们需要简化流程。
+endorse|/ɪnˈdɔrs/|支持；代言|高级动词|The plan was endorsed by the board.|这个计划得到了董事会的支持。
+verify|/ˈvɛrəfaɪ/|核实|高级动词|Please verify your identity.|请验证您的身份。
+elaborate|/ɪˈlæbəreɪt/|详细说明|高级动词|Could you elaborate on that?|你能具体说说吗？|动词读 -reɪt；形容词「精心的」读 -rət
+# day 6 商务邮件
+I hope this email finds you well||希望您一切都好|商务邮件|I hope this email finds you well. I'm writing to ask about…|希望您一切都好。我写信是想询问……|邮件开头的客套话
+I'm writing to inquire about||我写信是想询问|商务邮件|I'm writing to inquire about the vacancy.|我写信是想询问这个职位空缺。
+please find attached||附件中是|商务邮件|Please find attached the invoice.|附件是发票。|比 I attached… 正式
+as per our conversation||根据我们的谈话|商务邮件|As per our conversation, I've updated the contract.|根据我们的谈话，我更新了合同。
+just a quick reminder||温馨提醒一下|商务邮件|Just a quick reminder that the rent is due on Friday.|温馨提醒，房租周五到期。|提醒别人又不显得催
+I'd appreciate it if||如果…我将不胜感激|商务邮件|I'd appreciate it if you could reply by Monday.|如果您能在周一前回复，我将不胜感激。
+at your earliest convenience||在您方便时尽早|商务邮件|Please call me at your earliest convenience.|请您方便时尽早给我回电话。|比 ASAP 礼貌
+apologies for the delay||抱歉回复晚了|商务邮件|Apologies for the delay in getting back to you.|抱歉这么晚才回复您。
+to clarify||澄清一下|商务邮件|To clarify, the price includes tax.|澄清一下，价格含税。
+going forward||今后|商务邮件|Going forward, please send reports on Fridays.|今后请在周五发报告。
+loop in||把…拉进来（抄送）|商务邮件|I've looped in my manager.|我把经理也抄送进来了。
+cc|/ˌsiˈsi/|抄送|商务邮件|Please cc me on the email.|邮件请抄送我。
+on behalf of||代表|商务邮件|I'm writing on behalf of my company.|我代表公司写信。
+regarding|/rɪˈɡɑrdɪŋ/|关于|商务邮件|Regarding your question, the answer is yes.|关于您的问题，答案是肯定的。
+kindly|/ˈkaɪndli/|请（客气）|商务邮件|Kindly confirm your attendance.|请确认是否出席。|印度/东南亚英语很常用，英美人觉得略生硬
+feel free to||随时可以|商务邮件|Feel free to contact me with any questions.|有任何问题随时联系我。
+look forward to hearing from you||期待您的回复|商务邮件|I look forward to hearing from you soon.|期待您早日回复。
+follow-up email||跟进邮件|商务邮件|I'll send a follow-up email after the call.|电话后我会发一封跟进邮件。
+out of office||不在办公室（自动回复）|商务邮件|I'm out of office until Monday.|我周一前不在办公室。|缩写 OOO
+let me get back to you on that||这个我晚点答复你|商务邮件|Good question. Let me get back to you on that.|好问题，我晚点答复你。|不确定时争取时间
+# day 7 会议与谈判
+on the same page||看法一致；了解同样情况|会议与谈判|Let's make sure we're all on the same page.|确保我们大家想法一致。
+take it offline||会后再私下讨论|会议与谈判|That's a detail. Let's take it offline.|这是细节，会后再聊。
+action item||待办事项|会议与谈判|What are the action items from today?|今天的待办事项有哪些？
+agenda|/əˈdʒɛndə/|议程|会议与谈判|What's on the agenda today?|今天议程有什么？
+bottom line||底线；归根结底|会议与谈判|The bottom line is we need more money.|归根结底，我们需要更多资金。
+ballpark figure||大概的数字|会议与谈判|Can you give me a ballpark figure?|你能给个大概数吗？
+win-win|/ˌwɪnˈwɪn/|双赢|会议与谈判|We want a win-win solution.|我们想要双赢的方案。
+counteroffer|/ˈkaʊntɚˌɔfɚ/|还价|会议与谈判|They made a counteroffer of 20,000.|他们还价两万。
+leverage|/ˈlɛvərɪdʒ/|筹码；利用|会议与谈判|We don't have much leverage here.|我们在这件事上没多少筹码。
+deal-breaker|/ˈdilˌbreɪkɚ/|让人放弃交易的因素|会议与谈判|No parking is a deal-breaker for me.|没停车位的话我就不租了。
+meet halfway||各让一步|会议与谈判|Can we meet halfway on the price?|价格上我们能各让一步吗？
+non-negotiable|/ˌnɑnnɪˈɡoʊʃəbəl/|没商量余地的|会议与谈判|The deadline is non-negotiable.|截止日期没得商量。
+that's a fair point||这一点说得在理|会议与谈判|That's a fair point, but consider the cost.|有道理，但也要考虑成本。|先认同再转折
+if I may||请允许我（插话）|会议与谈判|If I may, I'd like to add something.|请允许我补充一点。
+to put it another way||换句话说|会议与谈判|To put it another way, we're over budget.|换句话说，我们超预算了。
+going off on a tangent||跑题|会议与谈判|Sorry, I'm going off on a tangent.|抱歉，我跑题了。
+sign off on||批准|会议与谈判|The manager needs to sign off on this.|这个需要经理批准。
+stakeholder|/ˈsteɪkˌhoʊldɚ/|利益相关方|会议与谈判|We need to update all stakeholders.|我们需要通知所有相关方。
+consensus|/kənˈsɛnsəs/|共识|会议与谈判|We reached a consensus.|我们达成了共识。
+table|/ˈteɪbəl/|搁置（美）；提出讨论（英）|会议与谈判|Let's table this until next week.|这事放到下周再说。|美英意思相反，美式是「搁置」
+# day 8 委婉表达
+I was wondering if||不知道能不能（客气地请求）|委婉表达|I was wondering if you could help me.|不知道您能不能帮我一下。|用过去进行时显得更客气
+would you mind||您介意…吗|委婉表达|Would you mind closing the window?|您介意关一下窗吗？|回答「不介意」要说 No, not at all
+I'm not sure that's the best idea||我不确定这是不是最好的办法|委婉表达|I'm not sure that's the best idea.|我觉得这可能不是最好的办法。|委婉地说「不行」
+it might be worth||也许值得|委婉表达|It might be worth checking again.|也许值得再检查一遍。|委婉地提建议
+with all due respect||恕我直言|委婉表达|With all due respect, I disagree.|恕我直言，我不同意。|后面常是反对意见
+I see where you're coming from||我理解你的出发点|委婉表达|I see where you're coming from, but…|我理解你的想法，但是……
+that's not quite what I meant||我不完全是那个意思|委婉表达|Sorry, that's not quite what I meant.|抱歉，我不完全是那个意思。
+I'm afraid that||恐怕|委婉表达|I'm afraid that's not possible.|恐怕这不可能。
+a bit of a||有点（缓和语气）|委婉表达|We have a bit of a problem.|我们有点小问题。|把大问题说小
+not exactly||不完全是；不太（含蓄否定）|委婉表达|It's not exactly cheap.|这可不算便宜。|实际意思是「很贵」
+I'd rather not||我不太想|委婉表达|I'd rather not talk about it.|我不太想谈这个。
+if you don't mind me asking||冒昧问一句|委婉表达|How old are you, if you don't mind me asking?|冒昧问一句，你多大了？
+correct me if I'm wrong||我说错的话请纠正|委婉表达|Correct me if I'm wrong, but wasn't it due yesterday?|如果我说错请纠正，不是昨天截止吗？|其实常是在委婉指出错误
+just to be clear||为了确认一下|委婉表达|Just to be clear, you'll pay the deposit today?|确认一下，你今天付押金对吧？
+I'll see what I can do||我尽力试试|委婉表达|I can't promise, but I'll see what I can do.|不能保证，但我尽力。|也常是礼貌的「大概不行」
+that's very kind of you, but||你真好，不过|委婉表达|That's very kind of you, but I'll manage.|你真好，不过我自己能行。|礼貌拒绝
+it's not ideal||不太理想|委婉表达|The location is not ideal, but the price is good.|位置不太理想，但价格不错。
+there seems to be||似乎有|委婉表达|There seems to be a mistake on the bill.|账单上好像有个错误。|投诉时不直接指责
+could you possibly||您能不能（非常客气）|委婉表达|Could you possibly lower the price?|价格能不能再低一点？
+to some extent||在某种程度上|委婉表达|I agree with you to some extent.|我在一定程度上同意你。
+# day 9 习语
+the ball is in your court||该你做决定了|习语|I've made my offer. The ball is in your court.|我已经出价了，现在看你的。
+cut corners||偷工减料|习语|Don't cut corners on safety.|安全上别偷工减料。
+a blessing in disguise||因祸得福|习语|Losing that job was a blessing in disguise.|丢了那份工作其实是因祸得福。
+hit the nail on the head||说到点子上|习语|You hit the nail on the head.|你说到点子上了。
+under the weather||身体不舒服|习语|I'm feeling a bit under the weather.|我有点不舒服。
+break the ice||打破僵局|习语|He told a joke to break the ice.|他讲了个笑话来活跃气氛。
+cost an arm and a leg||贵得要命|习语|That condo costs an arm and a leg.|那套公寓贵得离谱。
+once in a blue moon||千载难逢；很少|习语|I eat fast food once in a blue moon.|我很少吃快餐。
+on the fence||犹豫不决|习语|I'm still on the fence about moving.|我还在犹豫要不要搬家。
+the last straw||压垮骆驼的最后一根稻草|习语|The broken AC was the last straw.|空调坏掉是最后一根稻草。
+a piece of cake||小菜一碟|习语|The test was a piece of cake.|考试小菜一碟。
+beat around the bush||拐弯抹角|习语|Stop beating around the bush.|别拐弯抹角了。
+bite off more than you can chew||贪多嚼不烂；揽太多事|习语|I bit off more than I could chew this month.|这个月我揽的事太多了。
+get the hang of||掌握窍门|习语|You'll get the hang of it soon.|你很快就会上手的。
+in hot water||陷入麻烦|习语|He's in hot water with his boss.|他惹上司生气了。
+let the cat out of the bag||泄露秘密|习语|Who let the cat out of the bag?|谁把秘密说出去了？
+pull someone's leg||开某人玩笑|习语|Relax, I'm just pulling your leg.|放松，我开玩笑的。
+see eye to eye||意见一致|习语|We don't always see eye to eye.|我们意见不总是一致。
+by the skin of your teeth||险些；勉强|习语|I caught the train by the skin of my teeth.|我差一点没赶上火车。
+burn the midnight oil||熬夜工作|习语|I've been burning the midnight oil all week.|我这周一直熬夜干活。
+# day 10 搭配
+make a decision||做决定|搭配|We need to make a decision today.|我们今天得做决定。|不说 do a decision
+do someone a favor||帮某人一个忙|搭配|Could you do me a favor?|你能帮我个忙吗？
+take responsibility for||为…负责|搭配|He refused to take responsibility for the mistake.|他拒绝为这个错误负责。
+pay attention to||注意|搭配|Pay attention to the details.|注意细节。
+raise a question||提出问题|搭配|This raises an important question.|这引出了一个重要问题。
+meet a deadline||赶上截止日期|搭配|We worked late to meet the deadline.|我们加班赶截止日期。|反义 miss a deadline
+heavy traffic||交通拥堵|搭配|There's heavy traffic on Sukhumvit.|素坤逸路很堵。|不说 big traffic
+strong coffee||浓咖啡|搭配|I need a strong coffee.|我需要一杯浓咖啡。|不说 thick coffee
+make progress||取得进展|搭配|Are we making any progress?|我们有进展吗？
+draw a conclusion||得出结论|搭配|It's too early to draw a conclusion.|现在下结论还太早。
+take advantage of||利用；占便宜|搭配|Take advantage of the discount.|好好利用这个折扣。|对人用时是「占便宜」
+bear in mind||记住；考虑到|搭配|Bear in mind that prices may change.|请注意价格可能变动。
+run a business||经营生意|搭配|She runs a small business in Chiang Mai.|她在清迈做小生意。
+catch a cold||感冒|搭配|I caught a cold on the plane.|我在飞机上感冒了。
+keep a promise||遵守诺言|搭配|He always keeps his promises.|他总是信守诺言。
+place an order||下单|搭配|I placed an order online.|我在网上下了单。
+reach an agreement||达成协议|搭配|We finally reached an agreement.|我们终于达成协议。
+highly recommend||强烈推荐|搭配|I highly recommend this restaurant.|我强烈推荐这家餐厅。|不说 strongly recommend（也可，但 highly 更自然）
+deeply regret||深感遗憾|搭配|I deeply regret what I said.|我很后悔说了那些话。
+fully aware||完全清楚|搭配|I'm fully aware of the risks.|我完全清楚风险。
+# day 11 表达观点
+from my perspective||在我看来|表达观点|From my perspective, it's a good deal.|在我看来，这很划算。
+it seems to me that||在我看来似乎|表达观点|It seems to me that we're wasting time.|我觉得我们在浪费时间。
+on the other hand||另一方面|表达观点|It's cheap. On the other hand, it's far.|它便宜，另一方面，它很远。
+having said that||话虽如此|表达观点|It's expensive. Having said that, it's worth it.|是贵，话虽如此，还是值得的。
+that being said||话虽这么说|表达观点|That being said, I still have some concerns.|话虽如此，我还是有些顾虑。
+I'd argue that||我认为（有论证地）|表达观点|I'd argue that location matters more than size.|我认为位置比面积更重要。
+admittedly|/ədˈmɪtɪdli/|诚然；不可否认|表达观点|Admittedly, I made a mistake.|诚然，我犯了个错。
+nevertheless|/ˌnɛvɚðəˈlɛs/|尽管如此|表达观点|It was raining. Nevertheless, we went out.|下着雨，不过我们还是出门了。
+whereas|/wɛrˈæz/|然而；鉴于|表达观点|I like the city, whereas my wife prefers the beach.|我喜欢城市，而我太太更喜欢海边。
+in terms of||就…而言|表达观点|In terms of price, this one is better.|就价格而言，这个更好。
+as far as I'm concerned||就我而言|表达观点|As far as I'm concerned, the matter is closed.|对我来说，这事已经结束了。
+by and large||总的来说|表达观点|By and large, I'm happy here.|总体来说，我在这里很开心。
+it goes without saying||不用说|表达观点|It goes without saying that safety comes first.|不用说，安全第一。
+to a large extent||在很大程度上|表达观点|To a large extent, it depends on you.|这在很大程度上取决于你。
+I'm inclined to think||我倾向于认为|表达观点|I'm inclined to think he's right.|我倾向于认为他是对的。
+the point is||关键是|表达观点|The point is, we can't afford it.|关键是我们负担不起。
+not to mention||更不用说|表达观点|It's noisy, not to mention dirty.|又吵，更别说还脏。
+all things considered||综合考虑|表达观点|All things considered, it was a good year.|综合来看，这是不错的一年。
+arguably|/ˈɑrɡjuəbli/|可以说|表达观点|It's arguably the best street food in Asia.|这可以说是亚洲最好的街头小吃。
+I beg to differ||我不敢苟同|表达观点|I beg to differ. I think it's overpriced.|我不敢苟同，我觉得太贵了。|正式、略带讽刺
+# day 12 投诉与解决
+I'd like to make a complaint||我想投诉|投诉与解决|I'd like to make a complaint about the service.|我想投诉服务。
+this is unacceptable||这是不能接受的|投诉与解决|Waiting two hours is unacceptable.|等两个小时是不能接受的。
+I'd like a refund||我想退款|投诉与解决|The item was damaged. I'd like a refund.|东西坏了，我想退款。
+faulty|/ˈfɔlti/|有缺陷的|投诉与解决|The washing machine is faulty.|洗衣机有毛病。
+overcharge|/ˌoʊvɚˈtʃɑrdʒ/|多收钱|投诉与解决|I think you overcharged me.|我觉得你多收我钱了。
+look into the matter||调查此事|投诉与解决|We will look into the matter immediately.|我们会立即调查此事。
+compensation|/ˌkɑmpənˈseɪʃən/|赔偿|投诉与解决|Will I get any compensation?|我能得到赔偿吗？
+I've been more than patient||我已经够有耐心了|投诉与解决|I've been more than patient, but nothing has changed.|我已经够耐心了，可什么都没改变。
+escalate|/ˈɛskəleɪt/|升级（问题）；上报|投诉与解决|If this isn't fixed, I'll escalate it.|如果不解决，我就往上投诉。
+speak to the manager||找经理说|投诉与解决|Could I speak to the manager, please?|我能和经理谈谈吗？
+it's still not working||还是不能用|投诉与解决|You fixed it yesterday, but it's still not working.|你昨天修过了，但还是不行。
+take responsibility||承担责任|投诉与解决|Who's going to take responsibility for this?|谁来为此负责？
+I'd appreciate a quick response||希望尽快答复|投诉与解决|This is urgent. I'd appreciate a quick response.|这很急，希望尽快答复。
+in writing||书面形式|投诉与解决|Can you confirm that in writing?|你能书面确认一下吗？|口头承诺不算数时用
+breach|/britʃ/|违反（合同）|投诉与解决|That's a breach of contract.|这违反了合同。
+withhold|/wɪθˈhoʊld/|扣留；不给|投诉与解决|The landlord withheld my deposit.|房东扣了我的押金。
+wear and tear||正常损耗|投诉与解决|That's normal wear and tear, not damage.|这是正常损耗，不是损坏。|退押金时很重要
+dispute|/dɪˈspjut/|争议|投诉与解决|We have a dispute over the deposit.|我们在押金上有争议。
+resolve|/rɪˈzɑlv/|解决|投诉与解决|I hope we can resolve this quickly.|希望我们能尽快解决。
+goodwill gesture||表示诚意的补偿|投诉与解决|They gave us a free night as a goodwill gesture.|他们免费多给一晚以示诚意。
+# day 13 钱与合同
+terms and conditions||条款|钱与合同|Read the terms and conditions carefully.|仔细阅读条款。
+fine print||小字条款|钱与合同|Always check the fine print.|一定要看小字条款。
+notice period||提前通知期|钱与合同|The notice period is 30 days.|需要提前 30 天通知。
+renew|/rɪˈnu/|续签|钱与合同|Do you want to renew the lease?|你要续租吗？
+lease|/lis/|租约|钱与合同|I signed a one-year lease.|我签了一年的租约。
+terminate|/ˈtɝmɪneɪt/|终止|钱与合同|We can terminate the contract early.|我们可以提前终止合同。
+penalty|/ˈpɛnəlti/|罚款；违约金|钱与合同|There's a penalty for early termination.|提前解约要付违约金。
+upfront|/ˌʌpˈfrʌnt/|预先（付款）；坦率的|钱与合同|You have to pay three months upfront.|要预付三个月。
+installment|/ɪnˈstɔlmənt/|分期付款|钱与合同|Can I pay in installments?|可以分期付款吗？
+overdue|/ˌoʊvɚˈdu/|逾期的|钱与合同|The payment is two weeks overdue.|付款逾期两周了。
+budget|/ˈbʌdʒɪt/|预算|钱与合同|It's over my budget.|超出我的预算了。
+afford|/əˈfɔrd/|负担得起|钱与合同|I can't afford a car right now.|我现在买不起车。
+exchange rate||汇率|钱与合同|The exchange rate is good today.|今天汇率不错。
+transaction fee||手续费|钱与合同|Is there a transaction fee?|有手续费吗？
+invoice|/ˈɪnvɔɪs/|发票；账单|钱与合同|Please send me an invoice.|请给我开张发票。
+quote|/kwoʊt/|报价|钱与合同|Can you give me a quote?|你能给我报个价吗？|名词口语里常代替 quotation
+negotiable|/nɪˈɡoʊʃəbəl/|可议价的|钱与合同|Is the rent negotiable?|房租可以商量吗？
+refundable|/rɪˈfʌndəbəl/|可退款的|钱与合同|Is the deposit refundable?|押金可以退吗？
+liable|/ˈlaɪəbəl/|负有法律责任的|钱与合同|The tenant is liable for any damage.|租户对任何损坏负责。
+in arrears||拖欠|钱与合同|He's three months in arrears with his rent.|他拖欠了三个月房租。
+# day 14 情绪与人际
+frustrated|/ˈfrʌstreɪtɪd/|沮丧的；受挫的|情绪与人际|I'm frustrated with the slow progress.|进展太慢让我很烦。
+overwhelmed|/ˌoʊvɚˈwɛlmd/|不堪重负的|情绪与人际|I feel overwhelmed by all this work.|这么多工作让我喘不过气。
+relieved|/rɪˈlivd/|松了一口气的|情绪与人际|I was relieved to hear the news.|听到消息我松了口气。
+homesick|/ˈhoʊmsɪk/|想家的|情绪与人际|I sometimes feel homesick.|我有时候会想家。
+awkward|/ˈɔkwɚd/|尴尬的|情绪与人际|There was an awkward silence.|出现了一阵尴尬的沉默。
+resentful|/rɪˈzɛntfəl/|怨恨的|情绪与人际|She felt resentful about the decision.|她对这个决定心怀怨气。
+grateful|/ˈɡreɪtfəl/|感激的|情绪与人际|I'm really grateful for your help.|非常感谢你的帮助。
+burned out||精疲力竭；职业倦怠|情绪与人际|After three years, I was completely burned out.|三年后我彻底倦怠了。
+get on someone's nerves||让某人心烦|情绪与人际|His constant complaining gets on my nerves.|他老抱怨让我很烦。
+hit it off||一见如故|情绪与人际|We hit it off right away.|我们一见如故。
+fall out with||和…闹翻|情绪与人际|I fell out with my roommate.|我和室友闹翻了。
+make up||和好|情绪与人际|They argued but made up the next day.|他们吵架了，第二天就和好了。
+let someone down||让某人失望|情绪与人际|I'm sorry I let you down.|对不起，让你失望了。
+take something personally||往心里去|情绪与人际|Don't take it personally.|别往心里去。
+vent|/vɛnt/|发泄|情绪与人际|Sorry, I just needed to vent.|抱歉，我就是想发泄一下。
+reassure|/ˌriəˈʃʊr/|使安心|情绪与人际|The doctor reassured me it was nothing serious.|医生让我放心说没什么大事。
+empathize|/ˈɛmpəθaɪz/|感同身受|情绪与人际|I can empathize with your situation.|我能理解你的处境。
+give someone the benefit of the doubt||姑且相信某人|情绪与人际|I'll give him the benefit of the doubt this time.|这次我姑且相信他。
+keep in touch||保持联系|情绪与人际|Let's keep in touch.|我们保持联系。
+cheer up||振作起来|情绪与人际|Cheer up! It's not the end of the world.|振作点！又不是世界末日。
+# day 15 易混淆词
+affect|/əˈfɛkt/|影响（动词）|易混淆词|The rain affected our plans.|下雨影响了我们的计划。|名词「影响」用 effect
+effect|/ɪˈfɛkt/|效果；影响（名词）|易混淆词|The medicine had no effect.|这药没效果。|动词 affect，名词 effect
+assure|/əˈʃʊr/|向（人）保证|易混淆词|I assure you it's safe.|我向你保证它是安全的。|ensure 是「确保（事）」
+ensure|/ɪnˈʃʊr/|确保|易混淆词|Please ensure the door is locked.|请确保门锁好了。
+fewer|/ˈfjuɚ/|更少（可数）|易混淆词|There are fewer tourists this year.|今年游客少了。|不可数用 less
+borrow|/ˈbɑroʊ/|借（入）|易混淆词|Can I borrow your pen?|我能借你的笔吗？|借出是 lend
+lend|/lɛnd/|借（出）|易混淆词|Could you lend me 500 baht?|你能借我 500 泰铢吗？
+rise|/raɪz/|上升（不及物）|易混淆词|Prices continue to rise.|价格持续上涨。|及物「提高」用 raise
+raise|/reɪz/|提高；举起（及物）|易混淆词|The landlord raised the rent.|房东涨了房租。
+economic|/ˌɛkəˈnɑmɪk/|经济的|易混淆词|The economic situation is improving.|经济形势在好转。|economical＝节约的
+economical|/ˌɛkəˈnɑmɪkəl/|节约的；划算的|易混淆词|This car is very economical.|这车很省油。
+sensible|/ˈsɛnsəbəl/|明智的；合理的|易混淆词|That's a sensible decision.|这是个明智的决定。|sensitive＝敏感的
+sensitive|/ˈsɛnsətɪv/|敏感的|易混淆词|I have sensitive skin.|我是敏感肌。
+historic|/hɪˈstɔrɪk/|有历史意义的|易混淆词|It was a historic moment.|那是一个历史性时刻。|historical＝历史上的、与历史有关的
+historical|/hɪˈstɔrɪkəl/|历史的；史实的|易混淆词|I like historical novels.|我喜欢历史小说。
+complement|/ˈkɑmpləmənt/|补充；相配|易混淆词|The wine complements the food.|这酒和菜很配。|compliment＝称赞
+compliment|/ˈkɑmpləmənt/|称赞|易混淆词|Thanks for the compliment!|谢谢夸奖！
+principal|/ˈprɪnsəpəl/|主要的；校长；本金|易混淆词|The principal reason is cost.|主要原因是成本。|principle＝原则
+principle|/ˈprɪnsəpəl/|原则|易混淆词|It's a matter of principle.|这是原则问题。
+lose|/luz/|丢失；输|易混淆词|Don't lose your passport.|别弄丢护照。|loose /lus/＝松的

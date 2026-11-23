@@ -17,7 +17,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png'],
       manifest: {
-        id: base, name: '生活英语 · 每日一课', short_name: '生活英语', description: '在泰国生活和工作用得上的英语', lang: 'zh-CN',
+        id: base, name: '进阶英语 · 每日一课', short_name: '进阶英语', description: '学过多年英语的人用：地道表达、短语动词、商务、习语', lang: 'zh-CN',
         start_url: base, scope: base, display: 'standalone', orientation: 'portrait', background_color: '#ffffff', theme_color: '#ffffff',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },

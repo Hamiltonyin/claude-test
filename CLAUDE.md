@@ -1,7 +1,7 @@
 # 泰语每日30词（thai30）— 给 AI 助手的项目说明
 
 面向中文母语者的泰语学习 PWA。使用者住在泰国，日常要和快递员、房东等人沟通；在 iPhone Safari 上使用（添加到主屏幕）。
-线上地址：https://hamiltonyin.github.io/claude-test/ （**公开网站**）。同仓库还有「职场日语」App 在 `jp/`（部署到 `/jp/`）和「生活英语」App 在 `en/`（部署到 `/en/`，从 jp 复制改来，内容在 `en/content/words.txt`）。泰语 SW 的 `navigateFallbackDenylist` 和 `src/lib/update.ts` 都要排除这两个子路径。
+线上地址：https://hamiltonyin.github.io/claude-test/ （**公开网站**）。同仓库还有「职场日语」App 在 `jp/`（部署到 `/jp/`）和「进阶英语」App 在 `en/`（部署到 `/en/`，从 jp 复制改来，面向学过多年英语的人，内容在 `en/content/words.txt`，本机库名 `english-adv`）。泰语 SW 的 `navigateFallbackDenylist` 和 `src/lib/update.ts` 都要排除这两个子路径。
 
 ## 和使用者协作
 

@@ -58,7 +58,7 @@ export default function Home({ onStudy, onLibrary, onTheme, onCatchup, onMoreRec
   const revLeft = h.reviewTotal - h.reviewDone
   return (
     <>
-      <h1>生活英语 · 每日一课</h1>
+      <h1>进阶英语 · 每日一课</h1>
       <StatsHeader />
       <button className="entry" onClick={() => onStudy('today')} data-testid="start-today">
         <div className="ic" style={{ background: 'var(--blue)' }}>📖</div>

@@ -6,11 +6,12 @@ import { tmpdir } from 'os'
 import assert from 'assert'
 
 const lib = JSON.parse(readFileSync('en/public/content/library.json', 'utf8'))
-const hello = lib.words.find(w => w.en === 'hello'), day1 = lib.lessons[0].wordIds.length
+const byId = new Map(lib.words.map(w => [w.id, w])), [w1, w2] = lib.lessons[0].wordIds.map(i => byId.get(i)), day1 = lib.lessons[0].wordIds.length
+const withIpa = lib.words.find(w => w.ipa), hello = w1
 const tmp = mkdtempSync(tmpdir() + '/en-')
 cpSync('dist', tmp + '/dist', { recursive: true })
 for (const d of [tmp + '/dist/audio', tmp + '/dist/en/audio']) { rmSync(d, { recursive: true, force: true }); mkdirSync(d, { recursive: true }) }
-execSync(`ffmpeg -y -loglevel error -f lavfi -i "sine=frequency=440:duration=0.5" ${tmp}/dist/en/audio/${hello.id}.mp3`)   // 只给 hello 一个测试音
+execSync(`ffmpeg -y -loglevel error -f lavfi -i "sine=frequency=440:duration=0.5" ${tmp}/dist/en/audio/${hello.id}.mp3`)   // 只给第一张卡一个测试音
 const port = Number(process.env.E2E_PORT) || 4900 + Math.floor(Math.random() * 90)
 const srv = spawn('npx', ['vite', 'preview', '--outDir', tmp + '/dist', '--port', String(port), '--strictPort'], { stdio: 'ignore', detached: true })
 await new Promise(r => setTimeout(r, 2500))
@@ -25,25 +26,28 @@ await page.addInitScript(() => { window.__plays = []; const o = HTMLMediaElement
 try {
   await page.goto(URL + 'en/'); await page.waitForSelector('[data-testid=start-today]')
   const home = await page.textContent('body')
-  assert(home.includes('生活英语') && home.includes('第1天')); ok('英语 App 首页：第1天')
-  assert((await page.textContent('[data-testid=start-today]')).includes(`新卡片 ${day1} 张`)); ok(`第1天课程：问候与礼貌 ${day1} 张`)
+  assert(home.includes('进阶英语') && home.includes('第1天')); ok('英语 App 首页：第1天')
+  assert((await page.textContent('[data-testid=start-today]')).includes(`新卡片 ${day1} 张`)); ok(`第1天课程：${lib.lessons[0].title} ${day1} 张`)
   assert(!(await page.locator('[data-testid=tab-kana]').count())); ok('没有日语的五十音页')
   await page.screenshot({ path: tmp + '/home.png' })
 
   await page.tap('[data-testid=start-today]'); await page.waitForSelector('[data-testid=front]')
-  assert.equal((await page.textContent('[data-testid=front]')).trim(), 'hello'); ok('第一张卡：hello')
+  assert.equal((await page.textContent('[data-testid=front]')).trim(), w1.en); ok('第一张卡：' + w1.en)
   await page.tap('[data-testid=card]'); await page.waitForTimeout(500)
-  assert.equal((await page.textContent('[data-testid=ipa]')).trim(), '/həˈloʊ/'); ok('翻面：音标 /həˈloʊ/')
-  assert((await page.textContent('.back')).includes('你好') && (await page.textContent('.back')).includes('nice to meet you')); ok('背面：中文 + 例句')
+  const back = await page.textContent('.back')
+  assert(back.includes(w1.zh) && back.includes(w1.exEn) && (!w1.note || back.includes(w1.note))); ok('背面：中文 + 例句 + 用法说明')
   const plays = await page.evaluate(() => window.__plays); assert(plays.some(p => p.src === hello.id + '.mp3')); ok('自动朗读：播放 ' + hello.id + '.mp3')
   await page.screenshot({ path: tmp + '/card-back.png' })
   await page.tap('[data-testid=rate3]'); await page.waitForTimeout(200)
-  assert.equal((await page.textContent('[data-testid=front]')).trim(), 'hi'); ok('评级后进入下一张：hi')
+  assert.equal((await page.textContent('[data-testid=front]')).trim(), w2.en); ok('评级后进入下一张：' + w2.en)
   await page.tap('text=‹ 返回')
 
   await page.tap('[data-testid=tab-library]')
-  await page.fill('[data-testid=search]', 'Landlord'); await page.waitForTimeout(200); assert((await page.locator('[data-testid=word-row]').count()) >= 1); ok('英文搜索（不分大小写）Landlord')
-  await page.fill('[data-testid=search]', '房东'); assert((await page.locator('[data-testid=word-row]').count()) >= 1); ok('中文搜索 房东')
+  await page.fill('[data-testid=search]', 'POSTPONE'); await page.waitForTimeout(200); assert((await page.locator('[data-testid=word-row]').count()) >= 1); ok('英文搜索（不分大小写）POSTPONE')
+  await page.fill('[data-testid=search]', '推迟'); assert((await page.locator('[data-testid=word-row]').count()) >= 1); ok('中文搜索 推迟')
+  await page.fill('[data-testid=search]', withIpa.en); await page.waitForTimeout(200); await page.locator('[data-testid=word-row]').first().tap()
+  await page.waitForTimeout(300); assert((await page.textContent('body')).includes(withIpa.ipa)); ok('卡片详情显示音标 ' + withIpa.ipa)
+  await page.goto(URL + 'en/'); await page.waitForSelector('[data-testid=start-today]'); await page.tap('[data-testid=tab-library]')
   await page.fill('[data-testid=search]', ''); await page.tap('text=按天课程'); assert.equal(await page.locator('[data-testid^=day-]').count(), lib.lessons.length); ok(`课程共 ${lib.lessons.length} 天`)
 
   await page.reload(); await page.waitForSelector('[data-testid=start-today]')
@@ -55,7 +59,7 @@ try {
   const scopes = await page.evaluate(async () => (await navigator.serviceWorker.getRegistrations()).map(r => new URL(r.scope).pathname).sort())
   assert(scopes.includes('/') && scopes.includes('/en/')); ok('Service Worker 作用域独立：' + scopes.join(' , '))
   await page.goto(URL + 'en/'); await page.waitForSelector('[data-testid=start-today]')
-  assert((await page.textContent('body')).includes('生活英语')); ok('再回 /en/ 仍是英语 App（未被泰语 SW 接管）')
+  assert((await page.textContent('body')).includes('进阶英语')); ok('再回 /en/ 仍是英语 App（未被泰语 SW 接管）')
   assert((await page.textContent('.stats')).includes(`1/${day1}`)); ok('英语学习进度没被泰语 App 清掉')
 } catch (e) { console.error('FAIL', e.message); bad++ }
 try {
