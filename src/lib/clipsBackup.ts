@@ -1,7 +1,7 @@
 import { db } from './db'
 
 /** 视频时间轴备份：把元音页、声调页、情景对话里你校准过的「起止秒数」导出成一个小 JSON 文件（视频本身不在里面，因为太大）。 */
-export interface ClipsBackup { app: 'thai30-clips'; version: 1; exportedAt: number; vowelClips?: unknown; toneClips?: unknown; dlgclips?: Record<string, unknown>; dlgedit?: Record<string, unknown>; lyrclips?: Record<string, unknown>; lyredit?: Record<string, unknown>; tiktok?: unknown[]; facebook?: unknown[] }
+export interface ClipsBackup { app: 'thai30-clips'; version: 1; exportedAt: number; vowelClips?: unknown; toneClips?: unknown; dlgclips?: Record<string, unknown>; dlgedit?: Record<string, unknown>; lyrclips?: Record<string, unknown>; lyredit?: Record<string, unknown>; tiktok?: unknown[]; facebook?: unknown[]; bmuse?: Record<string, { open: number; play: number; last: number }> }
 
 export async function collectClips(): Promise<ClipsBackup> {
   const d = await db()
@@ -13,6 +13,7 @@ export async function collectClips(): Promise<ClipsBackup> {
     else if (k === 'toneClips') out.toneClips = await d.get('meta', k)
     else if (k === 'tiktok:mine') out.tiktok = await d.get('meta', k)
     else if (k === 'facebook:mine') out.facebook = await d.get('meta', k)
+    else if (k === 'bmuse') out.bmuse = await d.get('meta', k)
     else if (k.startsWith('lyredit:')) (out.lyredit ??= {})[k.slice(8)] = await d.get('meta', k)
     else if (k.startsWith('lyrclips:')) (out.lyrclips ??= {})[k.slice(9)] = await d.get('meta', k)
     else if (k.startsWith('dlgedit:')) (out.dlgedit ??= {})[k.slice(8)] = await d.get('meta', k)
@@ -37,6 +38,11 @@ export async function restoreClips(b: ClipsBackup): Promise<number> {
     const cur = ((await d.get('meta', key)) ?? []) as { id: string }[]
     const ids = new Set(cur.map(x => x.id)); const add = (list as { id: string }[]).filter(x => !ids.has(x.id))
     await d.put('meta', [...cur, ...add], key); n += add.length
+  }
+  if (b.bmuse && typeof b.bmuse === 'object') {   // 收藏的使用次数：每项取较大的那个，不会越恢复越多
+    const cur = ((await d.get('meta', 'bmuse')) ?? {}) as NonNullable<ClipsBackup['bmuse']>
+    for (const [id, u] of Object.entries(b.bmuse)) { const c = cur[id]; cur[id] = c ? { open: Math.max(c.open, u.open), play: Math.max(c.play, u.play), last: Math.max(c.last, u.last) } : u }
+    await d.put('meta', cur, 'bmuse')
   }
   for (const [id, v] of Object.entries(b.dlgclips ?? {})) await merge('dlgclips:' + id, v)
   for (const [id, v] of Object.entries(b.dlgedit ?? {})) await merge('dlgedit:' + id, v)

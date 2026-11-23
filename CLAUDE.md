@@ -49,7 +49,7 @@ jp/                 日语 App（独立的 vite 配置）
 - **已有用户数据不改写**：`mergeLibrary` 只新增词，不修改用户已有的词。要改变分类用运行时判断，不要改旧词的字段。
 - **音频**：`public/audio/<id>.mp3`，已存在的永不覆盖（除非 `tts-overrides.txt` 变了）。新内容的音频在下一次部署时由 CI 生成，在那之前 App 用系统语音兜底。
 - **iOS 限制**：`play()` 必须在点击回调里同步调用；本地视频以 Blob 存 IndexedDB；不用视频自带的 `controls`（会盖住画面），用 `ui.tsx` 的 `VideoBar`。
-- **IndexedDB `meta` 键**：`settings` `flips` `plays` `daily` `parked` `vowelClips` `toneClips`，以及按内容 id 的 `dlgvideo:` `dlgclips:` `dlgedit:` `lyrvideo:` `lyrclips:` `lyredit:` `patrec:`，以及 `tiktok:mine` `facebook:mine`。新增「用户校准/修改」类的键时，同步加进 `src/lib/clipsBackup.ts`。
+- **IndexedDB `meta` 键**：`settings` `flips` `plays` `daily` `parked` `vowelClips` `toneClips`，以及按内容 id 的 `dlgvideo:` `dlgclips:` `dlgedit:` `lyrvideo:` `lyrclips:` `lyredit:` `patrec:`，以及 `tiktok:mine` `facebook:mine` `bmuse`（收藏的使用次数：看/听/最近）。新增「用户校准/修改」类的键时，同步加进 `src/lib/clipsBackup.ts`。
 - **情景对话和歌词共用一套界面**：`src/views/Dialogues.tsx`（`kind` 为 `dlg` 或 `lyr`），`Lyrics.tsx` 只是薄包装。改一处两边都变。
 - **拼音 ↔ 元音**：`src/lib/vowelLookup.ts` 把一个拼音音节（如 lɛ́ɛo）对到元音卡片或「元音 + 尾音」组合；歌词/对话滚轴中间那句的拼音可以点（`TapRoman`），元音页有搜索框。新增拼音写法时要保证它能在这里查到。
 - **3D 人体**：`src/views/Body3D.tsx` 用 three.js 的基本几何体拼成（没有外部模型文件），懒加载；每个网格的 `userData.key` 是对应的泰文词。加部位就在 `buildBody()` 里加一个网格，并在 `Pictures.tsx` 的 `PARTS3D` 里加词条。

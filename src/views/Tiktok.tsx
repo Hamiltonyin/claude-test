@@ -20,6 +20,10 @@ const SITES = {
   facebook: { key: FB_KEY, name: 'Facebook', icon: '📘', re: /https?:\/\/\S*(facebook\.com|fb\.watch|fb\.com|fb\.me)\/\S+/, ok: /(facebook\.com|fb\.watch|fb\.com|fb\.me)\//, builtIn: false },
 } as const
 export type Site = keyof typeof SITES
+// 使用频率：每条收藏「打开视频」几次、「听句子」几次、最后一次什么时候（meta 'bmuse'，按收藏 id，TikTok 和 Facebook 共用）
+export const USE_KEY = 'bmuse'
+export interface Use { open: number; play: number; last: number }
+const ago = (t: number) => { const d = Math.floor((Date.now() - t) / 864e5); return d <= 0 ? '今天' : d === 1 ? '昨天' : d + ' 天前' }
 
 export default function Tiktok({ onClose, onLyrics, site = 'tiktok' }: { onClose: () => void; onLyrics?: () => void; site?: Site }) {
   const S = SITES[site]
@@ -29,6 +33,13 @@ export default function Tiktok({ onClose, onLyrics, site = 'tiktok' }: { onClose
   const [draft, setDraft] = useState({ url: '', title: '', text: '' })
   const [playing, setPlaying] = useState<string | null>(null)
   const [vq, setVq] = useState<ReturnType<typeof lookupSyllable>>(null)
+  const [use, setUse] = useState<Record<string, Use>>({})
+  useEffect(() => { get<Record<string, Use>>('meta', USE_KEY).then(d => d && setUse(d)).catch(() => {}) }, [])
+  const bump = (id: string, k: 'open' | 'play') => setUse(cur => {
+    const u = cur[id] ?? { open: 0, play: 0, last: 0 }
+    const next = { ...cur, [id]: { ...u, [k]: u[k] + 1, last: Date.now() } }
+    void put('meta', next, USE_KEY); return next
+  })
   useEffect(() => { let on = true; if (S.builtIn) load().then(d => on && setBuilt(d)); get<Item[]>('meta', S.key).then(d => on && d && setMine(d)).catch(() => {}); return () => { on = false; stopAudio() } }, [S])
 
   const saveMine = (list: Item[]) => { setMine(list); void put('meta', list, S.key) }
@@ -39,8 +50,8 @@ export default function Tiktok({ onClose, onLyrics, site = 'tiktok' }: { onClose
     setDraft({ url: '', title: '', text: '' }); setAdding(false)
   }
   const remove = (id: string) => { if (confirm('删除这条收藏？')) saveMine(mine.filter(x => x.id !== id)) }
-  const say = async (key: string, l: { th: string; clip?: string }) => {
-    stopAudio(); setPlaying(key)
+  const say = async (id: string, key: string, l: { th: string; clip?: string }) => {
+    bump(id, 'play'); stopAudio(); setPlaying(key)
     try { if (!l.clip) throw new Error('no file'); await playFile(l.clip, false) } catch { try { await playSystem(l.th, false) } catch { /* 没有语音 */ } }
     setPlaying(p => (p === key ? null : p))
   }
@@ -67,22 +78,23 @@ export default function Tiktok({ onClose, onLyrics, site = 'tiktok' }: { onClose
           <div key={it.id} className="ttcard" data-testid="tt-item">
             <div className="tthead">
               <b>{it.title}</b>
-              <a className="ttopen" href={it.url} target="_blank" rel="noreferrer" data-testid="tt-open">打开 {S.name} ↗</a>
+              <a className="ttopen" href={it.url} target="_blank" rel="noreferrer" onClick={() => bump(it.id, 'open')} data-testid="tt-open">打开 {S.name} ↗</a>
             </div>
             {it.note && <p className="ttnote">{it.note}</p>}
             {it.lines?.map((l, i) => (
-              <div key={i} className={'ttline' + (playing === it.id + i ? ' on' : '')} onClick={() => void say(it.id + i, l)} data-testid="tt-line">
+              <div key={i} className={'ttline' + (playing === it.id + i ? ' on' : '')} onClick={() => void say(it.id, it.id + i, l)} data-testid="tt-line">
                 <div className="th" lang="th">{l.th}</div>
                 <TapRoman roman={l.roman} onTap={s => setVq(lookupSyllable(s))} />
                 <div className="dz">{l.zh}</div>
                 <span className="ttspk" aria-hidden><Speaker /></span>
               </div>))}
             {myLines(it.text).map((t, i) => (
-              <div key={'m' + i} className={'ttline' + (playing === it.id + 'm' + i ? ' on' : '')} onClick={() => void say(it.id + 'm' + i, { th: t })}>
+              <div key={'m' + i} className={'ttline' + (playing === it.id + 'm' + i ? ' on' : '')} onClick={() => void say(it.id, it.id + 'm' + i, { th: t })}>
                 <div className={/[฀-๿]/.test(t) ? 'th' : 'dz'} lang="th">{t}</div>
                 {/[฀-๿]/.test(t) && <span className="ttspk" aria-hidden><Speaker /></span>}
               </div>))}
             <div className="ttfoot">
+              {use[it.id] ? <span className="ttuse" data-testid="tt-use">看 {use[it.id].open} 次 · 听 {use[it.id].play} 次 · {ago(use[it.id].last)}</span> : <span className="ttuse" data-testid="tt-use">还没用过</span>}
               {it.lyric && onLyrics && <button className="link" onClick={onLyrics} data-testid="tt-lyric">去歌词背诵 ›</button>}
               {it.mine && <span className="sub">我加的 · {new Date(it.added ?? 0).toLocaleDateString()}</span>}
               {it.mine && <button className="link danger" onClick={() => remove(it.id)} data-testid="tt-del">删除</button>}
