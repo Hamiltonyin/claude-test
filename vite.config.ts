@@ -4,11 +4,15 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // 部署到子路径（如 GitHub Pages）时设置 BASE=/repo-name/
 const base = process.env.BASE || '/'
+// 版本号：每次构建不同。App 里内置一份，网站上另放一个 version.json；两者不同就说明手机上是旧版本（见 src/lib/update.ts）
+const BUILD_ID = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '')
 
 export default defineConfig({
   base,
+  define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
   plugins: [
     react(),
+    { name: 'version-json', generateBundle() { this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ id: BUILD_ID }) }) } },
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'icons/*.svg'],

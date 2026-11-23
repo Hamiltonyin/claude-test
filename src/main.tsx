@@ -8,6 +8,7 @@ import '@fontsource/noto-sans/latin-ext-600.css'
 import './styles.css'
 import App from './App'
 import { registerSW } from 'virtual:pwa-register'
+import { watchUpdates } from './lib/update'
 
 // 新版本检查：iPhone 上「添加到主屏幕」的 App 很少自己检查更新，所以每次回到前台、以及每 30 分钟主动查一次；
 // 查到新版本后（autoUpdate）会自动刷新页面，学习进度都在 IndexedDB 里，不会丢
@@ -20,4 +21,5 @@ registerSW({
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check() })
   },
 })
+watchUpdates()
 createRoot(document.getElementById('root')!).render(<App />)

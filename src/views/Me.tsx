@@ -1,3 +1,4 @@
+import { BUILD_ID, applyUpdate, latestId } from '../lib/update'
 import { collectClips, countClips, restoreClips, shareFile } from '../lib/clipsBackup'
 import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../store'
@@ -133,6 +134,7 @@ export default function Me() {
   return (
     <>
       <h1>我的</h1>
+      <VersionRow />
       {msg && <div className={'note ' + msg.t} role="status">{msg.s}</div>}
       <div className="panel"><h3>数据保存</h3>
         <p className="sub">学习记录保存在本机 IndexedDB（关闭 Safari、刷新、升级版本都不会清空）。持久存储：{persist}</p>
@@ -205,4 +207,11 @@ function ClipsPanel() {
       <label className="btn sec block" style={{ textAlign: 'center' }}>从时间轴文件恢复<input type="file" accept=".json,application/json" hidden onChange={e => { const f = e.target.files?.[0]; if (f) void onFile(f); e.target.value = '' }} data-testid="clips-import" /></label>
       {msg && <div className={'note ' + (msg.t === 'err' ? 'err' : '')} style={{ marginTop: 8 }} data-testid="clips-msg">{msg.s}</div>}
     </div>)
+}
+
+/** 版本号 + 「检查更新」：手机上看不到新功能时，在这里点一下 */
+function VersionRow() {
+  const [msg, setMsg] = useState('')
+  const check = async () => { setMsg('检查中…'); const id = await latestId(); if (!id) return setMsg('连不上服务器，稍后再试'); if (id === BUILD_ID) return setMsg('已经是最新版本'); setMsg('发现新版本，正在更新…'); await applyUpdate(id) }
+  return <p className="sub verrow" data-testid="version">版本 {BUILD_ID} · <button className="link" onClick={() => void check()} data-testid="check-update">检查更新</button>{msg && <span> · {msg}</span>}</p>
 }

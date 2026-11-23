@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AppProvider, useApp } from './store'
 import Home, { type HomeView } from './views/Home'
 import Library, { WordSheet } from './views/Library'
@@ -16,6 +16,7 @@ import Lyrics from './views/Lyrics'
 import Roots from './views/Roots'
 import Pictures from './views/Pictures'
 import Tiktok from './views/Tiktok'
+import { applyUpdate } from './lib/update'
 import Patterns from './views/Patterns'
 
 type Tab = 'home' | 'cats' | 'library' | 'stats' | 'me'
@@ -43,6 +44,8 @@ function Shell() {
   const [roots, setRoots] = useState(false)
   const [pics, setPics] = useState(false)
   const [tt, setTt] = useState(false)
+  const [hasUpdate, setHasUpdate] = useState<string | boolean>(false)
+  useEffect(() => { const f = (e: Event) => setHasUpdate((e as CustomEvent<string>).detail || true); window.addEventListener('thai30-update', f); return () => window.removeEventListener('thai30-update', f) }, [])
   const [pats, setPats] = useState(false)
   const [detail, setDetail] = useState<string | null>(null)
   const [practice, setPractice] = useState<PracticeKind | null>(null)
@@ -62,6 +65,7 @@ function Shell() {
   if (!ready) return <div className="center"><div className="sub">加载中…</div></div>
   return (
     <div className="app">
+      {hasUpdate && <button className="updbar" onClick={() => void applyUpdate(typeof hasUpdate === 'string' ? hasUpdate : undefined)} data-testid="update-bar">✨ 有新版本 · 点这里更新</button>}
       <div className="scroll">
         {tab === 'home' && <Home view={legacy ? 'full' : 'search'} onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onPatterns={() => setPats(true)} onTiktok={() => setTt(true)} onStudyIds={(title, ids) => setStudy({ title, ids, mode: 'free' })} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
         {tab === 'cats' && <>

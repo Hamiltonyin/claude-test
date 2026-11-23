@@ -53,6 +53,7 @@ jp/                 日语 App（独立的 vite 配置）
 - **情景对话和歌词共用一套界面**：`src/views/Dialogues.tsx`（`kind` 为 `dlg` 或 `lyr`），`Lyrics.tsx` 只是薄包装。改一处两边都变。
 - **拼音 ↔ 元音**：`src/lib/vowelLookup.ts` 把一个拼音音节（如 lɛ́ɛo）对到元音卡片或「元音 + 尾音」组合；歌词/对话滚轴中间那句的拼音可以点（`TapRoman`），元音页有搜索框。新增拼音写法时要保证它能在这里查到。
 - **3D 人体**：`src/views/Body3D.tsx` 用 three.js 的基本几何体拼成（没有外部模型文件），懒加载；每个网格的 `userData.key` 是对应的泰文词。加部位就在 `buildBody()` 里加一个网格，并在 `Pictures.tsx` 的 `PARTS3D` 里加词条。
+- **版本更新**：每次构建生成版本号（`vite.config.ts` 的 `BUILD_ID`）并输出 `version.json`。`src/lib/update.ts` 在启动/回到前台时比对，不同就注销 Service Worker、清程序缓存、带 `?v=` 重新打开（音频缓存保留）。「我的」页顶部显示版本号和「检查更新」。使用者说「没更新」时先让他看这个版本号。
 - **界面风格**：iOS 毛玻璃。屏幕上只留学习内容，其余功能收成小圆点（`.gdot`）或收进 ⚙ 设置，说明文字尽量不要。
 
 ## 命令
