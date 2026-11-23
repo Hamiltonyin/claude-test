@@ -1,7 +1,7 @@
 import { db } from './db'
 
 /** 视频时间轴备份：把元音页、声调页、情景对话里你校准过的「起止秒数」导出成一个小 JSON 文件（视频本身不在里面，因为太大）。 */
-export interface ClipsBackup { app: 'thai30-clips'; version: 1; exportedAt: number; vowelClips?: unknown; toneClips?: unknown; dlgclips?: Record<string, unknown>; dlgedit?: Record<string, unknown>; lyrclips?: Record<string, unknown>; lyredit?: Record<string, unknown>; tiktok?: unknown[] }
+export interface ClipsBackup { app: 'thai30-clips'; version: 1; exportedAt: number; vowelClips?: unknown; toneClips?: unknown; dlgclips?: Record<string, unknown>; dlgedit?: Record<string, unknown>; lyrclips?: Record<string, unknown>; lyredit?: Record<string, unknown>; tiktok?: unknown[]; facebook?: unknown[] }
 
 export async function collectClips(): Promise<ClipsBackup> {
   const d = await db()
@@ -12,6 +12,7 @@ export async function collectClips(): Promise<ClipsBackup> {
     if (k === 'vowelClips') out.vowelClips = await d.get('meta', k)
     else if (k === 'toneClips') out.toneClips = await d.get('meta', k)
     else if (k === 'tiktok:mine') out.tiktok = await d.get('meta', k)
+    else if (k === 'facebook:mine') out.facebook = await d.get('meta', k)
     else if (k.startsWith('lyredit:')) (out.lyredit ??= {})[k.slice(8)] = await d.get('meta', k)
     else if (k.startsWith('lyrclips:')) (out.lyrclips ??= {})[k.slice(9)] = await d.get('meta', k)
     else if (k.startsWith('dlgedit:')) (out.dlgedit ??= {})[k.slice(8)] = await d.get('meta', k)
@@ -19,7 +20,7 @@ export async function collectClips(): Promise<ClipsBackup> {
   }
   return out
 }
-export const countClips = (b: ClipsBackup) => (b.vowelClips ? Object.keys(b.vowelClips as object).length : 0) + (b.toneClips ? Object.keys(b.toneClips as object).length : 0) + Object.values(b.dlgclips ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + Object.values(b.dlgedit ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + Object.values(b.lyrclips ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + Object.values(b.lyredit ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + (b.tiktok?.length ?? 0)
+export const countClips = (b: ClipsBackup) => (b.vowelClips ? Object.keys(b.vowelClips as object).length : 0) + (b.toneClips ? Object.keys(b.toneClips as object).length : 0) + Object.values(b.dlgclips ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + Object.values(b.dlgedit ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + Object.values(b.lyrclips ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + Object.values(b.lyredit ?? {}).reduce((a: number, v) => a + Object.keys(v as object).length, 0) + (b.tiktok?.length ?? 0) + (b.facebook?.length ?? 0)
 
 export async function restoreClips(b: ClipsBackup): Promise<number> {
   if (!b || b.app !== 'thai30-clips') throw new Error('不是时间轴备份文件')
@@ -31,10 +32,11 @@ export async function restoreClips(b: ClipsBackup): Promise<number> {
     await d.put('meta', next, key); n += Object.keys(incoming as object).length
   }
   await merge('vowelClips', b.vowelClips); await merge('toneClips', b.toneClips)
-  if (Array.isArray(b.tiktok)) {   // TikTok 收藏：按 id 合并，不重复
-    const cur = ((await d.get('meta', 'tiktok:mine')) ?? []) as { id: string }[]
-    const ids = new Set(cur.map(x => x.id)); const add = (b.tiktok as { id: string }[]).filter(x => !ids.has(x.id))
-    await d.put('meta', [...cur, ...add], 'tiktok:mine'); n += add.length
+  for (const [list, key] of [[b.tiktok, 'tiktok:mine'], [b.facebook, 'facebook:mine']] as const) {   // TikTok / Facebook 收藏：按 id 合并，不重复
+    if (!Array.isArray(list)) continue
+    const cur = ((await d.get('meta', key)) ?? []) as { id: string }[]
+    const ids = new Set(cur.map(x => x.id)); const add = (list as { id: string }[]).filter(x => !ids.has(x.id))
+    await d.put('meta', [...cur, ...add], key); n += add.length
   }
   for (const [id, v] of Object.entries(b.dlgclips ?? {})) await merge('dlgclips:' + id, v)
   for (const [id, v] of Object.entries(b.dlgedit ?? {})) await merge('dlgedit:' + id, v)

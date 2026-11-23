@@ -44,6 +44,7 @@ function Shell() {
   const [roots, setRoots] = useState(false)
   const [pics, setPics] = useState(false)
   const [tt, setTt] = useState(false)
+  const [fb, setFb] = useState(false)
   const [hasUpdate, setHasUpdate] = useState<string | boolean>(false)
   useEffect(() => { const f = (e: Event) => setHasUpdate((e as CustomEvent<string>).detail || true); window.addEventListener('thai30-update', f); return () => window.removeEventListener('thai30-update', f) }, [])
   const [pats, setPats] = useState(false)
@@ -67,14 +68,14 @@ function Shell() {
     <div className="app">
       {hasUpdate && <button className="updbar" onClick={() => void applyUpdate(typeof hasUpdate === 'string' ? hasUpdate : undefined)} data-testid="update-bar">✨ 有新版本 · 点这里更新</button>}
       <div className="scroll">
-        {tab === 'home' && <Home view={legacy ? 'full' : 'search'} onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onPatterns={() => setPats(true)} onTiktok={() => setTt(true)} onStudyIds={(title, ids) => setStudy({ title, ids, mode: 'free' })} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
+        {tab === 'home' && <Home view={legacy ? 'full' : 'search'} onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onPatterns={() => setPats(true)} onTiktok={() => setTt(true)} onFacebook={() => setFb(true)} onStudyIds={(title, ids) => setStudy({ title, ids, mode: 'free' })} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
         {tab === 'cats' && <>
-          {!legacy && <Home view="learn" onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onPatterns={() => setPats(true)} onTiktok={() => setTt(true)} onStudyIds={(title, ids) => setStudy({ title, ids, mode: 'free' })} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
+          {!legacy && <Home view="learn" onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onPatterns={() => setPats(true)} onTiktok={() => setTt(true)} onFacebook={() => setFb(true)} onStudyIds={(title, ids) => setStudy({ title, ids, mode: 'free' })} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
           <Categories onStudy={(title, ids, mode) => setStudy({ title, ids, mode })} />
         </>}
         {tab === 'library' && <Library key={libNonce} initialQuery={libQuery} onQueryUsed={() => setLibQuery('')} startMine={libMine} onMineShown={() => setLibMine(false)} onStudy={(title, ids, mode, startIdx) => setStudy({ title, ids, mode, startIdx })} />}
         {tab === 'stats' && <>
-          {!legacy && <Home view="progress" onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onPatterns={() => setPats(true)} onTiktok={() => setTt(true)} onStudyIds={(title, ids) => setStudy({ title, ids, mode: 'free' })} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
+          {!legacy && <Home view="progress" onStudy={m => m === 'today' ? startToday() : m === 'review' ? startReview() : startWeak()} onLibrary={() => setTab('library')} onTheme={startTheme} onCatchup={startCatchup} onMoreRecords={() => setTab('stats')} onPickDay={() => setPicking(true)} onPractice={setPractice} onDialogues={() => setDlg(true)} onVowels={() => setVow(true)} onTones={() => setTonePg(true)} onLyrics={() => setLyr(true)} onRoots={() => setRoots(true)} onPictures={() => setPics(true)} onPatterns={() => setPats(true)} onTiktok={() => setTt(true)} onFacebook={() => setFb(true)} onStudyIds={(title, ids) => setStudy({ title, ids, mode: 'free' })} onSearch={q => { setLibQuery(q); setLibNonce(n => n + 1); setTab('library') }} onMine={() => { setLibMine(true); setTab('library') }} />}
           <Stats onCatchup={startCatchup} />
         </>}
         {tab === 'me' && <Me />}
@@ -93,6 +94,7 @@ function Shell() {
       {roots && <Roots onClose={() => setRoots(false)} />}
       {pics && <Pictures onClose={() => setPics(false)} />}
       {tt && <Tiktok onClose={() => setTt(false)} onLyrics={() => { setTt(false); setLyr(true) }} />}
+      {fb && <Tiktok site="facebook" onClose={() => setFb(false)} />}
       {pats && <Patterns onClose={() => setPats(false)} />}
       {practice && <Practice key={practice} kind={practice} onClose={() => setPractice(null)} />}
       {study && <Study key={study.title + study.ids.length + (study.startIdx ?? '')} {...study} onClose={() => setStudy(null)} onDetail={study.mode === 'free' ? setDetail : undefined} />}

@@ -13,19 +13,27 @@ interface Item { id: string; url: string; title: string; note?: string; lyric?: 
 let cache: Promise<Item[]> | null = null
 const load = () => (cache ??= fetch(`${import.meta.env.BASE_URL}content/tiktok.json`).then(r => r.ok ? r.json() : []).catch(() => { cache = null; return [] }))
 export const TT_KEY = 'tiktok:mine'
+export const FB_KEY = 'facebook:mine'
+// 同一个收藏页给两个网站用：TikTok 有内置收藏；Facebook 只有自己加的
+const SITES = {
+  tiktok: { key: TT_KEY, name: 'TikTok', icon: '📌', re: /https?:\/\/\S*tiktok\.com\/\S+/, ok: /tiktok\.com\//, builtIn: true },
+  facebook: { key: FB_KEY, name: 'Facebook', icon: '📘', re: /https?:\/\/\S*(facebook\.com|fb\.watch|fb\.com|fb\.me)\/\S+/, ok: /(facebook\.com|fb\.watch|fb\.com|fb\.me)\//, builtIn: false },
+} as const
+export type Site = keyof typeof SITES
 
-export default function Tiktok({ onClose, onLyrics }: { onClose: () => void; onLyrics?: () => void }) {
+export default function Tiktok({ onClose, onLyrics, site = 'tiktok' }: { onClose: () => void; onLyrics?: () => void; site?: Site }) {
+  const S = SITES[site]
   const [built, setBuilt] = useState<Item[]>([])
   const [mine, setMine] = useState<Item[]>([])
   const [adding, setAdding] = useState(false)
   const [draft, setDraft] = useState({ url: '', title: '', text: '' })
   const [playing, setPlaying] = useState<string | null>(null)
   const [vq, setVq] = useState<ReturnType<typeof lookupSyllable>>(null)
-  useEffect(() => { let on = true; load().then(d => on && setBuilt(d)); get<Item[]>('meta', TT_KEY).then(d => on && d && setMine(d)).catch(() => {}); return () => { on = false; stopAudio() } }, [])
+  useEffect(() => { let on = true; if (S.builtIn) load().then(d => on && setBuilt(d)); get<Item[]>('meta', S.key).then(d => on && d && setMine(d)).catch(() => {}); return () => { on = false; stopAudio() } }, [S])
 
-  const saveMine = (list: Item[]) => { setMine(list); void put('meta', list, TT_KEY) }
+  const saveMine = (list: Item[]) => { setMine(list); void put('meta', list, S.key) }
   const add = () => {
-    const m = draft.url.match(/https?:\/\/\S*tiktok\.com\/\S+/)
+    const m = draft.url.match(S.re)
     if (!m) return
     saveMine([{ id: 'my-' + Date.now(), url: m[0], title: draft.title.trim() || '未命名', text: draft.text.trim(), mine: true, added: Date.now() }, ...mine])
     setDraft({ url: '', title: '', text: '' }); setAdding(false)
@@ -41,25 +49,25 @@ export default function Tiktok({ onClose, onLyrics }: { onClose: () => void; onL
 
   const all = [...mine, ...built]
   return (
-    <div className="study dlgpage" role="dialog" aria-label="TikTok 收藏">
+    <div className="study dlgpage" role="dialog" aria-label={`${S.name} 收藏`}>
       <div className="sthead">
         <button className="close" onClick={onClose}>‹</button>
-        <div className="prog"><b className="dtitle">📌 TikTok 收藏</b></div>
+        <div className="prog"><b className="dtitle">{S.icon} {S.name} 收藏</b></div>
         <button className={'gdot wide' + (adding ? ' on' : '')} onClick={() => setAdding(!adding)} data-testid="tt-add">＋ 收藏</button>
       </div>
       <div className="ttlist">
         {adding && <div className="ttform" data-testid="tt-form">
-          <input value={draft.url} onChange={e => setDraft({ ...draft, url: e.target.value })} placeholder="粘贴 TikTok 链接（分享 → 复制链接）" inputMode="url" autoCapitalize="off" data-testid="tt-url" />
+          <input value={draft.url} onChange={e => setDraft({ ...draft, url: e.target.value })} placeholder={`粘贴 ${S.name} 链接（分享 → 复制链接）`} inputMode="url" autoCapitalize="off" data-testid="tt-url" />
           <input value={draft.title} onChange={e => setDraft({ ...draft, title: e.target.value })} placeholder="起个名字（歌名 / 内容）" data-testid="tt-title" />
           <textarea value={draft.text} onChange={e => setDraft({ ...draft, text: e.target.value })} placeholder="想学的句子（可选，一行一句，泰文点了能听）" rows={3} data-testid="tt-text" />
-          <button className="btn block" disabled={!/tiktok\.com\//.test(draft.url)} onClick={add} data-testid="tt-save">保存</button>
+          <button className="btn block" disabled={!S.ok.test(draft.url)} onClick={add} data-testid="tt-save">保存</button>
         </div>}
         {vq && <VowelInfoCard q={vq} onClose={() => setVq(null)} />}
         {all.map(it => (
           <div key={it.id} className="ttcard" data-testid="tt-item">
             <div className="tthead">
               <b>{it.title}</b>
-              <a className="ttopen" href={it.url} target="_blank" rel="noreferrer" data-testid="tt-open">打开 TikTok ↗</a>
+              <a className="ttopen" href={it.url} target="_blank" rel="noreferrer" data-testid="tt-open">打开 {S.name} ↗</a>
             </div>
             {it.note && <p className="ttnote">{it.note}</p>}
             {it.lines?.map((l, i) => (
