@@ -162,6 +162,17 @@ if (existsSync('content/sentence-notes.txt')) {
   writeFileSync('public/content/parts.json', JSON.stringify(partsOut))
   console.log(`句子解释：${Object.keys(sentOut).length} 句`)
 }
+// TikTok 收藏：content/tiktok.json（只有链接和抄下来的句子；句子会生成电子音）
+if (existsSync('content/tiktok.json')) {
+  const tt = JSON.parse(readFileSync('content/tiktok.json', 'utf8'))
+  for (const it of tt.items) {
+    if (!it.id || !/^https:\/\/(vt\.|www\.)?tiktok\.com\//.test(it.url || '') || !it.title) { console.error(`✗ tiktok.json「${it.id}」缺 id / title，或链接不是 tiktok.com`); bad++ }
+    it.lines = (it.lines ?? []).map((l, i) => ({ ...l, clip: `tt-${it.id}-${String(i + 1).padStart(2, '0')}` }))
+    for (const l of it.lines) { if (!l.th || !l.roman || !l.zh) { console.error(`✗ tiktok.json「${it.id}」有一句缺泰文/拼音/中文`); bad++ } else extraClips.push({ id: l.clip, th: l.th }) }
+  }
+  writeFileSync('public/content/tiktok.json', JSON.stringify(tt.items))
+  console.log(`TikTok 收藏：${tt.items.length} 条`)
+}
 // 动词图集：content/verbs.json（每个动词必须在词库里）
 if (existsSync('content/verbs.json')) {
   const v = JSON.parse(readFileSync('content/verbs.json', 'utf8'))
