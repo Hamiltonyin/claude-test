@@ -13,7 +13,10 @@
     "dev:jp": "vite --config jp/vite.config.ts",
     "build:jp": "node jp/scripts/build-jp.mjs && tsc --noEmit -p jp/tsconfig.json && vite build --config jp/vite.config.ts",
     "audio:jp": "python3 scripts/gen_audio.py --library jp/public/content/library.json --out jp/public/audio --voice ja-JP-NanamiNeural --lang ja --text-key speak",
-    "build:all": "npm run build && npm run build:jp"
+    "dev:en": "vite --config en/vite.config.ts",
+    "build:en": "node en/scripts/build-en.mjs && tsc --noEmit -p en/tsconfig.json && vite build --config en/vite.config.ts",
+    "audio:en": "python3 scripts/gen_audio.py --library en/public/content/library.json --out en/public/audio --voice en-US-JennyNeural --lang en --text-key speak",
+    "build:all": "npm run build && npm run build:jp && npm run build:en"
   },
   "dependencies": {
     "@fontsource/noto-sans": "^5.3.0",

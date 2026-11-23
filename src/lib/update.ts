@@ -14,8 +14,8 @@ export async function applyUpdate(id?: string) {
   try { localStorage.setItem('thai30-upd', JSON.stringify({ id, t: Date.now() })) } catch { /* 无痕模式 */ }
   try {
     const regs = (await navigator.serviceWorker?.getRegistrations?.()) ?? []
-    for (const r of regs) if (!r.scope.includes('/jp/')) await r.unregister()
-    for (const k of (await caches?.keys?.()) ?? []) if (!k.includes('audio') && !k.includes('/jp/')) await caches.delete(k)
+    for (const r of regs) if (!/\/(jp|en)\/$/.test(r.scope)) await r.unregister()   // 同站点的日语、英语 App 有自己的 SW，不动
+    for (const k of (await caches?.keys?.()) ?? []) if (!k.includes('audio') && !k.includes('/jp/') && !k.includes('/en/')) await caches.delete(k)
   } catch { /* 浏览器不支持也没关系，直接刷新 */ }
   const u = new URL(location.href); u.searchParams.set('v', id || String(Date.now())); location.replace(u.toString())
 }

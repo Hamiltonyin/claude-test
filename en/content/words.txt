@@ -1,0 +1,255 @@
+# day 1 问候与礼貌
+hello|/həˈloʊ/|你好|问候|Hello, nice to meet you.|你好，很高兴认识你。
+hi|/haɪ/|嗨；你好（随意）|问候|Hi, how are you?|嗨，你好吗？
+good morning||早上好|问候|Good morning, everyone.|大家早上好。
+good afternoon||下午好|问候|Good afternoon. How can I help you?|下午好，有什么可以帮您？
+good evening||晚上好|问候|Good evening, sir.|先生，晚上好。
+how are you||你好吗|问候|Hi Tom, how are you?|嗨，汤姆，你好吗？
+I'm fine, thank you||我很好，谢谢|问候|I'm fine, thank you. And you?|我很好，谢谢。你呢？
+thank you||谢谢|问候|Thank you for your help.|谢谢你的帮助。
+thanks|/θæŋks/|谢了（随意）|问候|Thanks a lot!|多谢！
+you're welcome||不客气|问候|“Thanks!” “You're welcome.”|“谢谢！”“不客气。”
+sorry|/ˈsɑri/|对不起；抱歉|问候|Sorry, I'm late.|对不起，我迟到了。
+excuse me||打扰一下；劳驾|问候|Excuse me, where is the toilet?|打扰一下，洗手间在哪里？
+please|/pliz/|请|问候|Please wait a moment.|请稍等。
+no problem||没问题|问候|“Can you help me?” “No problem.”|“能帮我吗？”“没问题。”
+goodbye|/ɡʊdˈbaɪ/|再见|问候|Goodbye, see you tomorrow.|再见，明天见。
+see you later||回头见|问候|I have to go. See you later!|我得走了，回头见！
+nice to meet you||很高兴认识你|问候|Hi, I'm Lin. Nice to meet you.|你好，我是林，很高兴认识你。
+yes|/jɛs/|是；对|问候|Yes, that's right.|对，没错。
+no|/noʊ/|不；不是|问候|No, thank you.|不用了，谢谢。
+okay|/oʊˈkeɪ/|好的；可以|问候|Okay, I understand.|好的，我明白了。
+pardon|/ˈpɑrdən/|请再说一遍|问候|Pardon? Could you say that again?|什么？能再说一遍吗？|听不清时说 Pardon? 或 Sorry? 都可以
+slowly|/ˈsloʊli/|慢慢地|问候|Could you speak slowly, please?|请你说慢一点好吗？
+# day 2 自我介绍
+name|/neɪm/|名字|自我介绍|My name is Lin.|我的名字叫林。
+I'm from China||我来自中国|自我介绍|I'm from China. I live in Bangkok now.|我来自中国，现在住在曼谷。
+live|/lɪv/|住；生活|自我介绍|I live near the BTS station.|我住在轻轨站附近。|作动词「住」读 /lɪv/；作形容词「现场的」读 /laɪv/
+work|/wɝk/|工作|自我介绍|I work in an office.|我在办公室工作。
+job|/dʒɑb/|工作；职业|自我介绍|What's your job?|你做什么工作？
+company|/ˈkʌmpəni/|公司|自我介绍|I work for a Chinese company.|我在一家中国公司工作。
+year|/jɪr/|年；岁|自我介绍|I have lived here for two years.|我在这里住了两年。
+married|/ˈmærid/|已婚的|自我介绍|Are you married?|你结婚了吗？
+family|/ˈfæməli/|家人；家庭|自我介绍|My family is in China.|我的家人在中国。
+hobby|/ˈhɑbi/|爱好|自我介绍|My hobby is cooking.|我的爱好是做饭。
+speak|/spik/|说（语言）|自我介绍|I speak a little English.|我会说一点英语。
+a little||一点点|自我介绍|I can speak a little Thai.|我会说一点泰语。
+understand|/ˌʌndɚˈstænd/|明白；听懂|自我介绍|Sorry, I don't understand.|对不起，我没听懂。
+learn|/lɝn/|学习|自我介绍|I'm learning English.|我在学英语。
+phone number||电话号码|自我介绍|What's your phone number?|你的电话号码是多少？
+address|/ˈædrɛs/|地址|自我介绍|Can you send me your address?|你能把地址发给我吗？
+birthday|/ˈbɝθdeɪ/|生日|自我介绍|When is your birthday?|你生日是哪天？
+friend|/frɛnd/|朋友|自我介绍|This is my friend, Mei.|这是我的朋友小梅。
+Chinese|/tʃaɪˈniz/|中国人；中文|自我介绍|I'm Chinese.|我是中国人。
+Thai|/taɪ/|泰国人；泰语|自我介绍|Do you speak Thai?|你会说泰语吗？|th 在这里读 t，不读 θ
+# day 3 数字与钱
+how much||多少钱|数字与钱|How much is this?|这个多少钱？
+price|/praɪs/|价格|数字与钱|The price is too high.|价格太高了。
+cheap|/tʃip/|便宜的|数字与钱|This one is cheaper.|这个更便宜。
+expensive|/ɪkˈspɛnsɪv/|贵的|数字与钱|It's too expensive.|太贵了。
+discount|/ˈdɪskaʊnt/|折扣|数字与钱|Can I get a discount?|能打个折吗？
+cash|/kæʃ/|现金|数字与钱|Can I pay by cash?|可以付现金吗？
+card|/kɑrd/|卡|数字与钱|Do you take cards?|可以刷卡吗？
+change|/tʃeɪndʒ/|零钱；找零|数字与钱|Keep the change.|不用找了。
+receipt|/rɪˈsit/|收据；小票|数字与钱|Can I have a receipt, please?|可以给我一张收据吗？|p 不发音
+baht|/bɑt/|泰铢|数字与钱|It's two hundred baht.|两百泰铢。
+hundred|/ˈhʌndrəd/|百|数字与钱|Three hundred baht, please.|请付三百泰铢。
+thousand|/ˈθaʊzənd/|千|数字与钱|The rent is ten thousand a month.|房租每月一万。
+total|/ˈtoʊtəl/|总共；合计|数字与钱|What's the total?|总共多少？
+pay|/peɪ/|付钱|数字与钱|I'll pay now.|我现在付。
+transfer|/ˈtrænsfɚ/|转账|数字与钱|Can I transfer the money?|我可以转账吗？
+deposit|/dɪˈpɑzɪt/|押金；存款|数字与钱|The deposit is two months' rent.|押金是两个月房租。
+fee|/fi/|费用|数字与钱|Is there a service fee?|有服务费吗？
+free|/fri/|免费的；空闲的|数字与钱|Is it free?|这是免费的吗？
+bill|/bɪl/|账单|数字与钱|Can I have the bill, please?|请给我账单。
+first|/fɝst/|第一|数字与钱|It's on the first floor.|在一楼。
+second|/ˈsɛkənd/|第二；秒|数字与钱|Wait a second.|等一下。
+# day 4 购物
+shop|/ʃɑp/|商店；购物|购物|Is there a shop near here?|附近有商店吗？
+buy|/baɪ/|买|购物|I want to buy a phone case.|我想买个手机壳。
+look for||寻找|购物|I'm looking for a charger.|我在找充电器。
+just looking||随便看看|购物|No thanks, I'm just looking.|不用了，我只是看看。
+size|/saɪz/|尺码；大小|购物|Do you have a bigger size?|有大一号的吗？
+color|/ˈkʌlɚ/|颜色|购物|Do you have another color?|有别的颜色吗？
+try on||试穿|购物|Can I try it on?|我可以试穿吗？
+fitting room||试衣间|购物|Where is the fitting room?|试衣间在哪里？
+bag|/bæɡ/|袋子；包|购物|I don't need a bag, thanks.|我不需要袋子，谢谢。
+return|/rɪˈtɝn/|退货；归还|购物|Can I return this?|这个可以退吗？
+exchange|/ɪksˈtʃeɪndʒ/|换货；兑换|购物|I'd like to exchange it for a smaller one.|我想换一个小一点的。
+broken|/ˈbroʊkən/|坏了的|购物|It's broken. It doesn't work.|它坏了，不能用。
+sold out||卖完了|购物|Sorry, it's sold out.|抱歉，卖完了。
+in stock||有货|购物|Is this in stock?|这个有货吗？
+open|/ˈoʊpən/|开门；营业|购物|What time do you open?|你们几点开门？
+close|/kloʊz/|关门|购物|What time do you close?|你们几点关门？|动词读 /kloʊz/；形容词「近的」读 /kloʊs/
+supermarket|/ˈsupɚˌmɑrkɪt/|超市|购物|I go to the supermarket every week.|我每周去超市。
+convenience store||便利店|购物|There's a convenience store downstairs.|楼下有家便利店。
+online|/ˌɑnˈlaɪn/|网上的|购物|I bought it online.|我在网上买的。
+which one||哪一个|购物|Which one is better?|哪一个更好？
+# day 5 吃饭点餐
+menu|/ˈmɛnju/|菜单|吃饭点餐|Can I see the menu?|能看一下菜单吗？
+order|/ˈɔrdɚ/|点菜；订单|吃饭点餐|Are you ready to order?|可以点菜了吗？
+I'd like||我想要（客气）|吃饭点餐|I'd like a fried rice, please.|我要一份炒饭。
+spicy|/ˈspaɪsi/|辣的|吃饭点餐|Not too spicy, please.|请不要太辣。
+not spicy||不辣|吃饭点餐|Can you make it not spicy?|能做成不辣的吗？
+water|/ˈwɔtɚ/|水|吃饭点餐|A bottle of water, please.|请来一瓶水。
+ice|/aɪs/|冰|吃饭点餐|No ice, please.|请不要加冰。
+sugar|/ˈʃʊɡɚ/|糖|吃饭点餐|Less sugar, please.|请少放糖。
+take away||打包带走|吃饭点餐|For here or take away?|在这吃还是带走？|美国人多说 to go
+for here||在这儿吃|吃饭点餐|For here, please.|在这儿吃。
+table|/ˈteɪbəl/|桌子|吃饭点餐|A table for two, please.|两位，谢谢。
+delicious|/dɪˈlɪʃəs/|好吃的|吃饭点餐|This is delicious!|这个真好吃！
+vegetarian|/ˌvɛdʒəˈtɛriən/|素食的；素食者|吃饭点餐|Do you have vegetarian food?|有素食吗？
+allergic|/əˈlɝdʒɪk/|过敏的|吃饭点餐|I'm allergic to peanuts.|我对花生过敏。
+chicken|/ˈtʃɪkɪn/|鸡肉|吃饭点餐|Chicken or pork?|鸡肉还是猪肉？
+pork|/pɔrk/|猪肉|吃饭点餐|I'll have the pork.|我要猪肉的。
+beef|/bif/|牛肉|吃饭点餐|I don't eat beef.|我不吃牛肉。
+seafood|/ˈsifud/|海鲜|吃饭点餐|Let's have seafood tonight.|今晚吃海鲜吧。
+check please||买单|吃饭点餐|Excuse me, check please.|你好，买单。|英国人说 bill please
+full|/fʊl/|饱的；满的|吃饭点餐|I'm full. Thank you.|我吃饱了，谢谢。
+# day 6 交通出行
+taxi|/ˈtæksi/|出租车|交通出行|Let's take a taxi.|我们打车吧。
+station|/ˈsteɪʃən/|车站|交通出行|Where is the nearest station?|最近的车站在哪里？
+airport|/ˈɛrpɔrt/|机场|交通出行|How long does it take to the airport?|去机场要多久？
+ticket|/ˈtɪkɪt/|票|交通出行|One ticket to Siam, please.|一张去暹罗的票。
+go straight||直走|交通出行|Go straight for two hundred meters.|直走两百米。
+turn left||左转|交通出行|Turn left at the traffic lights.|在红绿灯处左转。
+turn right||右转|交通出行|Turn right here, please.|请在这里右转。
+stop here||在这里停|交通出行|Please stop here.|请在这里停车。
+traffic jam||堵车|交通出行|Sorry, there's a traffic jam.|抱歉，堵车了。
+far|/fɑr/|远的|交通出行|Is it far from here?|离这里远吗？
+near|/nɪr/|近的；在附近|交通出行|Is there an ATM near here?|这附近有取款机吗？
+map|/mæp/|地图|交通出行|Can you show me on the map?|能在地图上指给我看吗？
+pick up||接（人）|交通出行|I'll pick you up at six.|我六点来接你。
+drop off||让…下车|交通出行|Can you drop me off at the mall?|能在商场放我下车吗？
+driver|/ˈdraɪvɚ/|司机|交通出行|The driver is waiting outside.|司机在外面等。
+on the way||在路上|交通出行|I'm on the way.|我在路上了。
+late|/leɪt/|迟到的；晚的|交通出行|Sorry, I'll be ten minutes late.|抱歉，我会晚十分钟。
+arrive|/əˈraɪv/|到达|交通出行|What time will we arrive?|我们几点到？
+flight|/flaɪt/|航班|交通出行|My flight is at nine.|我的航班九点起飞。
+passport|/ˈpæspɔrt/|护照|交通出行|Please show your passport.|请出示您的护照。
+# day 7 租房与房东
+rent|/rɛnt/|房租；租|租房与房东|How much is the rent?|房租多少钱？
+landlord|/ˈlændlɔrd/|房东|租房与房东|I need to call my landlord.|我得给房东打电话。
+apartment|/əˈpɑrtmənt/|公寓|租房与房东|I live in an apartment.|我住公寓。
+contract|/ˈkɑntrækt/|合同|租房与房东|How long is the contract?|合同签多久？
+room|/rum/|房间|租房与房东|The room is very clean.|房间很干净。
+key|/ki/|钥匙|租房与房东|I lost my key.|我把钥匙弄丢了。
+air conditioner||空调|租房与房东|The air conditioner is not working.|空调坏了。|口语常说 the AC
+leak|/lik/|漏水；漏|租房与房东|The bathroom is leaking.|浴室漏水了。
+fix|/fɪks/|修理|租房与房东|Can you fix it today?|今天能修吗？
+repair|/rɪˈpɛr/|修理；维修|租房与房东|When will the repair man come?|维修工什么时候来？
+electricity|/ɪˌlɛkˈtrɪsəti/|电|租房与房东|How much is the electricity bill?|电费多少钱？
+water bill||水费|租房与房东|The water bill is included.|水费包含在内。
+included|/ɪnˈkludɪd/|包含在内的|租房与房东|Is Wi-Fi included?|包含网费吗？
+move in||搬进来|租房与房东|Can I move in next week?|我下周可以搬进来吗？
+move out||搬出去|租房与房东|I'm moving out at the end of the month.|我月底搬走。
+noisy|/ˈnɔɪzi/|吵闹的|租房与房东|My neighbor is very noisy.|我的邻居很吵。
+neighbor|/ˈneɪbɚ/|邻居|租房与房东|My neighbor is very kind.|我的邻居很友善。|gh 不发音
+furniture|/ˈfɝnɪtʃɚ/|家具|租房与房东|Is it furnished?|有家具吗？
+parking|/ˈpɑrkɪŋ/|停车位；停车|租房与房东|Is there parking?|有停车位吗？
+lift|/lɪft/|电梯（英式）|租房与房东|The lift is out of order.|电梯坏了。|美式说 elevator
+# day 8 快递与外卖
+delivery|/dɪˈlɪvəri/|送货；外卖|快递与外卖|Do you have delivery?|可以送货吗？
+package|/ˈpækɪdʒ/|包裹|快递与外卖|I have a package for you.|有您的包裹。
+parcel|/ˈpɑrsəl/|包裹（英式常用）|快递与外卖|Your parcel has arrived.|你的包裹到了。
+downstairs|/ˌdaʊnˈstɛrz/|楼下|快递与外卖|I'm downstairs. Can you come down?|我在楼下，您能下来吗？
+lobby|/ˈlɑbi/|大堂|快递与外卖|Please leave it in the lobby.|请放在大堂。
+leave it||放下就行|快递与外卖|Please leave it at the door.|请放在门口。
+front door||前门；正门|快递与外卖|I'm at the front door.|我在正门。
+security guard||保安|快递与外卖|Give it to the security guard, please.|请交给保安。
+sign|/saɪn/|签名|快递与外卖|Please sign here.|请在这里签字。|g 不发音
+tracking number||快递单号|快递与外卖|What's the tracking number?|快递单号是多少？
+cash on delivery||货到付款|快递与外卖|Is it cash on delivery?|是货到付款吗？
+wrong|/rɔŋ/|错的|快递与外卖|This is the wrong order.|这个订单送错了。
+missing|/ˈmɪsɪŋ/|缺少的；丢失的|快递与外卖|One item is missing.|少了一样东西。
+call me||给我打电话|快递与外卖|Please call me when you arrive.|到了请给我打电话。
+wait|/weɪt/|等|快递与外卖|Please wait five minutes.|请等五分钟。
+coming|/ˈkʌmɪŋ/|来了|快递与外卖|I'm coming down now.|我现在下来。
+floor|/flɔr/|楼层；地板|快递与外卖|I live on the 12th floor.|我住在12楼。
+room number||房间号|快递与外卖|My room number is 1205.|我的房号是1205。
+tip|/tɪp/|小费|快递与外卖|This is a tip for you.|这是给你的小费。
+on time||准时|快递与外卖|The food came on time.|饭准时送到了。
+# day 9 看病
+hospital|/ˈhɑspɪtəl/|医院|看病|I need to go to the hospital.|我得去医院。
+doctor|/ˈdɑktɚ/|医生|看病|I want to see a doctor.|我想看医生。
+sick|/sɪk/|生病的|看病|I feel sick.|我觉得不舒服。
+fever|/ˈfivɚ/|发烧|看病|I have a fever.|我发烧了。
+cough|/kɔf/|咳嗽|看病|I have a bad cough.|我咳得很厉害。|gh 读 f
+headache|/ˈhɛdeɪk/|头疼|看病|I have a headache.|我头疼。|ch 读 k
+stomachache|/ˈstʌməkeɪk/|肚子疼|看病|I have a stomachache.|我肚子疼。
+sore throat||嗓子疼|看病|I have a sore throat.|我嗓子疼。
+cold|/koʊld/|感冒；冷的|看病|I caught a cold.|我感冒了。
+pain|/peɪn/|疼痛|看病|Where is the pain?|哪里疼？
+hurt|/hɝt/|疼；受伤|看病|My back hurts.|我背疼。
+medicine|/ˈmɛdəsən/|药|看病|Take this medicine three times a day.|这药一天吃三次。
+pharmacy|/ˈfɑrməsi/|药店|看病|Is there a pharmacy near here?|附近有药店吗？|ph 读 f
+appointment|/əˈpɔɪntmənt/|预约|看病|I'd like to make an appointment.|我想预约。
+insurance|/ɪnˈʃʊrəns/|保险|看病|Do you accept my insurance?|你们接受我的保险吗？
+emergency|/ɪˈmɝdʒənsi/|紧急情况；急诊|看病|Where is the emergency room?|急诊室在哪里？
+dizzy|/ˈdɪzi/|头晕的|看病|I feel dizzy.|我头晕。
+better|/ˈbɛtɚ/|好些了|看病|I feel better now.|我现在好多了。
+before meals||饭前|看病|Take it before meals.|饭前服用。
+after meals||饭后|看病|Take two tablets after meals.|饭后吃两片。
+# day 10 银行与手机
+bank|/bæŋk/|银行|银行与手机|I need to go to the bank.|我得去银行。
+account|/əˈkaʊnt/|账户|银行与手机|I want to open a bank account.|我想开个银行账户。
+ATM|/ˌeɪ ti ˈɛm/|取款机|银行与手机|The ATM ate my card.|取款机把我的卡吞了。
+withdraw|/wɪðˈdrɔ/|取钱|银行与手机|I want to withdraw some cash.|我想取点现金。
+password|/ˈpæswɝd/|密码|银行与手机|I forgot my password.|我忘记密码了。
+SIM card||电话卡|银行与手机|Where can I buy a SIM card?|在哪里能买电话卡？
+top up||充值|银行与手机|I need to top up my phone.|我要给手机充值。
+signal|/ˈsɪɡnəl/|信号|银行与手机|There's no signal here.|这里没信号。
+battery|/ˈbætəri/|电池；电量|银行与手机|My battery is dead.|我手机没电了。
+charger|/ˈtʃɑrdʒɚ/|充电器|银行与手机|Can I borrow your charger?|能借一下你的充电器吗？
+Wi-Fi password||Wi-Fi 密码|银行与手机|What's the Wi-Fi password?|Wi-Fi 密码是多少？
+screenshot|/ˈskrinʃɑt/|截图|银行与手机|Send me a screenshot.|给我发张截图。
+download|/ˈdaʊnloʊd/|下载|银行与手机|Download the app first.|先下载这个应用。
+app|/æp/|应用；App|银行与手机|Do you use this app?|你用这个应用吗？
+message|/ˈmɛsɪdʒ/|消息|银行与手机|I'll send you a message.|我给你发消息。
+call back||回电话|银行与手机|Can I call you back later?|我晚点回你电话好吗？
+busy|/ˈbɪzi/|忙的；占线|银行与手机|Sorry, I'm busy now.|抱歉，我现在在忙。
+ID card||身份证|银行与手机|Please bring your ID card.|请带上身份证。
+form|/fɔrm/|表格|银行与手机|Please fill in this form.|请填写这张表。
+fill in||填写|银行与手机|Fill in your name here.|在这里填你的名字。
+# day 11 工作与办公室
+office|/ˈɔfɪs/|办公室|工作与办公室|I'm in the office now.|我现在在办公室。
+meeting|/ˈmitɪŋ/|会议|工作与办公室|We have a meeting at ten.|我们十点开会。
+boss|/bɔs/|老板；上司|工作与办公室|My boss is in a meeting.|我老板在开会。
+colleague|/ˈkɑliɡ/|同事|工作与办公室|This is my colleague, Anna.|这是我的同事安娜。
+schedule|/ˈskɛdʒul/|日程；安排|工作与办公室|What's your schedule tomorrow?|你明天的安排是什么？
+deadline|/ˈdɛdlaɪn/|截止日期|工作与办公室|The deadline is Friday.|截止日期是周五。
+report|/rɪˈpɔrt/|报告|工作与办公室|I'm writing the report.|我在写报告。
+project|/ˈprɑdʒɛkt/|项目|工作与办公室|How is the project going?|项目进展如何？
+customer|/ˈkʌstəmɚ/|客户；顾客|工作与办公室|The customer is waiting.|客户在等。
+check|/tʃɛk/|检查；确认|工作与办公室|Let me check.|我查一下。
+confirm|/kənˈfɝm/|确认|工作与办公室|Please confirm the time.|请确认一下时间。
+ready|/ˈrɛdi/|准备好的|工作与办公室|Are you ready?|准备好了吗？
+finish|/ˈfɪnɪʃ/|完成|工作与办公室|I'll finish it today.|我今天会做完。
+help|/hɛlp/|帮助|工作与办公室|Can you help me with this?|你能帮我弄一下这个吗？
+problem|/ˈprɑbləm/|问题|工作与办公室|We have a problem.|我们遇到了一个问题。
+question|/ˈkwɛstʃən/|问题；疑问|工作与办公室|Can I ask a question?|我可以问个问题吗？
+day off||休假日|工作与办公室|Tomorrow is my day off.|明天我休息。
+overtime|/ˈoʊvɚtaɪm/|加班|工作与办公室|I worked overtime last night.|我昨晚加班了。
+salary|/ˈsæləri/|工资|工作与办公室|When do we get our salary?|什么时候发工资？
+lunch break||午休|工作与办公室|Let's talk after the lunch break.|午休后再谈吧。
+# day 12 邮件电话会议
+email|/ˈimeɪl/|邮件；发邮件|邮件电话会议|I'll email you the file.|我把文件发邮件给你。
+attachment|/əˈtætʃmənt/|附件|邮件电话会议|Please see the attachment.|请查看附件。
+reply|/rɪˈplaɪ/|回复|邮件电话会议|Thanks for your quick reply.|谢谢你的快速回复。
+as soon as possible||尽快|邮件电话会议|Please reply as soon as possible.|请尽快回复。|缩写 ASAP
+let me know||告诉我一声|邮件电话会议|Let me know if you have any questions.|有任何问题告诉我。
+I'm afraid||恐怕（委婉地说坏消息）|邮件电话会议|I'm afraid I can't come tomorrow.|恐怕我明天来不了。
+could you||你能…吗（客气）|邮件电话会议|Could you send it again?|你能再发一次吗？
+speaking|/ˈspikɪŋ/|（电话里）我就是|邮件电话会议|“Is this Lin?” “Speaking.”|“是林吗？”“我就是。”
+hold on||稍等（电话）|邮件电话会议|Hold on, please.|请稍等。
+can you hear me||你能听到我吗|邮件电话会议|Hello? Can you hear me?|喂？你能听到我吗？
+mute|/mjut/|静音|邮件电话会议|You're on mute.|你开着静音呢。
+share screen||共享屏幕|邮件电话会议|Can you share your screen?|你能共享一下屏幕吗？
+agree|/əˈɡri/|同意|邮件电话会议|I agree with you.|我同意你的看法。
+suggest|/səɡˈdʒɛst/|建议|邮件电话会议|I suggest we meet on Monday.|我建议我们周一见。
+available|/əˈveɪləbəl/|有空的；可用的|邮件电话会议|Are you available this afternoon?|你今天下午有空吗？
+reschedule|/riˈskɛdʒul/|改期|邮件电话会议|Can we reschedule the meeting?|我们能改一下开会时间吗？
+cancel|/ˈkænsəl/|取消|邮件电话会议|The meeting is cancelled.|会议取消了。
+remind|/rɪˈmaɪnd/|提醒|邮件电话会议|Please remind me tomorrow.|明天请提醒我。
+by the way||顺便说一下|邮件电话会议|By the way, did you get my email?|顺便问一下，你收到我的邮件了吗？
+best regards||此致敬礼（邮件结尾）|邮件电话会议|Best regards, Lin|此致，林

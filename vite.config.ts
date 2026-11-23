@@ -39,7 +39,7 @@ export default defineConfig({
         // （同名缓存里的过期条目 Workbox 在激活时本来就会清理）
         cleanupOutdatedCaches: false,
         navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/\/jp\//],   // 同站点下的「职场日语」有自己的 Service Worker 和入口，泰语 SW 不接管
+        navigateFallbackDenylist: [/\/jp\//, /\/en\//],   // 同站点下的「职场日语」「生活英语」有自己的 Service Worker 和入口，泰语 SW 不接管
         // 音频体积较大，不预缓存；首次播放后运行时缓存（CacheFirst），也可在「我的」页一键离线下载
         runtimeCaching: [
           {

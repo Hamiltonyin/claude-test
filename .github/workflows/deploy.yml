@@ -36,6 +36,7 @@ jobs:
           node scripts/check-data.mjs
           node scripts/build-content.mjs
           node jp/scripts/build-jp.mjs      # 日语：假名表 + 职场词汇（读音/罗马音/重复校验）
+          node en/scripts/build-en.mjs      # 英语：生活词汇（音标/重复校验）
       - name: 端到端测试（失败则不生成音频、不部署）
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
@@ -52,10 +53,12 @@ jobs:
         run: python3 scripts/gen_audio.py --library public/content/library.json --out public/audio --suffix _zh --voice zh-CN-XiaoxiaoNeural --rate +0% --lang zh-CN --text-key zh --clean-zh --allow-fail ${{ inputs.force_audio && '--force' || '' }}
       - name: 生成缺失的日语音频（ja-JP-NanamiNeural，已有文件不覆盖）
         run: python3 scripts/gen_audio.py --library jp/public/content/library.json --out jp/public/audio --voice ja-JP-NanamiNeural --lang ja --text-key speak --allow-fail ${{ inputs.force_audio && '--force' || '' }}
+      - name: 生成缺失的英语音频（en-US-JennyNeural，已有文件不覆盖）
+        run: python3 scripts/gen_audio.py --library en/public/content/library.json --out en/public/audio --voice en-US-JennyNeural --rate -5% --lang en --text-key speak --allow-fail ${{ inputs.force_audio && '--force' || '' }}
       - name: 提交新增音频
         run: |
           git config user.name "thai30-bot"; git config user.email "bot@users.noreply.github.com"
-          git add public/audio public/content jp/public/audio jp/public/content jp/src/data
+          git add public/audio public/content jp/public/audio jp/public/content jp/src/data en/public/audio en/public/content en/src/data
           git diff --cached --quiet || (git commit -m "chore: 新增/更新音频与词库 [skip ci]" && git pull --rebase origin main && git push)
       - name: 构建
         run: BASE=/${{ github.event.repository.name }}/ npm run build:all
@@ -69,6 +72,9 @@ jobs:
           jhave=$(ls jp/public/audio/*.mp3 2>/dev/null | wc -l)
           echo "日语音频 $jhave / $jtotal"
           echo "### 日语音频 $jhave / $jtotal" >> $GITHUB_STEP_SUMMARY
+          etotal=$(node -e "console.log(require('./en/public/content/library.json').words.length)")
+          ehave=$(ls en/public/audio/*.mp3 2>/dev/null | wc -l)
+          echo "### 英语音频 $ehave / $etotal" >> $GITHUB_STEP_SUMMARY
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }
 

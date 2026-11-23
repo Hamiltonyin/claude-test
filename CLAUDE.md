@@ -1,7 +1,7 @@
 # 泰语每日30词（thai30）— 给 AI 助手的项目说明
 
 面向中文母语者的泰语学习 PWA。使用者住在泰国，日常要和快递员、房东等人沟通；在 iPhone Safari 上使用（添加到主屏幕）。
-线上地址：https://hamiltonyin.github.io/claude-test/ （**公开网站**）。同仓库还有一个「职场日语」App 在 `jp/`，部署到 `/jp/` 子路径。
+线上地址：https://hamiltonyin.github.io/claude-test/ （**公开网站**）。同仓库还有「职场日语」App 在 `jp/`（部署到 `/jp/`）和「生活英语」App 在 `en/`（部署到 `/en/`，从 jp 复制改来，内容在 `en/content/words.txt`）。泰语 SW 的 `navigateFallbackDenylist` 和 `src/lib/update.ts` 都要排除这两个子路径。
 
 ## 和使用者协作
 
@@ -24,6 +24,7 @@ src/store.tsx       全局状态（词库、进度、会话、设置）与 Index
 src/views/          各页面；src/ui.tsx 是共用组件；src/styles.css 是全部样式
 e2e/*.mjs           Playwright 端到端测试（iPhone 14 视口）
 jp/                 日语 App（独立的 vite 配置）
+en/                 英语 App（独立的 vite 配置，见 en/README.md）
 ```
 
 ### 内容文件（`content/`）
@@ -62,7 +63,7 @@ jp/                 日语 App（独立的 vite 配置）
 npm run dev                      # 本地开发
 node scripts/build-content.mjs   # 校验内容并生成 public/content
 npx tsc --noEmit                 # 类型检查
-npm run build:all                # 构建泰语 + 日语（测试前必须先构建，不带 BASE）
+npm run build:all                # 构建泰语 + 日语 + 英语（测试前必须先构建，不带 BASE）
 npm run test:e2e                 # 并行跑全部 e2e；只跑部分：node scripts/run-e2e.mjs wheel dialogue
 ```
 
