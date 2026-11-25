@@ -260,13 +260,14 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
         <label><input type="checkbox" checked={hideTh} onChange={e => { setHideTh(e.target.checked); setPeek(new Set()) }} data-testid={tp + '-hide'} /> 遮住泰文</label>
         {K === 'lyr' && hideTh && <label><input type="checkbox" checked={hint} onChange={e => setHint(e.target.checked)} data-testid="lyr-hint" /> 开头提示</label>}
         {K === 'lyr' && <label>单句 <select value={rep} onChange={e => setRep(Number(e.target.value))} data-testid="lyr-rep"><option value={1}>1 遍</option><option value={2}>2 遍</option><option value={3}>3 遍</option></select></label>}
-        {K === 'lyr' && <label><input type="checkbox" checked={loop} onChange={e => setLoop(e.target.checked)} data-testid="lyr-loop" /> 循环</label>}
         <button className="link" onClick={() => setMode(mode === 'wheel' ? 'chat' : 'wheel')} data-testid={tp + '-mode-toggle'}>{mode === 'wheel' ? '切到列表' : '切到滚轴'}</button>
         {vurl && <><button className="link" onClick={() => void exportClips()}>复制时间轴</button><button className="link" onClick={() => void removeVideo()}>移除视频</button></>}
         {vmsg && <p className="sub" style={{ fontSize: 11, wordBreak: 'break-all', flexBasis: '100%' }}>{vmsg}</p>}
       </div>}
       {vurl && <div className={'vowvid' + (vidBig ? '' : ' min')}>
-        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { setPlaying(null); const d = clipDone.current; clipDone.current = null; d?.() }} onClick={() => { const el = vid.current; if (el) { if (el.paused) void el.play().catch(() => {}); else el.pause() } }} data-testid={tp + '-video'} />
+        <video ref={vid} src={vurl} playsInline preload="metadata" onTimeUpdate={onTime} onEnded={() => { const d = clipDone.current; clipDone.current = null; if (d) { setPlaying(null); d(); return }
+          // 歌词开了循环：直接点视频播放的，播完从头再来（▶ 整首播放有自己的循环）
+          const el = vid.current; if (K === 'lyr' && loop && !all && el) { el.currentTime = 0; void el.play().catch(() => {}) } else setPlaying(null) }} onClick={() => { const el = vid.current; if (el) { if (el.paused) void el.play().catch(() => {}); else el.pause() } }} data-testid={tp + '-video'} />
         <VideoBar vid={vid} big={vidBig} onSize={() => setVidBig(!vidBig)} />
       </div>}
       {mode === 'wheel' ? (
@@ -326,6 +327,6 @@ export default function Dialogues({ onClose, kind = 'dlg' }: { onClose: () => vo
             </div>)
         })() : <div key={i} className="dsec"><span>{(it0 as { sec: string }).sec}</span></div>)}
       </div>)}
-      <div className="dlgbar"><button className={'nx' + (all ? ' stop' : '')} onClick={playAll} aria-label={all ? '停止' : tx.all} data-testid={tp + '-playall'}>{all ? '⏹' : '▶'}</button></div>
+      <div className="dlgbar">{K === 'lyr' && <button className={'loopbtn' + (loop ? ' on' : '')} onClick={() => setLoop(!loop)} aria-label={loop ? '关闭循环' : '循环播放'} aria-pressed={loop} data-testid="lyr-loop">🔁</button>}<button className={'nx' + (all ? ' stop' : '')} onClick={playAll} aria-label={all ? '停止' : tx.all} data-testid={tp + '-playall'}>{all ? '⏹' : '▶'}</button></div>
     </div>)
 }

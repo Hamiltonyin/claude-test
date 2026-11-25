@@ -503,6 +503,7 @@ h1{font-weight:800;letter-spacing:-.6px}
 .gpop{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:0 14px 6px;padding:8px 12px;font-size:13px;color:var(--sub);background:rgba(255,255,255,.66);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 8px 24px rgba(30,55,110,.12)}.gpop input{margin-right:4px;vertical-align:-2px}.gpop .link{font-size:13px}
 .dlgbar{position:absolute;right:14px;bottom:calc(var(--sab) + 14px);padding:0;background:none;z-index:6}
 .dlgbar .nx{width:52px;height:52px;border-radius:50%;font-size:18px;padding:0;display:grid;place-items:center;box-shadow:0 8px 20px rgba(70,90,255,.38)}
+.dlgbar{display:flex;align-items:center;gap:10px}.loopbtn{width:40px;height:40px;border-radius:50%;font-size:17px;display:grid;place-items:center;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--glass-edge);opacity:.55;filter:grayscale(1)}.loopbtn.on{opacity:1;filter:none;background:rgba(59,130,255,.18);border-color:rgba(59,130,255,.5)}
 .chat{padding-bottom:84px}
 
 /* ================= 视频播放条（YouTube 样式，ui.tsx 的 VideoBar）=================
